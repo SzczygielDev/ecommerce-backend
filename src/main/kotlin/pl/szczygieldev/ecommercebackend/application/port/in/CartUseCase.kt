@@ -1,8 +1,8 @@
 package pl.szczygieldev.ecommercebackend.application.port.`in`
 
-import pl.szczygieldev.ecommercebackend.application.command.AddItemToCartCommand
-import pl.szczygieldev.ecommercebackend.application.command.RemoveItemFromCartCommand
-import pl.szczygieldev.ecommercebackend.application.command.SubmitCartCommand
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.AddItemToCartCommand
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.RemoveItemFromCartCommand
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.SubmitCartCommand
 
 interface CartUseCase {
     fun submitCart(command: SubmitCartCommand)

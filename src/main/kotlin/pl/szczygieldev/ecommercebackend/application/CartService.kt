@@ -1,9 +1,8 @@
 package pl.szczygieldev.ecommercebackend.application
 
-import pl.szczygieldev.ecommercebackend.application.architecture.UseCase
-import pl.szczygieldev.ecommercebackend.application.command.AddItemToCartCommand
-import pl.szczygieldev.ecommercebackend.application.command.RemoveItemFromCartCommand
-import pl.szczygieldev.ecommercebackend.application.command.SubmitCartCommand
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.AddItemToCartCommand
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.RemoveItemFromCartCommand
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.SubmitCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
 import pl.szczygieldev.ecommercebackend.application.port.out.Carts
 import pl.szczygieldev.ecommercebackend.application.port.out.Products
@@ -11,6 +10,7 @@ import pl.szczygieldev.ecommercebackend.domain.CartId
 import pl.szczygieldev.ecommercebackend.domain.ProductId
 import pl.szczygieldev.ecommercebackend.domain.exception.CartNotFoundException
 import pl.szczygieldev.ecommercebackend.domain.exception.ProductNotFoundException
+import pl.szczygieldev.shared.architecture.UseCase
 
 @UseCase
 private class CartService(val carts: Carts, val products: Products) : CartUseCase {

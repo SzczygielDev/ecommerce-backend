@@ -1,5 +1,4 @@
-package pl.szczygieldev.ecommercebackend.domain.util
-
+package pl.szczygieldev.ddd.core
 import java.io.Serializable
 
 abstract class Identity<T : Identity<T>>(private val id: String) : Serializable {

@@ -31,6 +31,7 @@ dependencies {
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	implementation(project(":ddd-core"))
+	implementation(project(":shared"))
 	implementation("org.springframework.boot:spring-boot-starter-web:3.2.5")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 

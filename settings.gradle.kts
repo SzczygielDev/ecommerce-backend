@@ -2,5 +2,4 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"
 }
 rootProject.name = "ecommerce-backend"
-include("ddd-core")
-
+include("ddd-core","shared")

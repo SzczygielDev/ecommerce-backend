@@ -1,4 +1,4 @@
-package pl.szczygieldev.ecommercebackend.application.architecture
+package pl.szczygieldev.shared.architecture
 
 
 import java.lang.annotation.Inherited

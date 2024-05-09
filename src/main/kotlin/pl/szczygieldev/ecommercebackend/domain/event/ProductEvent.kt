@@ -1,6 +1,6 @@
 package pl.szczygieldev.ecommercebackend.domain.event
 
-import DomainEvent
+import pl.szczygieldev.ddd.core.DomainEvent
 import java.time.Instant
 
 sealed class ProductEvent : DomainEvent
