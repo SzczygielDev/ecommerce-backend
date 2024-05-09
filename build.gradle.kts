@@ -28,9 +28,11 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	implementation(project(":ddd-core"))
+	implementation("org.springframework.boot:spring-boot-starter-web:3.2.5")
+
 }
 
 tasks.withType<KotlinCompile> {
