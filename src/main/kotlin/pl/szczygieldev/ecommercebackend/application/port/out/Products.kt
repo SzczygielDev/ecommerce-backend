@@ -8,5 +8,7 @@ interface Products {
 
     fun findById(id:ProductId): Product?
 
+    fun findAll(): List<Product>
+
     fun save(product: Product)
 }
