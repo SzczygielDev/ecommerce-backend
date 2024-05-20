@@ -1,17 +1,23 @@
 package pl.szczygieldev.ecommercebackend.domain.event
 import pl.szczygieldev.ddd.core.DomainEvent
+import pl.szczygieldev.ecommercebackend.domain.CartId
+import pl.szczygieldev.ecommercebackend.domain.ProductId
 import java.time.Instant
 
-sealed class CartEvent : DomainEvent
+sealed class CartEvent(val cartId: CartId) : DomainEvent<CartEvent>
 
-class ItemAddedToCart : CartEvent(){
+class CartCreated(cartId: CartId) : CartEvent(cartId){
     override val occurredOn: Instant = Instant.now()
 }
 
-class ItemRemovedFromCart : CartEvent(){
+class ItemAddedToCart (val productId: ProductId,val  quantity: Int, cartId: CartId): CartEvent(cartId){
     override val occurredOn: Instant = Instant.now()
 }
 
-class CartSubmitted : CartEvent(){
+class ItemRemovedFromCart(val productId: ProductId,cartId: CartId) : CartEvent(cartId){
+    override val occurredOn: Instant = Instant.now()
+}
+
+class CartSubmitted(cartId: CartId) : CartEvent(cartId){
     override val occurredOn: Instant = Instant.now()
 }

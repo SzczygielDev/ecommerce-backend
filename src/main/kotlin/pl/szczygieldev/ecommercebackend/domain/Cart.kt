@@ -1,26 +1,25 @@
 package pl.szczygieldev.ecommercebackend.domain
 
-import pl.szczygieldev.ecommercebackend.domain.event.CartEvent
-import pl.szczygieldev.ecommercebackend.domain.event.CartSubmitted
-import pl.szczygieldev.ecommercebackend.domain.event.ItemAddedToCart
-import pl.szczygieldev.ecommercebackend.domain.event.ItemRemovedFromCart
+import pl.szczygieldev.ecommercebackend.domain.event.*
 import pl.szczygieldev.ecommercebackend.domain.exception.CartAlreadySubmittedException
 import pl.szczygieldev.ecommercebackend.domain.exception.CartNotActiveException
 
-class Cart private constructor(val cartId: CartId, var status: CartStatus) {
+class Cart private constructor(val cartId: CartId, private var status: CartStatus) {
     data class Entry(val productId: ProductId, val quantity: Int)
 
     companion object {
         fun create(cartId: CartId): Cart {
-            return Cart(cartId, CartStatus.ACTIVE)
+            val cart = Cart(cartId, CartStatus.ACTIVE)
+            cart.events.add(CartCreated(cartId))
+            return cart
         }
     }
 
 
-    private val events = mutableListOf<CartEvent>()
+    val events = mutableListOf<CartEvent>()
+    fun occurredEvents(): List<CartEvent> = events.toList()
 
     private var items: MutableList<Entry> = mutableListOf()
-
 
     fun addItem(productId: ProductId, quantity: Int) {
         if (status != CartStatus.ACTIVE) {
@@ -36,7 +35,7 @@ class Cart private constructor(val cartId: CartId, var status: CartStatus) {
         } else {
             items.add(Entry(productId, quantity))
         }
-        events.add(ItemAddedToCart())
+        events.add(ItemAddedToCart(productId, quantity, cartId))
     }
 
     fun removeItem(productId: ProductId) {
@@ -47,7 +46,7 @@ class Cart private constructor(val cartId: CartId, var status: CartStatus) {
         items.removeIf { item ->
             item.productId.sameValueAs(productId)
         }
-        events.add(ItemRemovedFromCart())
+        events.add(ItemRemovedFromCart(productId, cartId))
     }
 
     fun submit() {
@@ -55,6 +54,6 @@ class Cart private constructor(val cartId: CartId, var status: CartStatus) {
             throw CartAlreadySubmittedException(cartId)
         }
         status = CartStatus.SUBMITTED
-        events.add(CartSubmitted())
+        events.add(CartSubmitted(cartId))
     }
 }

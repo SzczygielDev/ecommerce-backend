@@ -5,20 +5,17 @@ import pl.szczygieldev.ecommercebackend.application.port.out.Carts
 import pl.szczygieldev.ecommercebackend.domain.Cart
 import pl.szczygieldev.ecommercebackend.domain.CartId
 import pl.szczygieldev.ecommercebackend.domain.Product
+import pl.szczygieldev.ecommercebackend.domain.event.CartEvent
 import java.util.UUID
 
 @Repository
 class CartRepository : Carts {
-    private val db  = mutableMapOf<String, Cart>()
-    override fun nextIdentity(): CartId {
-        return CartId.valueOf(UUID.randomUUID().toString())
-    }
-
-    override fun findById(id: CartId): Cart? {
-       return db[id.id]
-    }
+    private val db = mutableMapOf<String, Cart>()
+    override fun nextIdentity(): CartId = CartId.valueOf(UUID.randomUUID().toString())
+    override fun findById(id: CartId): Cart? = db[id.id]
 
     override fun save(cart: Cart) {
-        db[cart.cartId.id]=cart
+        cart.events.clear() //todo
+        db[cart.cartId.id] = cart
     }
 }
