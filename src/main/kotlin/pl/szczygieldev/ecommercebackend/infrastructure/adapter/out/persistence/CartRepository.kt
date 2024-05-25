@@ -15,7 +15,7 @@ class CartRepository : Carts {
     override fun findById(id: CartId): Cart? = db[id.id]
 
     override fun save(cart: Cart) {
-        cart.events.clear() //todo
+        cart.clearOccurredEvents()
         db[cart.cartId.id] = cart
     }
 }
