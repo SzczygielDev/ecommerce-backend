@@ -30,7 +30,7 @@ class InMemoryEventStore(val objectMapper: ObjectMapper) : EventStore {
         events.forEach { event ->
             versionOfCurrentEvent++
 
-            eventsForAggregate?.add(
+            eventsForAggregate.add(
                 StreamEntry(
                     aggregateId,
                     versionOfCurrentEvent,

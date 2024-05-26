@@ -24,7 +24,7 @@ private class CartService(
     override fun submitCart(command: SubmitCartCommand) {
         val cartId = CartId(command.cartId)
         val cart = carts.findById(cartId) ?: throw CartNotFoundException(cartId)
-        val currentVersion = cart.version;
+        val currentVersion = cart.version
         cart.submit()
 
         cart.occurredEvents().forEach {
@@ -36,7 +36,7 @@ private class CartService(
     override fun addProductToCart(command: AddItemToCartCommand) {
         val cartId = CartId(command.cartId)
         val cart = carts.findById(cartId) ?: throw CartNotFoundException(cartId)
-        val currentVersion = cart.version;
+        val currentVersion = cart.version
 
         val productId = ProductId(command.productId)
         val product = products.findById(productId) ?: throw ProductNotFoundException(productId)
@@ -52,7 +52,7 @@ private class CartService(
     override fun removeProductFromCart(command: RemoveItemFromCartCommand) {
         val cartId = CartId(command.cartId)
         val cart = carts.findById(cartId) ?: throw CartNotFoundException(cartId)
-        val currentVersion = cart.version;
+        val currentVersion = cart.version
 
         cart.removeItem(ProductId(command.productId))
         cart.occurredEvents().forEach {

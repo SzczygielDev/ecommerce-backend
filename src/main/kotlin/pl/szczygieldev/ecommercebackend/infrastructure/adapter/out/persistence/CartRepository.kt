@@ -4,7 +4,6 @@ import org.springframework.stereotype.Repository
 import pl.szczygieldev.ecommercebackend.application.port.out.Carts
 import pl.szczygieldev.ecommercebackend.domain.Cart
 import pl.szczygieldev.ecommercebackend.domain.CartId
-import pl.szczygieldev.ecommercebackend.domain.Product
 import pl.szczygieldev.ecommercebackend.domain.event.CartEvent
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.eventstore.EventStore
 import java.util.UUID

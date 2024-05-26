@@ -6,7 +6,7 @@ import pl.szczygieldev.ecommercebackend.domain.exception.CartAlreadySubmittedExc
 import pl.szczygieldev.ecommercebackend.domain.exception.CartNotActiveException
 
 class Cart private constructor(val cartId: CartId) : AggregateRoot<CartEvent>() {
-    private var status: CartStatus = CartStatus.ACTIVE;
+    private var status: CartStatus = CartStatus.ACTIVE
 
     data class Entry(val productId: ProductId, val quantity: Int)
 

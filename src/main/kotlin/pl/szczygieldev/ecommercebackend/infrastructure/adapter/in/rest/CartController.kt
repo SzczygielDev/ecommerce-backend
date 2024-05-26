@@ -16,7 +16,6 @@ import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.present
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.AddItemToCartRequest
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.RemoveItemFromCartRequest
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.persistence.CartProjectionRepository
-import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.persistence.CartRepository
 
 @RequestMapping("/carts")
 @RestController
