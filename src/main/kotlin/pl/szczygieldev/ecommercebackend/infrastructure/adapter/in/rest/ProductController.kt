@@ -23,7 +23,7 @@ class ProductController(
 
     @GetMapping("/{id}")
     fun getById(@PathVariable id: String): ResponseEntity<ProductDto> {
-        val product = products.findById(ProductId.valueOf(id))
+        val product = products.findById(ProductId(id))
 
         return ResponseEntity.ok().body(productPresenter.toDto(product!!))
     }

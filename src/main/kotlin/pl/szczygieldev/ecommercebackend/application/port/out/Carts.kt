@@ -6,5 +6,5 @@ import pl.szczygieldev.ecommercebackend.domain.CartId
 interface Carts {
     fun nextIdentity(): CartId
     fun findById(id : CartId): Cart?
-    fun save(cart: Cart)
+    fun save(cart: Cart, version: Int)
 }

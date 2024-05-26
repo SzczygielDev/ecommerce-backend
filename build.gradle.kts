@@ -35,6 +35,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web:3.2.5")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1")
+	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.1")
 
 
 }

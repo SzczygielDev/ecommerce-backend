@@ -27,24 +27,24 @@ class CartController(
 ) {
     @GetMapping("/{id}")
     fun get(@PathVariable id: String): ResponseEntity<*> {
-        return ResponseEntity.ok(cartPresenter.toDto(cartRepository.findById(CartId.valueOf(id))!!))
+        return ResponseEntity.ok(cartPresenter.toDto(cartRepository.findById(CartId(id))!!))
     }
 
     @PostMapping("/{id}/addItem")
     fun addProduct(@PathVariable id: String,@RequestBody request: AddItemToCartRequest) : ResponseEntity<*> {
         cartUseCase.addProductToCart(AddItemToCartCommand(id,request.productId,request.quantity))
-        return ResponseEntity.ok(cartPresenter.toDto(cartRepository.findById(CartId.valueOf(id))!!))
+        return ResponseEntity.ok(cartPresenter.toDto(cartRepository.findById(CartId(id))!!))
     }
 
     @PostMapping("/{id}/removeItem")
     fun redddd(@PathVariable id: String,@RequestBody request: RemoveItemFromCartRequest) : ResponseEntity<*> {
         cartUseCase.removeProductFromCart(RemoveItemFromCartCommand(id,request.productId))
-        return ResponseEntity.ok(cartPresenter.toDto(cartRepository.findById(CartId.valueOf(id))!!))
+        return ResponseEntity.ok(cartPresenter.toDto(cartRepository.findById(CartId(id))!!))
     }
 
     @PostMapping("/{id}/submit")
     fun submit(@PathVariable id: String) : ResponseEntity<*>{
         cartUseCase.submitCart(SubmitCartCommand(id))
-        return ResponseEntity.ok(cartPresenter.toDto(cartRepository.findById(CartId.valueOf(id))!!))
+        return ResponseEntity.ok(cartPresenter.toDto(cartRepository.findById(CartId(id))!!))
     }
 }

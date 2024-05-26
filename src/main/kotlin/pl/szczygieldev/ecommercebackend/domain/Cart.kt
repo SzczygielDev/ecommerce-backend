@@ -1,10 +1,11 @@
 package pl.szczygieldev.ecommercebackend.domain
 
+import pl.szczygieldev.ddd.core.AggregateRoot
 import pl.szczygieldev.ecommercebackend.domain.event.*
 import pl.szczygieldev.ecommercebackend.domain.exception.CartAlreadySubmittedException
 import pl.szczygieldev.ecommercebackend.domain.exception.CartNotActiveException
 
-class Cart private constructor(val cartId: CartId) {
+class Cart private constructor(val cartId: CartId) : AggregateRoot<CartEvent>() {
     private var status: CartStatus = CartStatus.ACTIVE;
 
     data class Entry(val productId: ProductId, val quantity: Int)
@@ -22,9 +23,6 @@ class Cart private constructor(val cartId: CartId) {
             return cart
         }
     }
-    private val events = mutableListOf<CartEvent>()
-    fun occurredEvents(): List<CartEvent> = events.toList()
-    fun clearOccurredEvents() = events.clear()
 
     private var items: MutableList<Entry> = mutableListOf()
 
@@ -49,38 +47,37 @@ class Cart private constructor(val cartId: CartId) {
         raiseEvent(CartSubmitted(cartId))
     }
 
-    private fun raiseEvent(event: CartEvent) {
-        events.add(event)
-        apply(event)
-    }
-    private fun apply(event: CartEvent) {
+    //region Event sourcing handlers
+    override fun applyEvent(event: CartEvent) {
         when (event) {
             is CartCreated -> {}
-            is CartSubmitted -> status = CartStatus.SUBMITTED
-            is ItemAddedToCart -> {
-                val entriesForProductId = items.filter {
-                    it.productId == event.productId
-                }
-                if (entriesForProductId.isNotEmpty()) {
-                    val currentEntry = entriesForProductId.first()
-                    items[items.indexOf(currentEntry)] =
-                        currentEntry.copy(quantity = currentEntry.quantity + event.quantity)
-                } else {
-                    items.add(Entry(event.productId, event.quantity))
-                }
-            }
-
-            is ItemRemovedFromCart -> items.removeIf { item ->
-                item.productId.sameValueAs(event.productId)
-            }
-
-        }
-
-    }
-
-    private fun applyAll(events: List<CartEvent>) {
-        events.forEach { event ->
-            apply(event)
+            is CartSubmitted -> apply(event)
+            is ItemAddedToCart -> apply(event)
+            is ItemRemovedFromCart -> apply(event)
         }
     }
+
+    private fun apply(event:CartSubmitted){
+        status = CartStatus.SUBMITTED
+    }
+
+    private fun apply(event:ItemAddedToCart){
+        val entriesForProductId = items.filter {
+            it.productId == event.productId
+        }
+        if (entriesForProductId.isNotEmpty()) {
+            val currentEntry = entriesForProductId.first()
+            items[items.indexOf(currentEntry)] =
+                currentEntry.copy(quantity = currentEntry.quantity + event.quantity)
+        } else {
+            items.add(Entry(event.productId, event.quantity))
+        }
+    }
+
+    private fun apply(event:ItemRemovedFromCart){
+        items.removeIf { item ->
+            item.productId.sameValueAs(event.productId)
+        }
+    }
+    //endregion
 }

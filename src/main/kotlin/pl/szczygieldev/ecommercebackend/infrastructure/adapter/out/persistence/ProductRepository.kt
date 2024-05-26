@@ -9,7 +9,7 @@ import java.util.UUID
 @Repository
 class ProductRepository : Products {
     private val db  = mutableMapOf<String,Product>()
-    override fun nextIdentity(): ProductId = ProductId.valueOf(UUID.randomUUID().toString())
+    override fun nextIdentity(): ProductId = ProductId(UUID.randomUUID().toString())
     override fun findById(id: ProductId): Product? = db[id.id()]
     override fun findAll(): List<Product> = db.values.toList()
 

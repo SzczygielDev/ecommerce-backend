@@ -18,10 +18,12 @@ class Warmup(val cartRepository: CartRepository, val productUseCase: ProductUseC
     @EventListener(ApplicationReadyEvent::class)
     fun initData() {
         val cart = Cart.create(cartRepository.nextIdentity())
+        var version = cart.version
         cart.occurredEvents().forEach {
             cartEventPublisher.publish(it)
         }
-        cartRepository.save(cart)
+        cartRepository.save(cart,version)
+
 
         logger.info("Cart for development created, id='${cart.cartId.id}'")
 
