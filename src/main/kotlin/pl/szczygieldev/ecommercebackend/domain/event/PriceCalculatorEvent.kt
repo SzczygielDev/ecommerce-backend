@@ -5,8 +5,6 @@ import pl.szczygieldev.ecommercebackend.domain.CartId
 import java.math.BigDecimal
 import java.time.Instant
 
-sealed class PriceCalculatorEvent : DomainEvent<PriceCalculatorEvent>
+sealed class PriceCalculatorEvent : DomainEvent<PriceCalculatorEvent>()
 
-class CartTotalRecalculated(val cartId: CartId, val amount: BigDecimal) : PriceCalculatorEvent() {
-    override val occurredOn: Instant = Instant.now()
-}
+class CartTotalRecalculated(val cartId: CartId, val amount: BigDecimal) : PriceCalculatorEvent()

@@ -1,9 +1,12 @@
 package pl.szczygieldev.ddd.core
 
 import java.time.Instant
+import java.util.UUID
 
-interface DomainEvent<T : DomainEvent<T>> {
+abstract class DomainEvent<T : DomainEvent<T>> {
+    val id: String = UUID.randomUUID().toString()
 
-    val occurredOn: Instant
+    val occurredOn: Instant = Instant.now()
 
+    fun sameEventAs(other: DomainEvent<*>): Boolean = id == other.id
 }
