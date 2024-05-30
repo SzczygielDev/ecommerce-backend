@@ -1,9 +1,12 @@
 package pl.szczygieldev.ecommercebackend.domain
 
+import arrow.core.Either
+import arrow.core.raise.either
 import pl.szczygieldev.ddd.core.AggregateRoot
+import pl.szczygieldev.ecommercebackend.domain.error.CartAlreadySubmittedError
+import pl.szczygieldev.ecommercebackend.domain.error.CartError
+import pl.szczygieldev.ecommercebackend.domain.error.CartNotActiveError
 import pl.szczygieldev.ecommercebackend.domain.event.*
-import pl.szczygieldev.ecommercebackend.domain.exception.CartAlreadySubmittedException
-import pl.szczygieldev.ecommercebackend.domain.exception.CartNotActiveException
 
 class Cart private constructor(val cartId: CartId) : AggregateRoot<CartEvent>() {
     private var status: CartStatus = CartStatus.ACTIVE
@@ -26,23 +29,23 @@ class Cart private constructor(val cartId: CartId) : AggregateRoot<CartEvent>() 
 
     private var items: MutableList<Entry> = mutableListOf()
 
-    fun addItem(productId: ProductId, quantity: Int) {
+    fun addItem(productId: ProductId, quantity: Int): Either<CartError, Unit> = either {
         if (status != CartStatus.ACTIVE) {
-            throw CartNotActiveException(cartId)
+            raise(CartNotActiveError.forId(cartId))
         }
         raiseEvent(ItemAddedToCart(productId, quantity, cartId))
     }
 
-    fun removeItem(productId: ProductId) {
+    fun removeItem(productId: ProductId): Either<CartError, Unit> = either {
         if (status != CartStatus.ACTIVE) {
-            throw CartNotActiveException(cartId)
+            raise(CartNotActiveError.forId(cartId))
         }
         raiseEvent(ItemRemovedFromCart(productId, cartId))
     }
 
-    fun submit() {
+    fun submit(): Either<CartError, Unit> = either {
         if (status == CartStatus.SUBMITTED) {
-            throw CartAlreadySubmittedException(cartId)
+            raise(CartAlreadySubmittedError.forId(cartId))
         }
         raiseEvent(CartSubmitted(cartId))
     }
@@ -57,11 +60,11 @@ class Cart private constructor(val cartId: CartId) : AggregateRoot<CartEvent>() 
         }
     }
 
-    private fun apply(event:CartSubmitted){
+    private fun apply(event: CartSubmitted) {
         status = CartStatus.SUBMITTED
     }
 
-    private fun apply(event:ItemAddedToCart){
+    private fun apply(event: ItemAddedToCart) {
         val entriesForProductId = items.filter {
             it.productId == event.productId
         }
@@ -74,7 +77,7 @@ class Cart private constructor(val cartId: CartId) : AggregateRoot<CartEvent>() 
         }
     }
 
-    private fun apply(event:ItemRemovedFromCart){
+    private fun apply(event: ItemRemovedFromCart) {
         items.removeIf { item ->
             item.productId.sameValueAs(event.productId)
         }

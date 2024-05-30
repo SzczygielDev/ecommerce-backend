@@ -1,5 +1,6 @@
 package pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.messaging
 
+import arrow.core.raise.either
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import pl.szczygieldev.ddd.core.DomainEventHandler
@@ -7,11 +8,10 @@ import pl.szczygieldev.ecommercebackend.application.model.CartProjection
 import pl.szczygieldev.ecommercebackend.application.port.`in`.PriceCalculatorUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CalculateCartTotalCommand
 import pl.szczygieldev.ecommercebackend.application.port.out.CartsProjections
-import pl.szczygieldev.ecommercebackend.domain.Cart
 import pl.szczygieldev.ecommercebackend.domain.CartStatus
+import pl.szczygieldev.ecommercebackend.domain.error.AppError
+import pl.szczygieldev.ecommercebackend.domain.error.CartNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.*
-import pl.szczygieldev.ecommercebackend.domain.exception.CartNotFoundException
-import java.lang.Exception
 import java.math.BigDecimal
 
 @Component
@@ -20,7 +20,7 @@ class CartEventHandler(
     private val priceCalculatorUseCase: PriceCalculatorUseCase
 ) : DomainEventHandler<CartEvent> {
     @EventListener
-    override fun handleEvent(domainEvent: CartEvent) {
+    override fun handleEvent(domainEvent: CartEvent) = either<AppError, Unit> {
         when (domainEvent) {
             is CartCreated -> cartsProjections.save(
                 CartProjection(
@@ -33,7 +33,7 @@ class CartEventHandler(
 
             is CartSubmitted -> cartsProjections.save(
                 cartsProjections.findById(domainEvent.cartId)?.copy(status = CartStatus.SUBMITTED)
-                    ?: throw CartNotFoundException(domainEvent.cartId)
+                    ?: raise(CartNotFoundError.forId(domainEvent.cartId))
             )
 
             is ItemAddedToCart -> {
@@ -52,10 +52,10 @@ class CartEventHandler(
                         }
 
                         it.copy(items = items)
-                    } ?: throw CartNotFoundException(domainEvent.cartId)
+                    }  ?: raise(CartNotFoundError.forId(domainEvent.cartId))
                 cartsProjections.save(cartProjection)
 
-                priceCalculatorUseCase.calculateCartTotal(CalculateCartTotalCommand(domainEvent.cartId))
+                priceCalculatorUseCase.calculateCartTotal(CalculateCartTotalCommand(domainEvent.cartId)).bind()
             }
 
             is ItemRemovedFromCart -> {
@@ -65,13 +65,15 @@ class CartEventHandler(
                     items.removeAll(itemsToRemove)
 
                     cartsProjection.copy(items = items)
-                } ?: throw CartNotFoundException(domainEvent.cartId)
+                }  ?: raise(CartNotFoundError.forId(domainEvent.cartId))
                 cartsProjections.save(cartProjection)
 
-                priceCalculatorUseCase.calculateCartTotal(CalculateCartTotalCommand(domainEvent.cartId))
+                priceCalculatorUseCase.calculateCartTotal(CalculateCartTotalCommand(domainEvent.cartId)).bind()
             }
 
 
         }
-    }
+    }.fold({
+           //TODO
+    },{})
 }
