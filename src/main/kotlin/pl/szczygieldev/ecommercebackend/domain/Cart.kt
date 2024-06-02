@@ -2,7 +2,7 @@ package pl.szczygieldev.ecommercebackend.domain
 
 import arrow.core.Either
 import arrow.core.raise.either
-import pl.szczygieldev.ddd.core.AggregateRoot
+import pl.szczygieldev.shared.ddd.core.AggregateRoot
 import pl.szczygieldev.ecommercebackend.domain.error.CartAlreadySubmittedError
 import pl.szczygieldev.ecommercebackend.domain.error.CartError
 import pl.szczygieldev.ecommercebackend.domain.error.CartNotActiveError

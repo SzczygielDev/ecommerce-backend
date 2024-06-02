@@ -1,9 +1,8 @@
 package pl.szczygieldev.ecommercebackend.domain.event
 
-import pl.szczygieldev.ddd.core.DomainEvent
+import pl.szczygieldev.shared.ddd.core.DomainEvent
 import pl.szczygieldev.ecommercebackend.domain.CartId
 import pl.szczygieldev.ecommercebackend.domain.ProductId
-import java.time.Instant
 
 sealed class CartEvent() : DomainEvent<CartEvent>()
 class CartCreated(val cartId: CartId) : CartEvent(){

@@ -2,13 +2,13 @@ package pl.szczygieldev.ecommercebackend.application
 
 import arrow.core.Either
 import arrow.core.raise.either
-import pl.szczygieldev.ddd.core.DomainEventPublisher
+import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.AddItemToCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.RemoveItemFromCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.SubmitCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
 import pl.szczygieldev.ecommercebackend.application.port.out.Carts
-import pl.szczygieldev.ecommercebackend.application.port.out.Outbox
+import pl.szczygieldev.shared.outbox.Outbox
 import pl.szczygieldev.ecommercebackend.application.port.out.Products
 import pl.szczygieldev.ecommercebackend.domain.CartId
 import pl.szczygieldev.ecommercebackend.domain.ProductId

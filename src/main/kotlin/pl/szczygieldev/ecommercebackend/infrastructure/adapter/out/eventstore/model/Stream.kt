@@ -1,6 +1,6 @@
 package pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.eventstore.model
 
-import pl.szczygieldev.ddd.core.Identity
+import pl.szczygieldev.shared.ddd.core.Identity
 
 class Stream private constructor(val aggregateId: Identity<*>) {
     companion object {

@@ -4,7 +4,7 @@ import arrow.core.raise.either
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
-import pl.szczygieldev.ddd.core.DomainEventHandler
+import pl.szczygieldev.shared.ddd.core.DomainEventHandler
 import pl.szczygieldev.ecommercebackend.application.model.CartProjection
 import pl.szczygieldev.ecommercebackend.application.port.`in`.PriceCalculatorUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CalculateCartTotalCommand

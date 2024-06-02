@@ -2,8 +2,8 @@ package pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.outbox
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Component
-import pl.szczygieldev.ddd.core.DomainEvent
-import pl.szczygieldev.ecommercebackend.application.port.out.Outbox
+import pl.szczygieldev.shared.ddd.core.DomainEvent
+import pl.szczygieldev.shared.outbox.Outbox
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.outbox.model.OutboxMessage
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.outbox.model.OutboxMessageStatus
 

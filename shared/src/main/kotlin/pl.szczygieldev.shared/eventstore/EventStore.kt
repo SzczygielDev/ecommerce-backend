@@ -1,7 +1,7 @@
-package pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.eventstore
+package pl.szczygieldev.shared.eventstore
 
-import pl.szczygieldev.ddd.core.DomainEvent
-import pl.szczygieldev.ddd.core.Identity
+import pl.szczygieldev.shared.ddd.core.DomainEvent
+import pl.szczygieldev.shared.ddd.core.Identity
 
 interface EventStore {
     fun appendEvents(aggregateId: Identity<*>, events: List<DomainEvent<*>>, exceptedVersion: Int)

@@ -5,7 +5,7 @@ import pl.szczygieldev.ecommercebackend.application.port.out.Carts
 import pl.szczygieldev.ecommercebackend.domain.Cart
 import pl.szczygieldev.ecommercebackend.domain.CartId
 import pl.szczygieldev.ecommercebackend.domain.event.CartEvent
-import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.eventstore.EventStore
+import pl.szczygieldev.shared.eventstore.EventStore
 import java.util.UUID
 
 @Repository

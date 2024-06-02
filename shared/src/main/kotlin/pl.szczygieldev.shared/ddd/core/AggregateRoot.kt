@@ -1,4 +1,4 @@
-package pl.szczygieldev.ddd.core
+package pl.szczygieldev.shared.ddd.core
 
 abstract class AggregateRoot<E : DomainEvent<E>> {
     private val events = mutableListOf<E>()

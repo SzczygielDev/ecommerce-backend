@@ -2,12 +2,12 @@ package pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.eventstore
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Component
-import pl.szczygieldev.ddd.core.DomainEvent
-import pl.szczygieldev.ddd.core.Identity
+import pl.szczygieldev.shared.ddd.core.DomainEvent
+import pl.szczygieldev.shared.ddd.core.Identity
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.eventstore.exception.EventStoreLockingException
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.eventstore.model.Stream
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.eventstore.model.StreamEntry
-import java.lang.RuntimeException
+import pl.szczygieldev.shared.eventstore.EventStore
 
 @Component
 class InMemoryEventStore(val objectMapper: ObjectMapper) : EventStore {

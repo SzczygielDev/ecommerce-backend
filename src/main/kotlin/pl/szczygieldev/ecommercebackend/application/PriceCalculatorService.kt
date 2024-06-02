@@ -3,18 +3,15 @@ package pl.szczygieldev.ecommercebackend.application
 import arrow.core.Either
 import arrow.core.mapOrAccumulate
 import arrow.core.raise.either
-import pl.szczygieldev.ddd.core.DomainEventPublisher
+import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 import pl.szczygieldev.ecommercebackend.application.port.`in`.PriceCalculatorUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CalculateCartTotalCommand
 import pl.szczygieldev.ecommercebackend.application.port.out.CartsProjections
 import pl.szczygieldev.ecommercebackend.application.port.out.Products
-import pl.szczygieldev.ecommercebackend.domain.Product
-import pl.szczygieldev.ecommercebackend.domain.ProductId
 import pl.szczygieldev.ecommercebackend.domain.error.*
 import pl.szczygieldev.ecommercebackend.domain.event.CartTotalRecalculated
 import pl.szczygieldev.ecommercebackend.domain.event.PriceCalculatorEvent
 import pl.szczygieldev.shared.architecture.UseCase
-import java.lang.RuntimeException
 
 @UseCase
 private class PriceCalculatorService(

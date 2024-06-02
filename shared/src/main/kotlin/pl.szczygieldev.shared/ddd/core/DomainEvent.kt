@@ -1,4 +1,4 @@
-package pl.szczygieldev.ddd.core
+package pl.szczygieldev.shared.ddd.core
 
 import java.time.Instant
 import java.util.UUID
