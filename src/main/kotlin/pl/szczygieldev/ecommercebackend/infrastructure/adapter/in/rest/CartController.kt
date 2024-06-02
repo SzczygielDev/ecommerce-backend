@@ -2,6 +2,7 @@ package pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest
 
 import arrow.core.raise.either
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -20,7 +21,6 @@ import pl.szczygieldev.ecommercebackend.domain.error.CartNotFoundError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.advice.mapToError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presenter.CartPresenter
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.AddItemToCartRequest
-import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.RemoveItemFromCartRequest
 
 @RequestMapping("/carts")
 @RestController
@@ -39,8 +39,8 @@ class CartController(
             { ResponseEntity.ok(cartPresenter.toDto(it)) })
     }
 
-    @PostMapping("/{id}/addItem")
-    fun addProduct(@PathVariable id: String, @RequestBody request: AddItemToCartRequest): ResponseEntity<*> {
+    @PostMapping("/{id}/items")
+    fun addItem(@PathVariable id: String, @RequestBody request: AddItemToCartRequest): ResponseEntity<*> {
         return either {
             val cartId = CartId(id)
             cartUseCase.addProductToCart(AddItemToCartCommand(id, request.productId, request.quantity)).bind()
@@ -50,11 +50,11 @@ class CartController(
             { ResponseEntity.ok(cartPresenter.toDto(it)) })
     }
 
-    @PostMapping("/{id}/removeItem")
-    fun remove(@PathVariable id: String, @RequestBody request: RemoveItemFromCartRequest): ResponseEntity<*> {
+    @DeleteMapping("/{id}/items/{productId}")
+    fun removeItem(@PathVariable id: String,@PathVariable productId:String): ResponseEntity<*> {
         return either {
             val cartId = CartId(id)
-            cartUseCase.removeProductFromCart(RemoveItemFromCartCommand(id, request.productId)).bind()
+            cartUseCase.removeProductFromCart(RemoveItemFromCartCommand(id, productId)).bind()
             cartRepository.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
