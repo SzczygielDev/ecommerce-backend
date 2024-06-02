@@ -38,6 +38,9 @@ dependencies {
 	implementation("io.arrow-kt:arrow-core:1.2.4")
 	implementation("io.arrow-kt:arrow-fx-coroutines:1.2.4")
 	implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
+	testImplementation("io.kotest:kotest-runner-junit5-jvm:5.9.0")
+	testImplementation("io.kotest:kotest-assertions-core-jvm:5.9.0")
+	implementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
 
 }
 
