@@ -7,4 +7,8 @@ import java.time.Instant
 
 sealed class PriceCalculatorEvent : DomainEvent<PriceCalculatorEvent>()
 
-class CartTotalRecalculated(val cartId: CartId, val amount: BigDecimal) : PriceCalculatorEvent()
+class CartTotalRecalculated(val cartId: CartId, val amount: BigDecimal) : PriceCalculatorEvent() {
+    override fun toString(): String {
+        return "CartTotalRecalculated(id=$id occuredOn=$occurredOn cartId=$cartId, amount=$amount)"
+    }
+}
