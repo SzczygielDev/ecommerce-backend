@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Component
 import pl.szczygieldev.ddd.core.DomainEvent
 import pl.szczygieldev.ddd.core.Identity
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.eventstore.exception.EventStoreLockingException
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.eventstore.model.Stream
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.eventstore.model.StreamEntry
 import java.lang.RuntimeException
@@ -23,7 +24,7 @@ class InMemoryEventStore(val objectMapper: ObjectMapper) : EventStore {
             currentVersion = 0
             eventsForAggregate = mutableListOf()
         } else if (currentVersion != exceptedVersion) {
-            throw RuntimeException("Optimistic locking exception")
+            throw EventStoreLockingException(aggregateId,currentVersion,exceptedVersion)
         }
 
         var versionOfCurrentEvent = currentVersion
