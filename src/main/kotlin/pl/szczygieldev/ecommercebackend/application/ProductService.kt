@@ -11,7 +11,7 @@ import pl.szczygieldev.shared.architecture.UseCase
 import java.math.BigDecimal
 
 @UseCase
-private class ProductService(val products: Products) : ProductUseCase {
+class ProductService(val products: Products) : ProductUseCase {
     override fun create(command: CreateProductCommand): Product {
         val product = Product.create(
             products.nextIdentity(),

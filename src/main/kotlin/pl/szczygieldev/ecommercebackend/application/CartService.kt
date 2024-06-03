@@ -19,7 +19,7 @@ import pl.szczygieldev.ecommercebackend.domain.event.CartEvent
 import pl.szczygieldev.shared.architecture.UseCase
 
 @UseCase
-private class CartService(
+class CartService(
     val carts: Carts,
     val products: Products,
     val outbox: Outbox,

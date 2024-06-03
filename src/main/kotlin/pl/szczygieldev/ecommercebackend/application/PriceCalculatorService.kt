@@ -14,7 +14,7 @@ import pl.szczygieldev.ecommercebackend.domain.event.PriceCalculatorEvent
 import pl.szczygieldev.shared.architecture.UseCase
 
 @UseCase
-private class PriceCalculatorService(
+class PriceCalculatorService(
     val products: Products,
     val cartProjections: CartsProjections,
     val priceCalculatorEventPublisher: DomainEventPublisher<PriceCalculatorEvent>,
