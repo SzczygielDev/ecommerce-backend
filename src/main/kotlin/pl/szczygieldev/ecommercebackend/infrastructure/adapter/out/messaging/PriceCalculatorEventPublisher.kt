@@ -1,20 +1,11 @@
 package pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.messaging
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
-import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 import pl.szczygieldev.ecommercebackend.domain.event.PriceCalculatorEvent
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.messaging.publisher.StoreAndForwardEventPublisher
+import pl.szczygieldev.shared.outbox.Outbox
 
 @Component
-class PriceCalculatorEventPublisher(private val eventPublisher: ApplicationEventPublisher) :
-    DomainEventPublisher<PriceCalculatorEvent> {
-    companion object {
-        private val log = KotlinLogging.logger { }
-    }
-    override fun publish(domainEvent: PriceCalculatorEvent) {
-        log.info { "publishing event='$domainEvent'" }
-        eventPublisher.publishEvent(domainEvent)
-    }
-}
-
+class PriceCalculatorEventPublisher(eventPublisher: ApplicationEventPublisher, outbox: Outbox) :
+    StoreAndForwardEventPublisher<PriceCalculatorEvent>(eventPublisher, outbox)

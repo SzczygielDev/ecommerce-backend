@@ -22,11 +22,8 @@ import pl.szczygieldev.shared.architecture.UseCase
 class CartService(
     val carts: Carts,
     val products: Products,
-    val outbox: Outbox,
-    val cartEventPublisher: DomainEventPublisher<CartEvent>,
-
-    ) : CartUseCase {
-    override fun submitCart(command: SubmitCartCommand): Either<AppError, Unit> = either  {
+    val cartEventPublisher: DomainEventPublisher<CartEvent> ) : CartUseCase {
+    override fun submitCart(command: SubmitCartCommand): Either<AppError, Unit> = either {
         val cartId = CartId(command.cartId)
         val cart = carts.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
         val currentVersion = cart.version
@@ -35,8 +32,8 @@ class CartService(
 
         val events = cart.occurredEvents()
         carts.save(cart, currentVersion)
-        outbox.insertEvents(events)
-        processOutbox(events)
+
+        cartEventPublisher.publishBatch(events)
     }
 
     override fun addProductToCart(command: AddItemToCartCommand): Either<AppError, Unit> = either {
@@ -51,11 +48,11 @@ class CartService(
 
         val events = cart.occurredEvents()
         carts.save(cart, currentVersion)
-        outbox.insertEvents(events)
-        processOutbox(events)
+
+        cartEventPublisher.publishBatch(events)
     }
 
-    override fun removeProductFromCart(command: RemoveItemFromCartCommand) : Either<AppError, Unit> = either {
+    override fun removeProductFromCart(command: RemoveItemFromCartCommand): Either<AppError, Unit> = either {
         val cartId = CartId(command.cartId)
         val cart = carts.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
         val currentVersion = cart.version
@@ -64,17 +61,7 @@ class CartService(
 
         val events = cart.occurredEvents()
         carts.save(cart, currentVersion)
-        outbox.insertEvents(events)
-        processOutbox(events)
-    }
 
-    /*
-    * Due to learning purposes for now executing outbox processing is done from methods, in future will be from background worker.
-    */
-    private fun processOutbox(events: List<CartEvent>) {
-        events.forEach { event ->
-            cartEventPublisher.publish(event)
-            outbox.markAsProcessed(event)
-        }
+        cartEventPublisher.publishBatch(events)
     }
 }
