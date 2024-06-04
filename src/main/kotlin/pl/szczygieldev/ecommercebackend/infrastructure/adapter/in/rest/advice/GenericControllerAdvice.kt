@@ -34,4 +34,12 @@ class GenericControllerAdvice {
 
         return problemDetail.also { log.error {  "Controller advice handling exception='${ex.javaClass.name}' message='${ex.message}'"} }
     }
+
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(ex: IllegalArgumentException): ProblemDetail {
+        val problemDetail: ProblemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.message ?: "")
+        problemDetail.title = "Provided invalid argument"
+
+        return problemDetail.also { log.error {  "Controller advice handling exception='${ex.javaClass.name}' message='${ex.message}'"} }
+    }
 }

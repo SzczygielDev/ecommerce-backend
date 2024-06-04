@@ -33,6 +33,7 @@ class Cart private constructor(val cartId: CartId) : EventSourcedEntity<CartEven
         if (status != CartStatus.ACTIVE) {
             raise(CartNotActiveError.forId(cartId))
         }
+        require(quantity > 0)  { "Item quantity must be positive value, provided='$quantity'" }
         raiseEvent(ItemAddedToCart(productId, quantity, cartId))
     }
 

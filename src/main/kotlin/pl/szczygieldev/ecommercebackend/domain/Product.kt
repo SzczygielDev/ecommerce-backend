@@ -1,8 +1,8 @@
 package pl.szczygieldev.ecommercebackend.domain
 
-import pl.szczygieldev.ecommercebackend.domain.event.CartEvent
 import pl.szczygieldev.ecommercebackend.domain.event.ProductCreated
 import pl.szczygieldev.ecommercebackend.domain.event.ProductEvent
+import java.math.BigDecimal
 
 class Product private constructor(
     val productId: ProductId,
@@ -22,8 +22,11 @@ class Product private constructor(
             title: ProductTitle,
             description: ProductDescription,
             price: ProductPrice
-        ): Product = Product(productId, title, description, price).also {
-            it.addEvent(ProductCreated())
+        ): Product {
+            require(price.amount > BigDecimal.ZERO) { "Product price must be positive value, provided='$price'" }
+            return Product(productId, title, description, price).also {
+                it.addEvent(ProductCreated())
+            }
         }
     }
 }
