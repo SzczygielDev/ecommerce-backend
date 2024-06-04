@@ -24,15 +24,13 @@ import java.util.*
 class CartUseCaseTests : FunSpec() {
     val productsMock = mockk<Products>()
     val cartsMock = mockk<Carts>()
-    val outboxMock = mockk<Outbox>()
     val eventPublisherMock = mockk<DomainEventPublisher<CartEvent>>()
-    val productUseCase: CartUseCase = CartService(cartsMock,productsMock,outboxMock,eventPublisherMock)
+    val productUseCase: CartUseCase = CartService(cartsMock,productsMock,eventPublisherMock)
 
     init {
         every { cartsMock.save(any(),any()) } just runs
-        every { outboxMock.insertEvents(any())} just runs
         every { eventPublisherMock.publish(any()) } just runs
-        every { outboxMock.markAsProcessed(any()) } just runs
+        every { eventPublisherMock.publishBatch(any()) } just runs
 
         test("Submitting cart should raise CartNotFoundError when cart not found") {
             //Arrange
