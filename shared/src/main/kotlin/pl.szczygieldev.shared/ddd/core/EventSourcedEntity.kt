@@ -1,6 +1,6 @@
 package pl.szczygieldev.shared.ddd.core
 
-abstract class AggregateRoot<E : DomainEvent<E>> {
+abstract class EventSourcedEntity<E : DomainEvent<E>> : Entity<E>() {
     private val events = mutableListOf<E>()
     fun occurredEvents(): List<E> = events.toList()
     fun clearOccurredEvents() = events.clear()

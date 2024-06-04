@@ -1,4 +1,4 @@
-package pl.szczygieldev.ecommercebackend
+package pl.szczygieldev.ecommercebackend.domain
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.shouldNotBeNull

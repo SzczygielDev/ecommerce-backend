@@ -2,13 +2,13 @@ package pl.szczygieldev.ecommercebackend.domain
 
 import arrow.core.Either
 import arrow.core.raise.either
-import pl.szczygieldev.shared.ddd.core.AggregateRoot
+import pl.szczygieldev.shared.ddd.core.EventSourcedEntity
 import pl.szczygieldev.ecommercebackend.domain.error.CartAlreadySubmittedError
 import pl.szczygieldev.ecommercebackend.domain.error.CartError
 import pl.szczygieldev.ecommercebackend.domain.error.CartNotActiveError
 import pl.szczygieldev.ecommercebackend.domain.event.*
 
-class Cart private constructor(val cartId: CartId) : AggregateRoot<CartEvent>() {
+class Cart private constructor(val cartId: CartId) : EventSourcedEntity<CartEvent>() {
     private var status: CartStatus = CartStatus.ACTIVE
 
     data class Entry(val productId: ProductId, val quantity: Int)
