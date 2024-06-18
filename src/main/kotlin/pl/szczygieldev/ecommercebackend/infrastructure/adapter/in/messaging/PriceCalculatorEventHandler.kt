@@ -1,4 +1,4 @@
-package pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.messaging
+package pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.messaging
 
 import arrow.core.raise.either
 import io.github.oshai.kotlinlogging.KotlinLogging

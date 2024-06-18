@@ -1,4 +1,4 @@
-package pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.messaging
+package pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.messaging
 
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
