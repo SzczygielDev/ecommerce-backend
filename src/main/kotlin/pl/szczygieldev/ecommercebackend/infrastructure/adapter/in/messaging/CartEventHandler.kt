@@ -6,10 +6,14 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import pl.szczygieldev.shared.ddd.core.DomainEventHandler
 import pl.szczygieldev.ecommercebackend.application.model.CartProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.PriceCalculatorUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CalculateCartTotalCommand
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CreateOrderCommand
 import pl.szczygieldev.ecommercebackend.application.port.out.CartsProjections
 import pl.szczygieldev.ecommercebackend.domain.CartStatus
+import pl.szczygieldev.ecommercebackend.domain.DeliveryProvider
+import pl.szczygieldev.ecommercebackend.domain.PaymentServiceProvider
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.CartNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.*
@@ -18,7 +22,8 @@ import java.math.BigDecimal
 @Component
 class CartEventHandler(
     private val cartsProjections: CartsProjections,
-    private val priceCalculatorUseCase: PriceCalculatorUseCase
+    private val priceCalculatorUseCase: PriceCalculatorUseCase,
+    private val  orderUseCase:OrderUseCase
 ) : DomainEventHandler<CartEvent> {
     companion object {
         private val log = KotlinLogging.logger { }
@@ -36,10 +41,13 @@ class CartEventHandler(
                 )
             )
 
-            is CartSubmitted -> cartsProjections.save(
-                cartsProjections.findById(domainEvent.cartId)?.copy(status = CartStatus.SUBMITTED)
-                    ?: raise(CartNotFoundError.forId(domainEvent.cartId))
-            )
+            is CartSubmitted -> {
+                cartsProjections.save(
+                    cartsProjections.findById(domainEvent.cartId)?.copy(status = CartStatus.SUBMITTED)
+                        ?: raise(CartNotFoundError.forId(domainEvent.cartId))
+                )
+                orderUseCase.createOrder(CreateOrderCommand(domainEvent.cartId,PaymentServiceProvider.MOCK_PSP,DeliveryProvider.MOCK_DELIVERY_SERVICE)) //!!!
+            }
 
             is ItemAddedToCart -> {
                 val cartProjection = cartsProjections.findById(domainEvent.cartId)

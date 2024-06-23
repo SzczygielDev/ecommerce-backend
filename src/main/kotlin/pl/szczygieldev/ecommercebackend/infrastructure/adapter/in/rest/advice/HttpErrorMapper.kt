@@ -29,5 +29,15 @@ internal fun mapToError(error: AppError): ResponseEntity<*> {
         is UnableToCalculateCartTotalError -> ResponseEntity.status(HttpStatus.CONFLICT)
             .body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, error.message))
         //endregion
+
+        //region Order
+        is AlreadyAcceptedOrderError -> TODO()
+        is CannotCancelSentOrderError -> TODO()
+        is CannotPackageNotAcceptedOrderError -> TODO()
+        is CannotReturnNotReceivedOrderError -> TODO()
+        is InvalidPaymentAmountError -> TODO()
+        is NotPaidOrderError -> TODO()
+        is OrderNotFoundError -> TODO()
+        //endregion
     }
 }

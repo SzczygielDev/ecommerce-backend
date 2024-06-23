@@ -52,3 +52,11 @@ data class InvalidPaymentAmountError(val message: String) : OrderError {
         }
     }
 }
+
+data class OrderNotFoundError(val message: String) : OrderError {
+    companion object {
+        fun forId(id: OrderId): OrderNotFoundError {
+            return OrderNotFoundError("Cannot find order with id='${id.id()}'.")
+        }
+    }
+}

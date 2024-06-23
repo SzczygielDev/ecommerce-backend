@@ -11,10 +11,10 @@ class Payment(val amount: BigDecimal, val paymentServiceProvider: PaymentService
     val restAmount: BigDecimal
         get() {
             val result = amount.minus(sumOfTransactions)
-            if (result <= BigDecimal.ZERO) {
-                return BigDecimal.ZERO
+            return if (result <= BigDecimal.ZERO) {
+                BigDecimal.ZERO
             } else {
-                return result
+                result
             }
         }
     val sumOfTransactions: BigDecimal
@@ -23,12 +23,12 @@ class Payment(val amount: BigDecimal, val paymentServiceProvider: PaymentService
     fun registerTransaction(paymentTransaction: PaymentTransaction) {
         transactions.add(paymentTransaction)
 
-        if (sumOfTransactions == amount) {
-            status = PaymentStatus.PAID
+        status = if (sumOfTransactions == amount) {
+            PaymentStatus.PAID
         } else if (sumOfTransactions == BigDecimal.ZERO) {
-            status = PaymentStatus.UNPAID
+            PaymentStatus.UNPAID
         } else {
-            status = PaymentStatus.INVALID_AMOUNT
+            PaymentStatus.INVALID_AMOUNT
         }
     }
 
