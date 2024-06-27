@@ -3,7 +3,9 @@ package pl.szczygieldev.ecommercebackend.domain
 import java.math.BigDecimal
 
 class Payment(val amount: BigDecimal, val paymentServiceProvider: PaymentServiceProvider) {
-    private var status: PaymentStatus = PaymentStatus.UNPAID
+    private var _status: PaymentStatus = PaymentStatus.UNPAID
+    val status: PaymentStatus
+        get() = _status
     private var transactions = mutableListOf<PaymentTransaction>()
 
     val isPaid: Boolean
@@ -23,7 +25,7 @@ class Payment(val amount: BigDecimal, val paymentServiceProvider: PaymentService
     fun registerTransaction(paymentTransaction: PaymentTransaction) {
         transactions.add(paymentTransaction)
 
-        status = if (sumOfTransactions == amount) {
+        _status = if (sumOfTransactions == amount) {
             PaymentStatus.PAID
         } else if (sumOfTransactions == BigDecimal.ZERO) {
             PaymentStatus.UNPAID

@@ -95,11 +95,8 @@ class Order private constructor(
     *   We want to save all incoming payments. If an order payment is unpaid in full, we should ask the client for additional payment.
     *   If the amount is over the desired value, we should refund the client. Mechanism to be implemented in the future.
     */
-    fun pay(paymentTransaction: PaymentTransaction): Either<OrderError, Unit> = either {
+    fun pay(paymentTransaction: PaymentTransaction)  {
         raiseEvent(OrderPaymentReceived(orderId, paymentTransaction))
-        if (!payment.isPaid) {
-            raise(InvalidPaymentAmountError.forId(orderId, payment.sumOfTransactions, payment.amount))
-        }
     }
 
     override fun applyEvent(event: OrderEvent) {
@@ -113,6 +110,8 @@ class Order private constructor(
             is OrderPaymentReceived -> apply(event)
             is OrderRejected -> apply(event)
             is OrderSent -> apply(event)
+            is OrderPaid -> {}
+            is OrderInvalidAmountPaid -> {}
         }
     }
 
@@ -144,6 +143,11 @@ class Order private constructor(
 
     private fun apply(event: OrderPaymentReceived) {
         payment.registerTransaction(event.paymentTransaction)
+        if(payment.isPaid){
+            raiseEvent(OrderPaid(orderId))
+        }else{
+            raiseEvent(OrderInvalidAmountPaid(orderId,payment.sumOfTransactions,payment.amount))
+        }
     }
 
     private fun apply(event: OrderRejected) {

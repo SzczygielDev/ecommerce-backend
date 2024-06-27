@@ -11,22 +11,23 @@ import pl.szczygieldev.ecommercebackend.application.port.`in`.command.AcceptOrde
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CancelOrderCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.RejectOrderCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.ReturnOrderCommand
+import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
 import pl.szczygieldev.ecommercebackend.domain.OrderId
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.persistence.OrderRepository
 
 @RestController
 @RequestMapping("/orders")
-class OrderController(val orderUseCase: OrderUseCase, val orderRepository: OrderRepository) {
+class OrderController(val orderUseCase: OrderUseCase, val ordersProjections: OrdersProjections) {
 
-    /*
+
     @GetMapping
     fun getOrders(): ResponseEntity<*> {
-        return ResponseEntity.ok(orderRepository.findAll())
+        return ResponseEntity.ok(ordersProjections.findAll())
     }
-    */
+
     @GetMapping("/{orderId}")
     fun getOrder(@PathVariable orderId: String): ResponseEntity<*> {
-        return ResponseEntity.ok(orderRepository.findById(OrderId(orderId)))
+        return ResponseEntity.ok(ordersProjections.findById(OrderId(orderId)))
     }
     //Change to command pattern
     @PostMapping("/{orderId}/accept")

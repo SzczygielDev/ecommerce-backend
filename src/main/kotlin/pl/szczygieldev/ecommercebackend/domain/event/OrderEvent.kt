@@ -63,3 +63,15 @@ class OrderPaymentReceived(val orderId: OrderId, val paymentTransaction: Payment
         return "OrderPaymentReceived(id=$id occuredOn=$occurredOn orderId=$orderId)"
     }
 }
+
+class OrderPaid(val orderId: OrderId) : OrderEvent() {
+    override fun toString(): String {
+        return "OrderPaid(id=$id occuredOn=$occurredOn orderId=$orderId)"
+    }
+}
+
+class OrderInvalidAmountPaid(val orderId: OrderId, val paidAmount: BigDecimal,val desiredAmount: BigDecimal) : OrderEvent() {
+    override fun toString(): String {
+        return "OrderInvalidAmountPaid(id=$id occuredOn=$occurredOn paidAmount=$paidAmount desiredAmount=$desiredAmount)"
+    }
+}

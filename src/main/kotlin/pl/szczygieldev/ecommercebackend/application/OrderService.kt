@@ -11,7 +11,6 @@ import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.CartNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.error.OrderNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.OrderEvent
-import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.messaging.OrderEventPublisher
 import pl.szczygieldev.shared.architecture.UseCase
 import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 
@@ -33,8 +32,9 @@ class OrderService(
             command.deliveryProvider
         )
         val orderVersion = order.version
+        val events = order.occurredEvents()
         orders.save(order,orderVersion)
-        orderEventPublisher.publishBatch(order.occurredEvents())
+        orderEventPublisher.publishBatch(events)
     }
 
     override fun acceptOrder(command: AcceptOrderCommand): Either<AppError, Unit> = either {
@@ -42,8 +42,9 @@ class OrderService(
         val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
         val orderVersion = order.version
         order.accept().bind()
+        val events = order.occurredEvents()
         orders.save(order,orderVersion)
-        orderEventPublisher.publishBatch(order.occurredEvents())
+        orderEventPublisher.publishBatch(events)
     }
 
     override fun rejectOrder(command: RejectOrderCommand): Either<AppError, Unit> = either {
@@ -51,8 +52,9 @@ class OrderService(
         val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
         val orderVersion = order.version
         order.reject().bind()
+        val events = order.occurredEvents()
         orders.save(order,orderVersion)
-        orderEventPublisher.publishBatch(order.occurredEvents())
+        orderEventPublisher.publishBatch(events)
     }
 
     override fun cancelOrder(command: CancelOrderCommand): Either<AppError, Unit> = either {
@@ -60,8 +62,9 @@ class OrderService(
         val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
         val orderVersion = order.version
         order.cancel().bind()
+        val events = order.occurredEvents()
         orders.save(order,orderVersion)
-        orderEventPublisher.publishBatch(order.occurredEvents())
+        orderEventPublisher.publishBatch(events)
     }
 
     override fun returnOrder(command: ReturnOrderCommand): Either<AppError, Unit> = either {
@@ -69,8 +72,8 @@ class OrderService(
         val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
         val orderVersion = order.version
         order.returnOrder().bind()
+        val events = order.occurredEvents()
         orders.save(order,orderVersion)
-        orderEventPublisher.publishBatch(order.occurredEvents())
+        orderEventPublisher.publishBatch(events)
     }
-
 }
