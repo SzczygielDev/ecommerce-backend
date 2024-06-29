@@ -1,6 +1,7 @@
 package pl.szczygieldev.ecommercebackend.domain.error
 
 import pl.szczygieldev.ecommercebackend.domain.OrderId
+import pl.szczygieldev.ecommercebackend.domain.ParcelIdentifier
 import java.math.BigDecimal
 
 sealed interface OrderError : AppError
@@ -47,7 +48,7 @@ data class CannotPackageNotAcceptedOrderError(val message: String) : OrderError 
 
 data class InvalidPaymentAmountError(val message: String) : OrderError {
     companion object {
-        fun forId(id: OrderId,currentAmount: BigDecimal, targetAmount: BigDecimal): InvalidPaymentAmountError {
+        fun forId(id: OrderId, currentAmount: BigDecimal, targetAmount: BigDecimal): InvalidPaymentAmountError {
             return InvalidPaymentAmountError("Invalid payment amount for order with id='${id.id()}' current amount='${currentAmount}' desired amount='${targetAmount}'")
         }
     }
@@ -57,6 +58,17 @@ data class OrderNotFoundError(val message: String) : OrderError {
     companion object {
         fun forId(id: OrderId): OrderNotFoundError {
             return OrderNotFoundError("Cannot find order with id='${id.id()}'.")
+        }
+
+        fun forParcelIdentifier(parcelIdentifier: ParcelIdentifier): OrderNotFoundError {
+            return OrderNotFoundError("Cannot find order with parcel identifier='${parcelIdentifier.identifier}'.")
+        }
+    }
+}
+data class CannotRegisterParcelError(val message: String) : OrderError {
+    companion object {
+        fun forId(id: OrderId): CannotRegisterParcelError {
+            return CannotRegisterParcelError("Failed to register parcel for order with id='${id.id()}'")
         }
     }
 }

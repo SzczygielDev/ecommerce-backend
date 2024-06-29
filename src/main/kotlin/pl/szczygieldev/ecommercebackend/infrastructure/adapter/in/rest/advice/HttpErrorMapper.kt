@@ -38,6 +38,7 @@ internal fun mapToError(error: AppError): ResponseEntity<*> {
         is InvalidPaymentAmountError -> TODO()
         is NotPaidOrderError -> TODO()
         is OrderNotFoundError -> TODO()
+        is CannotRegisterParcelError -> TODO()
         //endregion
     }
 }

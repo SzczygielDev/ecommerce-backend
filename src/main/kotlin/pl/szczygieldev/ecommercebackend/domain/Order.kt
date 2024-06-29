@@ -76,26 +76,25 @@ class Order private constructor(
         raiseEvent(OrderPackagingStarted(orderId))
     }
 
-    fun completePacking(): Either<OrderError, Unit> = either {
-        if (status != OrderStatus.ACCEPTED) {
-            raise(CannotPackageNotAcceptedOrderError.forId(orderId))
+    fun completePacking(
+        parcelIdentifier: ParcelIdentifier,
+        parcelDimensions: ParcelDimensions
+    ): Either<OrderError, Unit> = either {
+        if (status != OrderStatus.IN_PROGRESS) {
+            raise(CannotPackageNotAcceptedOrderError.forId(orderId)) //other error
         }
-        raiseEvent(OrderPackaged(orderId))
+        raiseEvent(OrderPackaged(orderId, parcelIdentifier, parcelDimensions))
     }
 
-    fun send(externalParcelIdentifier: String) {
-        raiseEvent(OrderSent(orderId, externalParcelIdentifier))
-    }
-
-    fun delivered() {
-        raiseEvent(OrderDelivered(orderId))
+    fun changeDeliveryStatus(deliveryStatus: DeliveryStatus) {
+        raiseEvent(OrderDeliveryStatusChanged(orderId, deliveryStatus))
     }
 
     /*
     *   We want to save all incoming payments. If an order payment is unpaid in full, we should ask the client for additional payment.
     *   If the amount is over the desired value, we should refund the client. Mechanism to be implemented in the future.
     */
-    fun pay(paymentTransaction: PaymentTransaction)  {
+    fun pay(paymentTransaction: PaymentTransaction) {
         raiseEvent(OrderPaymentReceived(orderId, paymentTransaction))
     }
 
@@ -104,12 +103,11 @@ class Order private constructor(
             is OrderAccepted -> apply(event)
             is OrderCanceled -> apply(event)
             is OrderCreated -> apply(event)
-            is OrderDelivered -> apply(event)
+            is OrderDeliveryStatusChanged -> apply(event)
             is OrderPackaged -> apply(event)
             is OrderPackagingStarted -> apply(event)
             is OrderPaymentReceived -> apply(event)
             is OrderRejected -> apply(event)
-            is OrderSent -> apply(event)
             is OrderPaid -> {}
             is OrderInvalidAmountPaid -> {}
         }
@@ -117,7 +115,7 @@ class Order private constructor(
 
     private fun apply(event: OrderCreated) {
         payment = Payment(event.amount, event.paymentServiceProvider)
-        delivery = Delivery(event.deliveryProvider, null, DeliveryStatus.WAITING)
+        delivery = Delivery(event.deliveryProvider, DeliveryStatus.WAITING, null)
     }
 
 
@@ -129,12 +127,17 @@ class Order private constructor(
         status = OrderStatus.CANCELLED
     }
 
-    private fun apply(event: OrderDelivered) {
+    private fun apply(event: OrderDeliveryStatusChanged) {
         delivery = delivery.copy(status = DeliveryStatus.DELIVERED)
     }
 
     private fun apply(event: OrderPackaged) {
         status = OrderStatus.READY
+
+        delivery =
+            delivery.copy(
+                parcel = Parcel(event.parcelIdentifier, event.parcelDimensions)
+            )
     }
 
     private fun apply(event: OrderPackagingStarted) {
@@ -143,10 +146,10 @@ class Order private constructor(
 
     private fun apply(event: OrderPaymentReceived) {
         payment.registerTransaction(event.paymentTransaction)
-        if(payment.isPaid){
+        if (payment.isPaid) {
             raiseEvent(OrderPaid(orderId))
-        }else{
-            raiseEvent(OrderInvalidAmountPaid(orderId,payment.sumOfTransactions,payment.amount))
+        } else {
+            raiseEvent(OrderInvalidAmountPaid(orderId, payment.sumOfTransactions, payment.amount))
         }
     }
 
@@ -154,11 +157,5 @@ class Order private constructor(
         status = OrderStatus.REJECTED
     }
 
-    private fun apply(event: OrderSent) {
-        delivery =
-            delivery.copy(
-                status = DeliveryStatus.IN_DELIVERY,
-                externalParcelIdentifier = event.externalParcelIdentifier
-            )
-    }
+
 }

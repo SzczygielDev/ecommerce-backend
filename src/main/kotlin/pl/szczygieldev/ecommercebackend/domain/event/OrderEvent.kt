@@ -40,21 +40,15 @@ class OrderPackagingStarted(val orderId: OrderId) : OrderEvent() {
     }
 }
 
-class OrderPackaged(val orderId: OrderId) : OrderEvent() {
+class OrderPackaged(val orderId: OrderId,val parcelIdentifier: ParcelIdentifier,val  parcelDimensions: ParcelDimensions) : OrderEvent() {
     override fun toString(): String {
-        return "OrderPackaged(id=$id occuredOn=$occurredOn orderId=$orderId)"
+        return "OrderPackaged(id=$id occuredOn=$occurredOn orderId=$orderId parcelIdentifier=$parcelIdentifier parcelDimensions=$parcelDimensions)"
     }
 }
 
-class OrderSent(val orderId: OrderId, val externalParcelIdentifier: String) : OrderEvent() {
+class OrderDeliveryStatusChanged(val orderId: OrderId, val status: DeliveryStatus) : OrderEvent() {
     override fun toString(): String {
-        return "OrderSent(id=$id occuredOn=$occurredOn orderId=$orderId)"
-    }
-}
-
-class OrderDelivered(val orderId: OrderId) : OrderEvent() {
-    override fun toString(): String {
-        return "OrderDelivered(id=$id occuredOn=$occurredOn orderId=$orderId)"
+        return "OrderDeliveryStatusChanged(id=$id occuredOn=$occurredOn orderId=$orderId deliveryStatus=$status)"
     }
 }
 
