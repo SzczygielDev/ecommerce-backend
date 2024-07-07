@@ -42,7 +42,8 @@ dependencies {
 	testImplementation("io.kotest:kotest-assertions-core-jvm:5.9.0")
 	implementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
 	testImplementation("io.mockk:mockk:1.13.11")
-
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
+	runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.9.0-RC")
 }
 
 tasks.withType<KotlinCompile> {

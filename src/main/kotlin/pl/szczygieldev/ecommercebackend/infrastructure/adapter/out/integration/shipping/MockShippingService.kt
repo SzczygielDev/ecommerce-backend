@@ -50,7 +50,7 @@ class MockShippingService(val eventPublisher: ApplicationEventPublisher) : Shipp
        val parcelsToProcess =  db.values
         parcelsToProcess.forEach { parcel ->
             if(parcel.status!=ParcelStatus.DELIVERED){
-                parcel.status=ParcelStatus.values().get(parcel.status.ordinal+1)
+                parcel.status=ParcelStatus.entries.get(parcel.status.ordinal+1)
                 eventPublisher.publishEvent(ParcelStatusChangeNotification(parcel.id,parcel.status))
             }
         }

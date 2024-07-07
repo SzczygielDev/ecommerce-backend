@@ -2,9 +2,9 @@ package pl.szczygieldev.ecommercebackend.domain.error
 
 import pl.szczygieldev.ecommercebackend.domain.ProductId
 
-sealed interface ProductError : AppError
+sealed class ProductError(message: String) : AppError(message)
 
-data class ProductNotFoundError(val message: String) : ProductError {
+data class ProductNotFoundError(override val message: String) : ProductError(message) {
     companion object {
         fun forId(id: ProductId): ProductNotFoundError {
             return ProductNotFoundError("Cannot find product with id='${id.id()}'")

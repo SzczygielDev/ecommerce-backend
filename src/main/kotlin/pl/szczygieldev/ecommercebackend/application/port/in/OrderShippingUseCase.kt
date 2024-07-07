@@ -6,7 +6,7 @@ import pl.szczygieldev.ecommercebackend.application.port.`in`.command.ChangeOrde
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CompleteOrderPackingCommand
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 
-interface OrderPackingUseCase {
+interface OrderShippingUseCase {
     fun beginPacking(command: BeginOrderPackingCommand): Either<AppError, Unit>
     fun completePacking(command: CompleteOrderPackingCommand): Either<AppError, Unit>
     fun changeDeliveryStatus(command: ChangeOrderDeliveryStatusCommand): Either<AppError, Unit>

@@ -2,9 +2,9 @@ package pl.szczygieldev.ecommercebackend.domain.error
 
 import pl.szczygieldev.ecommercebackend.domain.CartId
 
-sealed interface CartError : AppError
+sealed class CartError(message: String) : AppError(message)
 
-data class CartNotFoundError(val message: String) : CartError {
+data class CartNotFoundError(override val message: String) : CartError(message) {
     companion object {
         fun forId(id: CartId): CartNotFoundError {
             return CartNotFoundError("Cannot find cart with id='${id.id()}'.")
@@ -12,7 +12,7 @@ data class CartNotFoundError(val message: String) : CartError {
     }
 }
 
-data class CartNotActiveError(val message: String) : CartError {
+data class CartNotActiveError(override val message: String) :  CartError(message) {
     companion object {
         fun forId(id: CartId): CartNotActiveError {
             return CartNotActiveError("Cart with id='${id.id()}' is not active.")
@@ -20,7 +20,7 @@ data class CartNotActiveError(val message: String) : CartError {
     }
 }
 
-data class CartAlreadySubmittedError(val message: String) : CartError {
+data class CartAlreadySubmittedError(override val message: String) :  CartError(message) {
     companion object {
         fun forId(id: CartId): CartAlreadySubmittedError {
             return CartAlreadySubmittedError("Cart with id='${id.id()}' is already submitted.")

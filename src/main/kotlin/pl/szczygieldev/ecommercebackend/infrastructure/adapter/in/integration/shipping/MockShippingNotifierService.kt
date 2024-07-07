@@ -2,7 +2,7 @@ package pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.integration
 
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
-import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderPackingUseCase
+import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderShippingUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.ChangeOrderDeliveryStatusCommand
 import pl.szczygieldev.ecommercebackend.domain.DeliveryStatus
 import pl.szczygieldev.ecommercebackend.domain.ParcelIdentifier
@@ -10,11 +10,11 @@ import pl.szczygieldev.ecommercebackend.infrastructure.integration.shipping.Parc
 import pl.szczygieldev.ecommercebackend.infrastructure.integration.shipping.ParcelStatusChangeNotification
 
 @Component
-class MockShippingNotifierService(val orderPackingUseCase: OrderPackingUseCase) {
+class MockShippingNotifierService(val orderShippingUseCase: OrderShippingUseCase) {
 
     @EventListener
     fun handleParcelStatusChangeNotification(notification: ParcelStatusChangeNotification) {
-        orderPackingUseCase.changeDeliveryStatus(
+        orderShippingUseCase.changeDeliveryStatus(
             ChangeOrderDeliveryStatusCommand(
                 ParcelIdentifier(notification.parcelId),
                 mapParcelStatus(notification.parcelStatus)

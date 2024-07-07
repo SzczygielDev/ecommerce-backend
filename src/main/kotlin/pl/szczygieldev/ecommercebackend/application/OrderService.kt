@@ -2,9 +2,11 @@ package pl.szczygieldev.ecommercebackend.application
 
 import arrow.core.Either
 import arrow.core.raise.either
+import pl.szczygieldev.ecommercebackend.application.handlers.*
 import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.*
 import pl.szczygieldev.ecommercebackend.application.port.out.CartsProjections
+import pl.szczygieldev.ecommercebackend.application.port.out.CommandStorage
 import pl.szczygieldev.ecommercebackend.application.port.out.Orders
 import pl.szczygieldev.ecommercebackend.domain.Order
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
@@ -16,9 +18,13 @@ import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 
 @UseCase
 class OrderService(
-    val cartProjections: CartsProjections,
     val orders: Orders,
-    val orderEventPublisher: DomainEventPublisher<OrderEvent>
+    val cartProjections: CartsProjections,
+    val orderEventPublisher: DomainEventPublisher<OrderEvent>,
+    val acceptOrderCommandHandler: AcceptOrderCommandHandler,
+    val rejectOrderCommandHandler: RejectOrderCommandHandler,
+    val cancelOrderCommandHandler: CancelOrderCommandHandler,
+    val returnOrderCommandHandler: ReturnOrderCommandHandler,
 ) : OrderUseCase {
     override fun createOrder(command: CreateOrderCommand): Either<AppError, Unit> = either {
         val cartId = command.cartId
@@ -33,47 +39,23 @@ class OrderService(
         )
         val orderVersion = order.version
         val events = order.occurredEvents()
-        orders.save(order,orderVersion)
+        orders.save(order, orderVersion)
         orderEventPublisher.publishBatch(events)
     }
 
     override fun acceptOrder(command: AcceptOrderCommand): Either<AppError, Unit> = either {
-        val orderId = command.orderId
-        val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
-        val orderVersion = order.version
-        order.accept().bind()
-        val events = order.occurredEvents()
-        orders.save(order,orderVersion)
-        orderEventPublisher.publishBatch(events)
+        acceptOrderCommandHandler.execute(command).bind();
     }
 
     override fun rejectOrder(command: RejectOrderCommand): Either<AppError, Unit> = either {
-        val orderId = command.orderId
-        val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
-        val orderVersion = order.version
-        order.reject().bind()
-        val events = order.occurredEvents()
-        orders.save(order,orderVersion)
-        orderEventPublisher.publishBatch(events)
+        rejectOrderCommandHandler.execute(command).bind();
     }
 
     override fun cancelOrder(command: CancelOrderCommand): Either<AppError, Unit> = either {
-        val orderId = command.orderId
-        val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
-        val orderVersion = order.version
-        order.cancel().bind()
-        val events = order.occurredEvents()
-        orders.save(order,orderVersion)
-        orderEventPublisher.publishBatch(events)
+        cancelOrderCommandHandler.execute(command).bind();
     }
 
     override fun returnOrder(command: ReturnOrderCommand): Either<AppError, Unit> = either {
-        val orderId = command.orderId
-        val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
-        val orderVersion = order.version
-        order.returnOrder().bind()
-        val events = order.occurredEvents()
-        orders.save(order,orderVersion)
-        orderEventPublisher.publishBatch(events)
+        returnOrderCommandHandler.execute(command).bind();
     }
 }
