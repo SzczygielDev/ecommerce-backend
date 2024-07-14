@@ -12,6 +12,7 @@ import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.OrderNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.*
 import pl.szczygieldev.shared.ddd.core.DomainEventHandler
+import java.math.BigDecimal
 
 @Component
 class OrderEventHandler(val ordersProjections: OrdersProjections) : DomainEventHandler<OrderEvent> {
@@ -20,7 +21,7 @@ class OrderEventHandler(val ordersProjections: OrdersProjections) : DomainEventH
     }
 
     @EventListener
-    override fun handleEvent(domainEvent: OrderEvent) = either<AppError, Unit> {
+    override suspend  fun handleEvent(domainEvent: OrderEvent) = either<AppError, Unit> {
         when (domainEvent) {
             is OrderCreated -> {
                 ordersProjections.save(
@@ -28,7 +29,8 @@ class OrderEventHandler(val ordersProjections: OrdersProjections) : DomainEventH
                         domainEvent.orderId,
                         domainEvent.cartId,
                         OrderStatus.CREATED,
-                        PaymentProjection(domainEvent.amount, domainEvent.paymentServiceProvider, PaymentStatus.UNPAID),
+                        PaymentProjection(domainEvent.amount,
+                            BigDecimal.ZERO, domainEvent.paymentServiceProvider, PaymentStatus.UNPAID),
                         Delivery(domainEvent.deliveryProvider, DeliveryStatus.WAITING, null)
                     )
                 )
@@ -79,7 +81,7 @@ class OrderEventHandler(val ordersProjections: OrdersProjections) : DomainEventH
                 val foundOrder = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
                 val paymentProjection = foundOrder.paymentProjection
                 val updatedPaymentProjection =
-                    paymentProjection.copy(amount = paymentProjection.amount.add(domainEvent.paymentTransaction.amount))
+                    paymentProjection.copy(amountPaid = paymentProjection.amountPaid.add(domainEvent.paymentTransaction.amount))
                 ordersProjections.save(foundOrder.copy(paymentProjection = updatedPaymentProjection))
             }
 

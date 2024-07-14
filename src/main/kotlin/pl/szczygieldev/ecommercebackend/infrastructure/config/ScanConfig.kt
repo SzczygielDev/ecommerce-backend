@@ -4,7 +4,7 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
 import pl.szczygieldev.shared.architecture.UseCase
-import pl.szczygieldev.shared.architecture.CommandHandler
+import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandHandler
 
 @Configuration
 @ComponentScan(

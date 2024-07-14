@@ -12,19 +12,21 @@ import org.springframework.web.bind.annotation.RestController
 import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderShippingUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.*
-import pl.szczygieldev.ecommercebackend.application.port.out.CommandStorage
+import pl.szczygieldev.ecommercebackend.application.port.out.CommandResultStorage
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
 import pl.szczygieldev.ecommercebackend.domain.OrderId
 import pl.szczygieldev.ecommercebackend.domain.ParcelDimensions
-import pl.szczygieldev.shared.architecture.CommandId
+import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandId
 import java.net.URI
-import kotlinx.coroutines.*
+import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandResult
 import pl.szczygieldev.ecommercebackend.application.model.OrderProjection
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.OrderNotFoundError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.CommandNotFoundError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.advice.mapToError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presenter.CommandPresenter
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presenter.OrderPresenter
+import java.util.UUID
 
 @RestController
 @RequestMapping("/orders")
@@ -32,90 +34,196 @@ class OrderController(
     val orderUseCase: OrderUseCase,
     val ordersProjections: OrdersProjections,
     val orderShippingUseCase: OrderShippingUseCase,
-    val commandStorage: CommandStorage,
-    val commandPresenter: CommandPresenter
+    val commandResultStorage: CommandResultStorage,
+    val commandPresenter: CommandPresenter,
+    val orderPresenter: OrderPresenter
 ) {
-    val coroutineScope = CoroutineScope(SupervisorJob())
     @GetMapping
     fun getOrders(): ResponseEntity<*> {
-        return ResponseEntity.ok(ordersProjections.findAll())
+        return ResponseEntity.ok(
+            ordersProjections.findAll().map { orderProjection -> orderPresenter.toDto(orderProjection) })
     }
 
     @GetMapping("/{orderId}")
-    fun getOrder(@PathVariable orderId: String): ResponseEntity<*> {
+    fun getOrder(@PathVariable orderId: UUID): ResponseEntity<*> {
         return either<AppError, OrderProjection> {
-            val id = OrderId(orderId)
+            val id = OrderId(orderId.toString())
             ordersProjections.findById(id) ?: raise(OrderNotFoundError.forId(id))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
-            { ResponseEntity.ok(it) })
+            { ResponseEntity.ok(orderPresenter.toDto(it)) })
+    }
+
+    @GetMapping("/development/commands")
+    fun getCommands(): ResponseEntity<*> {
+        return ResponseEntity.ok(commandResultStorage.findAll().map { commandPresenter.toDto(it) })
+    }
+
+    @PutMapping("/{orderId}/accept-commands/{commandId}")
+    suspend fun createAcceptCommand(
+        @PathVariable orderId: UUID,
+        @PathVariable commandId: UUID,
+        request: HttpServletRequest
+    ): ResponseEntity<*> {
+        return either<AppError, CommandResult> {
+            val commandId = CommandId(commandId.toString())
+            val command = AcceptOrderCommand(commandId, OrderId(orderId.toString()))
+            orderUseCase.acceptOrder(command).bind()
+            commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
+        }.fold<ResponseEntity<*>>(
+            { mapToError(it) },
+            {
+                ResponseEntity.created(URI.create("${request.requestURL}/${it.id.id}"))
+                    .body(commandPresenter.toDto(it))
+            })
     }
 
     @GetMapping("/{orderId}/accept-commands/{commandId}")
-    fun getAcceptCommand(@PathVariable orderId: String, @PathVariable commandId: String): ResponseEntity<*> {
+    fun getAcceptCommand(@PathVariable orderId: UUID, @PathVariable commandId: UUID): ResponseEntity<*> {
+        val orderId = OrderId(orderId.toString())
+        val commandId = CommandId(commandId.toString())
+        return getCommandResultResponse(orderId, commandId)
+    }
+
+    @PutMapping("/{orderId}/reject-commands/{commandId}")
+    suspend fun rejectOrder(
+        @PathVariable orderId: UUID,
+        @PathVariable commandId: UUID,
+        request: HttpServletRequest
+    ): ResponseEntity<*> {
+        return either<AppError, CommandResult> {
+            val commandId = CommandId(commandId.toString())
+            orderUseCase.rejectOrder(RejectOrderCommand(commandId, OrderId(orderId.toString()))).bind()
+            commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
+        }.fold<ResponseEntity<*>>(
+            { mapToError(it) },
+            {
+                ResponseEntity.created(URI.create("${request.requestURL}/${it.id.id}"))
+                    .body(commandPresenter.toDto(it))
+            })
+    }
+
+    @GetMapping("/{orderId}/reject-commands/{commandId}")
+    fun getRejectCommand(@PathVariable orderId: UUID, @PathVariable commandId: UUID): ResponseEntity<*> {
+        val orderId = OrderId(orderId.toString())
+        val commandId = CommandId(commandId.toString())
+        return getCommandResultResponse(orderId, commandId)
+    }
+
+    @PutMapping("/{orderId}/cancel-commands/{commandId}")
+    suspend fun cancelOrder(
+        @PathVariable orderId: UUID, @PathVariable commandId: UUID,
+        request: HttpServletRequest
+    ): ResponseEntity<*> {
+        return either<AppError, CommandResult> {
+            val commandId = CommandId(commandId.toString())
+            orderUseCase.cancelOrder(CancelOrderCommand(commandId, OrderId(orderId.toString()))).bind()
+            commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
+        }.fold<ResponseEntity<*>>(
+            { mapToError(it) },
+            {
+                ResponseEntity.created(URI.create("${request.requestURL}/${it.id.id}"))
+                    .body(commandPresenter.toDto(it))
+            })
+    }
+
+    @GetMapping("/{orderId}/cancel-commands/{commandId}")
+    fun getCancelCommand(@PathVariable orderId: UUID, @PathVariable commandId: UUID): ResponseEntity<*> {
+        val orderId = OrderId(orderId.toString())
+        val commandId = CommandId(commandId.toString())
+        return getCommandResultResponse(orderId, commandId)
+    }
+
+    @PutMapping("/{orderId}/return-commands/{commandId}")
+    suspend fun returnOrder(
+        @PathVariable orderId: UUID, @PathVariable commandId: UUID,
+        request: HttpServletRequest
+    ): ResponseEntity<*> {
+        return either<AppError, CommandResult> {
+            val commandId = CommandId(commandId.toString())
+            orderUseCase.returnOrder(ReturnOrderCommand(commandId, OrderId(orderId.toString()))).bind()
+            commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
+        }.fold<ResponseEntity<*>>(
+            { mapToError(it) },
+            {
+                ResponseEntity.created(URI.create("${request.requestURL}/${it.id.id}"))
+                    .body(commandPresenter.toDto(it))
+            })
+    }
+
+    @GetMapping("/{orderId}/return-commands/{commandId}")
+    fun getReturnCommand(@PathVariable orderId: UUID, @PathVariable commandId: UUID): ResponseEntity<*> {
+        val orderId = OrderId(orderId.toString())
+        val commandId = CommandId(commandId.toString())
+        return getCommandResultResponse(orderId, commandId)
+    }
+
+
+    @PutMapping("/{orderId}/beginPacking-commands/{commandId}")
+    suspend fun beginPackingOrder(
+        @PathVariable orderId: UUID, @PathVariable commandId: UUID,
+        request: HttpServletRequest
+    ): ResponseEntity<*> {
+        return either<AppError, CommandResult> {
+            val commandId = CommandId(commandId.toString())
+            orderShippingUseCase.beginPacking(BeginOrderPackingCommand(commandId, OrderId(orderId.toString()))).bind()
+            commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
+        }.fold<ResponseEntity<*>>(
+            { mapToError(it) },
+            {
+                ResponseEntity.created(URI.create("${request.requestURL}/${it.id.id}"))
+                    .body(commandPresenter.toDto(it))
+            })
+    }
+
+    @GetMapping("/{orderId}/beginPacking-commands/{commandId}")
+    fun getBeginPackingOrderCommand(@PathVariable orderId: UUID, @PathVariable commandId: UUID): ResponseEntity<*> {
+        val orderId = OrderId(orderId.toString())
+        val commandId = CommandId(commandId.toString())
+        return getCommandResultResponse(orderId, commandId)
+    }
+
+    @PutMapping("/{orderId}/completePacking-commands/{commandId}")
+    suspend fun completePackingOrder(
+        @PathVariable orderId: UUID, @PathVariable commandId: UUID,
+        @RequestBody parcelDimensions: ParcelDimensions,
+        request: HttpServletRequest
+    ): ResponseEntity<*> {
+        return either<AppError, CommandResult> {
+            val commandId = CommandId(commandId.toString())
+            orderShippingUseCase.completePacking(
+                CompleteOrderPackingCommand(
+                    commandId,
+                    OrderId(orderId.toString()),
+                    parcelDimensions
+                )
+            ).bind()
+            commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
+        }.fold<ResponseEntity<*>>(
+            { mapToError(it) },
+            {
+                ResponseEntity.created(URI.create("${request.requestURL}/${it.id.id}"))
+                    .body(commandPresenter.toDto(it))
+            })
+    }
+
+    @GetMapping("/{orderId}/completePacking-commands/{commandId}")
+    fun getCompletePackingOrderCommand(
+        @PathVariable orderId: UUID,
+        @PathVariable commandId: UUID
+    ): ResponseEntity<*> {
+        val orderId = OrderId(orderId.toString())
+        val commandId = CommandId(commandId.toString())
+        return getCommandResultResponse(orderId, commandId)
+    }
+
+    //TODO - extend with command type
+    private fun getCommandResultResponse(orderId: OrderId, commandId: CommandId): ResponseEntity<*> {
         return either {
-            val orderId = OrderId(orderId)
             ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
-
-            val commandId = CommandId(commandId)
-            commandStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
-
+            commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
             { ResponseEntity.ok(commandPresenter.toDto(it)) })
-    }
-
-    @PutMapping("/{orderId}/accept-commands")
-    fun createAcceptCommand(@PathVariable orderId: String, request: HttpServletRequest): ResponseEntity<*> {
-        val command = AcceptOrderCommand(OrderId(orderId))
-        commandStorage.runCommand(command)
-
-        coroutineScope.launch {
-            orderUseCase.acceptOrder(command).fold({ error ->
-                commandStorage.commandFailed(command.id, error)
-            }, {
-                commandStorage.commandSuccess(command.id)
-            })
-        }
-
-        return ResponseEntity.created(URI.create("${request.requestURL}/${command.id.id}"))
-            .body(commandStorage.findById(command.id)!!)
-    }
-
-
-    @PutMapping("/{orderId}/reject-commands")
-    fun rejectOrder(@PathVariable orderId: String): ResponseEntity<*> {
-        return ResponseEntity.ok(orderUseCase.rejectOrder(RejectOrderCommand(OrderId(orderId))))
-    }
-
-    @PutMapping("/{orderId}/cancel-commands")
-    fun cancelOrder(@PathVariable orderId: String): ResponseEntity<*> {
-        return ResponseEntity.ok(orderUseCase.cancelOrder(CancelOrderCommand(OrderId(orderId))))
-    }
-
-    @PutMapping("/{orderId}/return-commands")
-    fun returnOrder(@PathVariable orderId: String): ResponseEntity<*> {
-        return ResponseEntity.ok(orderUseCase.returnOrder(ReturnOrderCommand(OrderId(orderId))))
-    }
-
-
-    @PutMapping("/{orderId}/beginPacking-commands")
-    fun beginPackingOrder(@PathVariable orderId: String): ResponseEntity<*> {
-        return ResponseEntity.ok(orderShippingUseCase.beginPacking(BeginOrderPackingCommand(OrderId(orderId))))
-    }
-
-    @PutMapping("/{orderId}/completePacking-commands")
-    fun completePackingOrder(
-        @PathVariable orderId: String,
-        @RequestBody parcelDimensions: ParcelDimensions
-    ): ResponseEntity<*> {
-        return ResponseEntity.ok(
-            orderShippingUseCase.completePacking(
-                CompleteOrderPackingCommand(
-                    OrderId(orderId),
-                    parcelDimensions
-                )
-            )
-        )
     }
 }

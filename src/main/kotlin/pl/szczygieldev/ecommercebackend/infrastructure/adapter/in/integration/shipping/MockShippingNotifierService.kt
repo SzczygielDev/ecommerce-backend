@@ -13,7 +13,7 @@ import pl.szczygieldev.ecommercebackend.infrastructure.integration.shipping.Parc
 class MockShippingNotifierService(val orderShippingUseCase: OrderShippingUseCase) {
 
     @EventListener
-    fun handleParcelStatusChangeNotification(notification: ParcelStatusChangeNotification) {
+    suspend fun handleParcelStatusChangeNotification(notification: ParcelStatusChangeNotification) {
         orderShippingUseCase.changeDeliveryStatus(
             ChangeOrderDeliveryStatusCommand(
                 ParcelIdentifier(notification.parcelId),

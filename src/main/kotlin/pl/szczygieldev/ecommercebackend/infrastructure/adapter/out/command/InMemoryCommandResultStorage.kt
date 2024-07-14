@@ -3,21 +3,26 @@ package pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.command
 import arrow.core.Either
 import arrow.core.raise.either
 import org.springframework.stereotype.Repository
-import pl.szczygieldev.ecommercebackend.application.port.out.CommandStorage
+import pl.szczygieldev.ecommercebackend.application.handlers.common.*
+import pl.szczygieldev.ecommercebackend.application.port.out.CommandResultStorage
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.CommandAlreadyProcessingError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.CommandNotFoundError
-import pl.szczygieldev.shared.architecture.*
 import java.time.Duration
 import java.time.Instant
 
 @Repository
-class InMemoryCommandStorage : CommandStorage {
+class InMemoryCommandResultStorage : CommandResultStorage {
     private val db = mutableMapOf<CommandId, CommandResult>()
 
-
     override fun findById(id: CommandId): CommandResult? = db[id]
+    override fun findAll(): List<CommandResult> = db.values.toList()
 
-    override fun runCommand(command: Command) {
+    override fun commandBegin(command: Command): Either<AppError, Unit>  = either {
+        if(db.containsKey(command.id)){
+            raise(CommandAlreadyProcessingError.forId(command.id))
+        }
+
         db.put(
             command.id,
             CommandResult(command.id, CommandResultStatus.RUNNING, Instant.now(), Duration.ZERO, mutableListOf())

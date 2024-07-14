@@ -30,7 +30,7 @@ class CartEventHandler(
     }
 
     @EventListener
-    override fun handleEvent(domainEvent: CartEvent) = either<AppError, Unit> {
+    override suspend fun handleEvent(domainEvent: CartEvent) = either<AppError, Unit> {
         when (domainEvent) {
             is CartCreated -> cartsProjections.save(
                 CartProjection(

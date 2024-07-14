@@ -19,7 +19,7 @@ class PriceCalculatorEventHandler(private val cartsProjections: CartsProjections
     }
 
     @EventListener
-    override fun handleEvent(domainEvent: PriceCalculatorEvent) = either<AppError, Unit> {
+    override suspend fun handleEvent(domainEvent: PriceCalculatorEvent) = either<AppError, Unit> {
         when (domainEvent) {
             is CartTotalRecalculated -> {
                 val foundCart =

@@ -72,3 +72,11 @@ data class CannotRegisterParcelError(override val message: String) : OrderError(
         }
     }
 }
+
+data class PackingNotInProgressError(override val message: String) : OrderError(message)  {
+    companion object {
+        fun forId(id: OrderId): PackingNotInProgressError {
+            return PackingNotInProgressError("Cannot finish packing order with id='${id.id()}' because packing is not started")
+        }
+    }
+}

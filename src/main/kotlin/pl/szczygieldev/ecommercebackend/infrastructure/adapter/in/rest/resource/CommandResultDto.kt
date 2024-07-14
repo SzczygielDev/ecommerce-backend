@@ -1,6 +1,6 @@
 package pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource
 
-import pl.szczygieldev.shared.architecture.CommandResultStatus
+import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandResultStatus
 import java.time.Duration
 import java.time.Instant
 

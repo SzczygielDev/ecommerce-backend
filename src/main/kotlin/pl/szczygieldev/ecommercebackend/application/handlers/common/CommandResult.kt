@@ -1,4 +1,4 @@
-package pl.szczygieldev.shared.architecture
+package pl.szczygieldev.ecommercebackend.application.handlers.common
 
 import java.time.Duration
 import java.time.Instant

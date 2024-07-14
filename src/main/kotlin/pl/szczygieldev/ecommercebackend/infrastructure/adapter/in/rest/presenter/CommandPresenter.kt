@@ -2,7 +2,7 @@ package pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presen
 
 import org.springframework.stereotype.Component
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.CommandResultDto
-import pl.szczygieldev.shared.architecture.CommandResult
+import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandResult
 
 @Component
 class CommandPresenter {

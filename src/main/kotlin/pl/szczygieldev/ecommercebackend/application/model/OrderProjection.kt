@@ -9,7 +9,6 @@ data class OrderProjection(
     val orderId: OrderId,
     val cartId: CartId,
     val status: OrderStatus,
-
     val paymentProjection: PaymentProjection,
     val delivery: Delivery
 )
