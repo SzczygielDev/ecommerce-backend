@@ -25,7 +25,7 @@ class InMemoryCommandResultStorage : CommandResultStorage {
 
         db.put(
             command.id,
-            CommandResult(command.id, CommandResultStatus.RUNNING, Instant.now(), Duration.ZERO, mutableListOf())
+            CommandResult(command.id,command, CommandResultStatus.RUNNING, Instant.now(), Duration.ZERO, mutableListOf())
         )
     }
 

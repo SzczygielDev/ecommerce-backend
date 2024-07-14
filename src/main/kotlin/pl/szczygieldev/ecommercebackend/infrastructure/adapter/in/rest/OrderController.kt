@@ -54,11 +54,6 @@ class OrderController(
             { ResponseEntity.ok(orderPresenter.toDto(it)) })
     }
 
-    @GetMapping("/development/commands")
-    fun getCommands(): ResponseEntity<*> {
-        return ResponseEntity.ok(commandResultStorage.findAll().map { commandPresenter.toDto(it) })
-    }
-
     @PutMapping("/{orderId}/accept-commands/{commandId}")
     suspend fun createAcceptCommand(
         @PathVariable orderId: UUID,
@@ -217,7 +212,6 @@ class OrderController(
         return getCommandResultResponse(orderId, commandId)
     }
 
-    //TODO - extend with command type
     private fun getCommandResultResponse(orderId: OrderId, commandId: CommandId): ResponseEntity<*> {
         return either {
             ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))

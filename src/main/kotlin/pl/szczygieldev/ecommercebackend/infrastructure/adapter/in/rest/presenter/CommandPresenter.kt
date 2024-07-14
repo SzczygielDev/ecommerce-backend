@@ -3,6 +3,7 @@ package pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presen
 import org.springframework.stereotype.Component
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.CommandResultDto
 import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandResult
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.CommandResultFullDto
 
 @Component
 class CommandPresenter {
@@ -13,5 +14,15 @@ class CommandPresenter {
             commandResult.timestamp,
             commandResult.duration,
             commandResult.errors.map { error -> CommandResultDto.Error(error.name, error.message) })
+    }
+
+    fun toFullDto(commandResult: CommandResult): CommandResultFullDto {
+        return CommandResultFullDto(
+            commandResult.id.id,
+            commandResult.command,
+            commandResult.status,
+            commandResult.timestamp,
+            commandResult.duration,
+            commandResult.errors.map { error -> CommandResultFullDto.Error(error.name, error.message) })
     }
 }
