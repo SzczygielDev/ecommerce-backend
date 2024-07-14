@@ -23,6 +23,7 @@ class Cart private constructor(val cartId: CartId) : EventSourcedEntity<CartEven
         fun fromEvents(cartId: CartId, events: List<CartEvent>): Cart {
             val cart = Cart(cartId)
             cart.applyAll(events)
+            cart.clearOccurredEvents()
             return cart
         }
     }

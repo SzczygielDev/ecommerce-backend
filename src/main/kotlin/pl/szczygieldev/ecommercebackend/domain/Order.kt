@@ -31,6 +31,7 @@ class Order private constructor(
         fun fromEvents(orderId: OrderId, events: List<OrderEvent>): Order {
             val order = Order(orderId)
             order.applyAll(events)
+            order.clearOccurredEvents()
             return order
         }
 
@@ -81,7 +82,7 @@ class Order private constructor(
         parcelDimensions: ParcelDimensions
     ): Either<OrderError, Unit> = either {
         if (status != OrderStatus.IN_PROGRESS) {
-            raise(CannotPackageNotAcceptedOrderError.forId(orderId)) //other error
+            raise(PackingNotInProgressError.forId(orderId))
         }
         raiseEvent(OrderPackaged(orderId, parcelIdentifier, parcelDimensions))
     }
