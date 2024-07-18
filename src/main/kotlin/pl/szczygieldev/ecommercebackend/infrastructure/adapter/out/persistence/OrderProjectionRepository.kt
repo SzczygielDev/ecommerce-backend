@@ -4,7 +4,8 @@ import org.springframework.stereotype.Repository
 import pl.szczygieldev.ecommercebackend.application.model.OrderProjection
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
 import pl.szczygieldev.ecommercebackend.domain.OrderId
-import pl.szczygieldev.ecommercebackend.domain.ParcelIdentifier
+import pl.szczygieldev.ecommercebackend.domain.ParcelId
+import pl.szczygieldev.ecommercebackend.domain.PaymentId
 
 @Repository
 class OrderProjectionRepository : OrdersProjections {
@@ -16,6 +17,10 @@ class OrderProjectionRepository : OrdersProjections {
     }
 
     override fun findAll(): List<OrderProjection> = db.values.toList()
-    override fun findByParcelIdentifier(identifier: ParcelIdentifier): OrderProjection? =
-        db.values.find { orderProjection -> orderProjection.delivery.parcel?.parcelIdentifier == identifier }
+    override fun findByParcelIdentifier(identifier: ParcelId): OrderProjection? =
+        db.values.find { orderProjection -> orderProjection.delivery.parcel?.parcelId == identifier }
+
+    override fun findByPaymentId(paymentId: PaymentId): OrderProjection? =
+        db.values.find { orderProjection -> orderProjection.paymentProjection.paymentId.sameValueAs(paymentId) }
+
 }

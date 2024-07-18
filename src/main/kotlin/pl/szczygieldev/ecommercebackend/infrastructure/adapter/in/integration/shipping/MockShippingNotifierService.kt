@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderShippingUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.ChangeOrderDeliveryStatusCommand
 import pl.szczygieldev.ecommercebackend.domain.DeliveryStatus
-import pl.szczygieldev.ecommercebackend.domain.ParcelIdentifier
+import pl.szczygieldev.ecommercebackend.domain.ParcelId
 import pl.szczygieldev.ecommercebackend.infrastructure.integration.shipping.ParcelStatus
 import pl.szczygieldev.ecommercebackend.infrastructure.integration.shipping.ParcelStatusChangeNotification
 
@@ -16,7 +16,7 @@ class MockShippingNotifierService(val orderShippingUseCase: OrderShippingUseCase
     suspend fun handleParcelStatusChangeNotification(notification: ParcelStatusChangeNotification) {
         orderShippingUseCase.changeDeliveryStatus(
             ChangeOrderDeliveryStatusCommand(
-                ParcelIdentifier(notification.parcelId),
+                ParcelId(notification.parcelId),
                 mapParcelStatus(notification.parcelStatus)
             )
         )

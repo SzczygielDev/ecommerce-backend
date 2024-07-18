@@ -20,11 +20,11 @@ class Order private constructor(
             orderId: OrderId,
             cartId: CartId,
             amount: BigDecimal,
-            paymentServiceProvider: PaymentServiceProvider,
+            paymentDetails: PaymentDetails,
             deliveryProvider: DeliveryProvider,
         ): Order {
             val order = Order(orderId)
-            order.raiseEvent(OrderCreated(orderId, cartId, amount, paymentServiceProvider, deliveryProvider))
+            order.raiseEvent(OrderCreated(orderId, cartId, amount, paymentDetails, deliveryProvider))
             return order
         }
 
@@ -78,13 +78,13 @@ class Order private constructor(
     }
 
     fun completePacking(
-        parcelIdentifier: ParcelIdentifier,
+        parcelId: ParcelId,
         parcelDimensions: ParcelDimensions
     ): Either<OrderError, Unit> = either {
         if (status != OrderStatus.IN_PROGRESS) {
             raise(PackingNotInProgressError.forId(orderId))
         }
-        raiseEvent(OrderPackaged(orderId, parcelIdentifier, parcelDimensions))
+        raiseEvent(OrderPackaged(orderId, parcelId, parcelDimensions))
     }
 
     fun changeDeliveryStatus(deliveryStatus: DeliveryStatus) {
@@ -115,7 +115,9 @@ class Order private constructor(
     }
 
     private fun apply(event: OrderCreated) {
-        payment = Payment(event.amount, event.paymentServiceProvider)
+        val paymentDetails = event.paymentDetails
+        payment =
+            Payment(paymentDetails.id, paymentDetails.amount, paymentDetails.url, paymentDetails.paymentServiceProvider)
         delivery = Delivery(event.deliveryProvider, DeliveryStatus.WAITING, null)
     }
 
@@ -137,7 +139,7 @@ class Order private constructor(
 
         delivery =
             delivery.copy(
-                parcel = Parcel(event.parcelIdentifier, event.parcelDimensions)
+                parcel = Parcel(event.parcelId, event.parcelDimensions)
             )
     }
 

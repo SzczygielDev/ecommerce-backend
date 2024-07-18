@@ -5,8 +5,9 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import pl.szczygieldev.ecommercebackend.application.port.out.ShippingService
+import pl.szczygieldev.ecommercebackend.domain.DeliveryProvider
 import pl.szczygieldev.ecommercebackend.domain.ParcelDimensions
-import pl.szczygieldev.ecommercebackend.domain.ParcelIdentifier
+import pl.szczygieldev.ecommercebackend.domain.ParcelId
 import pl.szczygieldev.ecommercebackend.domain.ParcelLabel
 import pl.szczygieldev.ecommercebackend.infrastructure.integration.shipping.Parcel
 import pl.szczygieldev.ecommercebackend.infrastructure.integration.shipping.ParcelSize
@@ -21,7 +22,7 @@ class MockShippingService(val eventPublisher: ApplicationEventPublisher) : Shipp
         private val log = KotlinLogging.logger { }
     }
     private val db = mutableMapOf<String, Parcel>()
-    override fun registerParcel(parcelDimensions: ParcelDimensions): ParcelIdentifier {
+    override fun registerParcel(parcelDimensions: ParcelDimensions, deliveryProvider: DeliveryProvider): ParcelId? {
         val parcel = Parcel(
             UUID.randomUUID().toString(),
             ParcelStatus.PREPARING,
@@ -39,10 +40,10 @@ class MockShippingService(val eventPublisher: ApplicationEventPublisher) : Shipp
             parcel
         )
 
-        return ParcelIdentifier(parcel.id)
+        return ParcelId(parcel.id)
     }
 
-    override fun getLabel(parcelIdentifier: ParcelIdentifier): ParcelLabel? = db.get(parcelIdentifier.identifier)?.parcelLabel
+    override fun getLabel(parcelId: ParcelId): ParcelLabel? = db.get(parcelId.id)?.parcelLabel
 
 
     @Scheduled(fixedRate = 1000 * 60)

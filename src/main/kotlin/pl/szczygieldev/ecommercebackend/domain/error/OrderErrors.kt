@@ -1,7 +1,8 @@
 package pl.szczygieldev.ecommercebackend.domain.error
 
 import pl.szczygieldev.ecommercebackend.domain.OrderId
-import pl.szczygieldev.ecommercebackend.domain.ParcelIdentifier
+import pl.szczygieldev.ecommercebackend.domain.ParcelId
+import pl.szczygieldev.ecommercebackend.domain.PaymentId
 import java.math.BigDecimal
 
 sealed class OrderError(message: String) : AppError(message)
@@ -60,8 +61,12 @@ data class OrderNotFoundError(override val message: String) : OrderError(message
             return OrderNotFoundError("Cannot find order with id='${id.id()}'.")
         }
 
-        fun forParcelIdentifier(parcelIdentifier: ParcelIdentifier): OrderNotFoundError {
-            return OrderNotFoundError("Cannot find order with parcel identifier='${parcelIdentifier.identifier}'.")
+        fun forParcelId(parcelId: ParcelId): OrderNotFoundError {
+            return OrderNotFoundError("Cannot find order with parcel id='${parcelId.id}'.")
+        }
+
+        fun forPaymentId(paymentId: PaymentId): OrderNotFoundError {
+            return OrderNotFoundError("Cannot find order with payment id='${paymentId.id}'.")
         }
     }
 }

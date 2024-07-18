@@ -8,10 +8,6 @@ import pl.szczygieldev.ecommercebackend.application.port.out.CommandResultStorag
 import pl.szczygieldev.ecommercebackend.application.port.out.Orders
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
 import pl.szczygieldev.ecommercebackend.application.port.out.ShippingService
-import pl.szczygieldev.ecommercebackend.domain.DeliveryProvider
-import pl.szczygieldev.ecommercebackend.domain.OrderId
-import pl.szczygieldev.ecommercebackend.domain.ParcelDimensions
-import pl.szczygieldev.ecommercebackend.domain.ParcelIdentifier
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.CannotRegisterParcelError
 import pl.szczygieldev.ecommercebackend.domain.error.OrderNotFoundError
@@ -33,24 +29,13 @@ class CompleteOrderPackingCommandHandler(
         )
         val orderVersion = order.version
 
-        val parcelIdentifier = sendOrder(orderId, orderProjection.delivery.deliveryProvider, command.dimensions).bind()
-        order.completePacking(parcelIdentifier, command.dimensions).bind()
+        val parcelId = shippingService.registerParcel( command.dimensions, orderProjection.delivery.deliveryProvider) ?: raise(
+            CannotRegisterParcelError.forId(orderId)
+        )
+        order.completePacking(parcelId, command.dimensions).bind()
 
         val events = order.occurredEvents()
         orders.save(order, orderVersion)
         orderEventPublisher.publishBatch(events)
     }
-
-    private fun sendOrder(
-        orderId: OrderId,
-        provider: DeliveryProvider,
-        parcelDimensions: ParcelDimensions
-    ): Either<AppError, ParcelIdentifier> =
-        either {
-            return@either when (provider) {
-                DeliveryProvider.MOCK_DELIVERY_SERVICE -> shippingService.registerParcel(parcelDimensions) ?: raise(
-                    CannotRegisterParcelError.forId(orderId)
-                )
-            }
-        }
 }

@@ -7,8 +7,10 @@ import java.math.BigDecimal
 sealed class OrderEvent : DomainEvent<OrderEvent>()
 
 class OrderCreated(
-    val orderId: OrderId, val cartId: CartId, val amount: BigDecimal,
-    val paymentServiceProvider: PaymentServiceProvider,
+    val orderId: OrderId,
+    val cartId: CartId,
+    val amount: BigDecimal,
+    val paymentDetails: PaymentDetails,
     val deliveryProvider: DeliveryProvider,
 ) : OrderEvent() {
     override fun toString(): String {
@@ -40,9 +42,9 @@ class OrderPackagingStarted(val orderId: OrderId) : OrderEvent() {
     }
 }
 
-class OrderPackaged(val orderId: OrderId,val parcelIdentifier: ParcelIdentifier,val  parcelDimensions: ParcelDimensions) : OrderEvent() {
+class OrderPackaged(val orderId: OrderId, val parcelId: ParcelId, val  parcelDimensions: ParcelDimensions) : OrderEvent() {
     override fun toString(): String {
-        return "OrderPackaged(id=$id occuredOn=$occurredOn orderId=$orderId parcelIdentifier=$parcelIdentifier parcelDimensions=$parcelDimensions)"
+        return "OrderPackaged(id=$id occuredOn=$occurredOn orderId=$orderId parcelIdentifier=$parcelId parcelDimensions=$parcelDimensions)"
     }
 }
 

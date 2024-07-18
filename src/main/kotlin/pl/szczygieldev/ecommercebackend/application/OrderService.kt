@@ -7,7 +7,9 @@ import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.*
 import pl.szczygieldev.ecommercebackend.application.port.out.CartsProjections
 import pl.szczygieldev.ecommercebackend.application.port.out.Orders
+import pl.szczygieldev.ecommercebackend.application.port.out.PaymentService
 import pl.szczygieldev.ecommercebackend.domain.Order
+import pl.szczygieldev.ecommercebackend.domain.PaymentDetails
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.CartNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.OrderEvent
@@ -18,6 +20,7 @@ import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 class OrderService(
     val orders: Orders,
     val cartProjections: CartsProjections,
+    val paymentService: PaymentService,
     val orderEventPublisher: DomainEventPublisher<OrderEvent>,
     val acceptOrderCommandHandler: AcceptOrderCommandHandler,
     val rejectOrderCommandHandler: RejectOrderCommandHandler,
@@ -27,14 +30,23 @@ class OrderService(
     override suspend fun createOrder(command: CreateOrderCommand): Either<AppError, Unit> = either {
         val cartId = command.cartId
         val cart = cartProjections.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
+        val paymentServiceProvider = command.paymentServiceProvider
+
+        val paymentRegistration = paymentService.registerPayment(cart.amount, paymentServiceProvider)
 
         val order = Order.create(
             orders.nextIdentity(),
             cart.cartId,
             cart.amount,
-            command.paymentServiceProvider,
+            PaymentDetails(
+                paymentRegistration.id,
+                cart.amount,
+                paymentRegistration.url,
+                paymentServiceProvider
+            ),
             command.deliveryProvider
         )
+
         val orderVersion = order.version
         val events = order.occurredEvents()
         orders.save(order, orderVersion)

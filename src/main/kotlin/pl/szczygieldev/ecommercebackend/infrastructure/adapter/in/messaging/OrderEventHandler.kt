@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component
 import pl.szczygieldev.ecommercebackend.application.model.OrderProjection
 import pl.szczygieldev.ecommercebackend.application.model.PaymentProjection
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
+import pl.szczygieldev.ecommercebackend.application.port.out.PaymentService
 import pl.szczygieldev.ecommercebackend.domain.*
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.OrderNotFoundError
@@ -15,22 +16,30 @@ import pl.szczygieldev.shared.ddd.core.DomainEventHandler
 import java.math.BigDecimal
 
 @Component
-class OrderEventHandler(val ordersProjections: OrdersProjections) : DomainEventHandler<OrderEvent> {
+class OrderEventHandler(val ordersProjections: OrdersProjections, val paymentService: PaymentService) :
+    DomainEventHandler<OrderEvent> {
     companion object {
         private val log = KotlinLogging.logger { }
     }
 
     @EventListener
-    override suspend  fun handleEvent(domainEvent: OrderEvent) = either<AppError, Unit> {
+    override suspend fun handleEvent(domainEvent: OrderEvent) = either<AppError, Unit> {
         when (domainEvent) {
             is OrderCreated -> {
+                val paymentDetails = domainEvent.paymentDetails
                 ordersProjections.save(
                     OrderProjection(
                         domainEvent.orderId,
                         domainEvent.cartId,
                         OrderStatus.CREATED,
-                        PaymentProjection(domainEvent.amount,
-                            BigDecimal.ZERO, domainEvent.paymentServiceProvider, PaymentStatus.UNPAID),
+                        PaymentProjection(
+                            paymentDetails.id,
+                            paymentDetails.amount,
+                            BigDecimal.ZERO,
+                            paymentDetails.paymentServiceProvider,
+                            PaymentStatus.UNPAID,
+                            paymentDetails.url, emptyList()
+                        ),
                         Delivery(domainEvent.deliveryProvider, DeliveryStatus.WAITING, null)
                     )
                 )
@@ -56,7 +65,7 @@ class OrderEventHandler(val ordersProjections: OrdersProjections) : DomainEventH
                     foundOrder.copy(
                         status = OrderStatus.READY, delivery = foundOrder.delivery.copy(
                             parcel = Parcel(
-                                domainEvent.parcelIdentifier , domainEvent.parcelDimensions,
+                                domainEvent.parcelId, domainEvent.parcelDimensions,
                             )
                         )
                     )
@@ -80,8 +89,16 @@ class OrderEventHandler(val ordersProjections: OrdersProjections) : DomainEventH
                 val orderId = domainEvent.orderId
                 val foundOrder = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
                 val paymentProjection = foundOrder.paymentProjection
+
+                val transactions = mutableListOf<PaymentTransaction>()
+                transactions.addAll(paymentProjection.transactions)
+                transactions.add(domainEvent.paymentTransaction)
+
                 val updatedPaymentProjection =
-                    paymentProjection.copy(amountPaid = paymentProjection.amountPaid.add(domainEvent.paymentTransaction.amount))
+                    paymentProjection.copy(
+                        amountPaid = paymentProjection.amountPaid.add(domainEvent.paymentTransaction.amount),
+                        transactions = transactions
+                    )
                 ordersProjections.save(foundOrder.copy(paymentProjection = updatedPaymentProjection))
             }
 
@@ -94,6 +111,7 @@ class OrderEventHandler(val ordersProjections: OrdersProjections) : DomainEventH
             is OrderPaid -> {
                 val orderId = domainEvent.orderId
                 val foundOrder = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
+                paymentService.verifyPayment(foundOrder.paymentProjection.paymentId)
                 ordersProjections.save(foundOrder.copy(paymentProjection = foundOrder.paymentProjection.copy(status = PaymentStatus.PAID)))
             }
 

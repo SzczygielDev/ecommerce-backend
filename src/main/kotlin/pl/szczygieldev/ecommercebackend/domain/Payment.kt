@@ -1,8 +1,12 @@
 package pl.szczygieldev.ecommercebackend.domain
 
 import java.math.BigDecimal
+import java.net.URL
 
-class Payment(val amount: BigDecimal, val paymentServiceProvider: PaymentServiceProvider) {
+class Payment(
+    val id: PaymentId, val amount: BigDecimal, val url: URL,
+    val paymentServiceProvider: PaymentServiceProvider
+) {
     private var _status: PaymentStatus = PaymentStatus.UNPAID
     val status: PaymentStatus
         get() = _status
@@ -25,9 +29,9 @@ class Payment(val amount: BigDecimal, val paymentServiceProvider: PaymentService
     fun registerTransaction(paymentTransaction: PaymentTransaction) {
         transactions.add(paymentTransaction)
 
-        _status = if (sumOfTransactions == amount) {
+        _status = if (sumOfTransactions.compareTo(amount) == 0) {
             PaymentStatus.PAID
-        } else if (sumOfTransactions == BigDecimal.ZERO) {
+        } else if (sumOfTransactions.compareTo(BigDecimal.ZERO) == 0) {
             PaymentStatus.UNPAID
         } else {
             PaymentStatus.INVALID_AMOUNT

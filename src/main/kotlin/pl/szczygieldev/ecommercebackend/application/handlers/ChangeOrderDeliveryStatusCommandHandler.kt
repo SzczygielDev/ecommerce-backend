@@ -19,9 +19,9 @@ class ChangeOrderDeliveryStatusCommandHandler(
     commandResultStorage: CommandResultStorage
 ) : CommandHandler<ChangeOrderDeliveryStatusCommand>(commandResultStorage) {
     override suspend fun processCommand(command: ChangeOrderDeliveryStatusCommand): Either<AppError, Unit> = either {
-        val parcelIdentifier = command.parcelIdentifier
+        val parcelIdentifier = command.parcelId
         val orderProjection = ordersProjections.findByParcelIdentifier(parcelIdentifier) ?: raise(
-            OrderNotFoundError.forParcelIdentifier(parcelIdentifier)
+            OrderNotFoundError.forParcelId(parcelIdentifier)
         )
 
         val orderId = orderProjection.orderId
