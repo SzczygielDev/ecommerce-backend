@@ -25,7 +25,8 @@ class OrderPresenter {
             orderProjection.cartId.id(),
             orderProjection.status,
             paymentDto,
-            deliveryDto
+            deliveryDto,
+            orderProjection.createdAt.toString()
         )
     }
 
@@ -54,7 +55,7 @@ class OrderPresenter {
             orderProjection.cartId.id(),
             orderProjection.status,
             paymentDto,
-            deliveryDto
+            deliveryDto, orderProjection.createdAt.toString()
         )
     }
 }

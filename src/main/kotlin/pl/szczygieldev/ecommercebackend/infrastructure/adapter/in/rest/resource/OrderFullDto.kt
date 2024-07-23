@@ -7,5 +7,6 @@ data class OrderFullDto(
     val cartId: String,
     val status: OrderStatus,
     val payment: PaymentFullDto,
-    val delivery: DeliveryDto
+    val delivery: DeliveryDto,
+    val createdAt: String
 )

@@ -4,11 +4,13 @@ import pl.szczygieldev.ecommercebackend.domain.CartId
 import pl.szczygieldev.ecommercebackend.domain.Delivery
 import pl.szczygieldev.ecommercebackend.domain.OrderId
 import pl.szczygieldev.ecommercebackend.domain.OrderStatus
+import java.time.Instant
 
 data class OrderProjection(
     val orderId: OrderId,
     val cartId: CartId,
     val status: OrderStatus,
     val paymentProjection: PaymentProjection,
-    val delivery: Delivery
+    val delivery: Delivery,
+    val createdAt: Instant
 )

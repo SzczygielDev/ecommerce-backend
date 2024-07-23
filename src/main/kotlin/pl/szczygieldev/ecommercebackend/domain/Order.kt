@@ -6,6 +6,7 @@ import pl.szczygieldev.ecommercebackend.domain.error.*
 import pl.szczygieldev.ecommercebackend.domain.event.*
 import pl.szczygieldev.shared.ddd.core.EventSourcedEntity
 import java.math.BigDecimal
+import java.time.Instant
 
 class Order private constructor(
     val orderId: OrderId
@@ -14,6 +15,7 @@ class Order private constructor(
     private lateinit var cartId: CartId
     private lateinit var payment: Payment
     private lateinit var delivery: Delivery
+    private lateinit var createdAt: Instant
 
     companion object {
         fun create(
@@ -119,6 +121,7 @@ class Order private constructor(
         payment =
             Payment(paymentDetails.id, paymentDetails.amount, paymentDetails.url, paymentDetails.paymentServiceProvider)
         delivery = Delivery(event.deliveryProvider, DeliveryStatus.WAITING, null)
+        createdAt = event.occurredOn
     }
 
 
@@ -131,7 +134,10 @@ class Order private constructor(
     }
 
     private fun apply(event: OrderDeliveryStatusChanged) {
-        delivery = delivery.copy(status = DeliveryStatus.DELIVERED)
+        if(event.status != DeliveryStatus.WAITING){
+            status = OrderStatus.SENT
+        }
+        delivery = delivery.copy(status = event.status)
     }
 
     private fun apply(event: OrderPackaged) {

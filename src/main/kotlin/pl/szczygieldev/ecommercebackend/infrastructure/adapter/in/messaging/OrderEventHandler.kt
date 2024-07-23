@@ -40,7 +40,8 @@ class OrderEventHandler(val ordersProjections: OrdersProjections, val paymentSer
                             PaymentStatus.UNPAID,
                             paymentDetails.url, emptyList()
                         ),
-                        Delivery(domainEvent.deliveryProvider, DeliveryStatus.WAITING, null)
+                        Delivery(domainEvent.deliveryProvider, DeliveryStatus.WAITING, null),
+                        domainEvent.occurredOn
                     )
                 )
             }
@@ -118,7 +119,13 @@ class OrderEventHandler(val ordersProjections: OrdersProjections, val paymentSer
             is OrderDeliveryStatusChanged -> {
                 val orderId = domainEvent.orderId
                 val foundOrder = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
-                ordersProjections.save(foundOrder.copy(delivery = foundOrder.delivery.copy(status = domainEvent.status)))
+
+                var updatedOrder = foundOrder.copy(delivery = foundOrder.delivery.copy(status = domainEvent.status))
+                if (domainEvent.status != DeliveryStatus.WAITING) {
+                    updatedOrder = updatedOrder.copy(status = OrderStatus.SENT)
+                }
+
+                ordersProjections.save(updatedOrder)
             }
         }
     }.fold({

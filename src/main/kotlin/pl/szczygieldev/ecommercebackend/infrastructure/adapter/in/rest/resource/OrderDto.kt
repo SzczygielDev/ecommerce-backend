@@ -6,5 +6,6 @@ data class OrderDto(
     val cartId: String,
     val status: OrderStatus,
     val payment: PaymentDto,
-    val delivery: DeliveryDto
+    val delivery: DeliveryDto,
+    val createdAt: String
 )
