@@ -16,9 +16,11 @@ class CartTests : FunSpec({
         val cartId = CartId(UUID.randomUUID().toString())
         val cart = Cart.create(cartId)
         val productId = ProductId(UUID.randomUUID().toString())
+        val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
+        val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
 
         //Act
-        cart.submit()
+        cart.submit(deliveryProvider,paymentServiceProvider)
         val result = cart.addItem(productId, 1)
 
         //Assert
@@ -32,9 +34,11 @@ class CartTests : FunSpec({
         val cartId = CartId(UUID.randomUUID().toString())
         val cart = Cart.create(cartId)
         val productId = ProductId(UUID.randomUUID().toString())
+        val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
+        val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
 
         //Act
-        cart.submit()
+        cart.submit(deliveryProvider,paymentServiceProvider)
         val result = cart.removeItem(productId)
 
         //Assert
@@ -47,10 +51,12 @@ class CartTests : FunSpec({
         //Arrange
         val cartId = CartId(UUID.randomUUID().toString())
         val cart = Cart.create(cartId)
+        val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
+        val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
 
         //Act
-        cart.submit()
-        val secondSubmit = cart.submit()
+        cart.submit(deliveryProvider,paymentServiceProvider)
+        val secondSubmit = cart.submit(deliveryProvider,paymentServiceProvider)
 
         //Assert
         secondSubmit.isLeft().shouldBe(true)

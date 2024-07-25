@@ -35,10 +35,13 @@ class CartUseCaseTests : FunSpec() {
         test("Submitting cart should raise CartNotFoundError when cart not found") {
             //Arrange
             val cartId = CartId(UUID.randomUUID().toString())
+            val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
+            val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
+
             every { cartsMock.findById(cartId)} returns null
 
             //Act
-            val result = productUseCase.submitCart(SubmitCartCommand(cartId.id()))
+            val result = productUseCase.submitCart(SubmitCartCommand(cartId.id(),deliveryProvider,paymentServiceProvider))
 
             //Assert
             result.isLeft().shouldBe(true)
@@ -50,12 +53,14 @@ class CartUseCaseTests : FunSpec() {
             val cartId = CartId(UUID.randomUUID().toString())
             val cart =  spyk<Cart>(Cart.create(cartId))
             every { cartsMock.findById(cartId)} returns cart
+            val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
+            val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
 
             //Act
-            productUseCase.submitCart(SubmitCartCommand(cartId.id()))
+            productUseCase.submitCart(SubmitCartCommand(cartId.id(),deliveryProvider, paymentServiceProvider))
 
             //Assert
-            verify { cart.submit() }
+            verify { cart.submit(deliveryProvider, paymentServiceProvider) }
         }
 
         test("Adding product to cart should raise CartNotFoundError when cart not found") {
