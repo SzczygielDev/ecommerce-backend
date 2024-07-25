@@ -10,11 +10,14 @@ import pl.szczygieldev.ecommercebackend.application.port.`in`.command.RemoveItem
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.SubmitCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.out.CartsProjections
 import pl.szczygieldev.ecommercebackend.domain.CartId
+import pl.szczygieldev.ecommercebackend.domain.DeliveryProvider
+import pl.szczygieldev.ecommercebackend.domain.PaymentServiceProvider
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.CartNotFoundError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.advice.mapToError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presenter.CartPresenter
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.AddItemToCartRequest
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.SubmitCartRequest
 
 @RequestMapping("/carts")
 @RestController
@@ -56,10 +59,10 @@ class CartController(
     }
 
     @PostMapping("/{id}/submit")
-    fun submit(@PathVariable id: String): ResponseEntity<*> {
+    fun submit(@PathVariable id: String, @RequestBody request: SubmitCartRequest): ResponseEntity<*> {
         return either {
             val cartId = CartId(id)
-            cartUseCase.submitCart(SubmitCartCommand(id)).bind()
+            cartUseCase.submitCart(SubmitCartCommand(id,request.deliveryProvider,request.paymentServiceProvider)).bind()
             cartRepository.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },

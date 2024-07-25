@@ -27,7 +27,7 @@ class CartService(
         val cart = carts.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
         val currentVersion = cart.version
 
-        cart.submit().bind()
+        cart.submit(command.deliveryProvider,command.paymentServiceProvider).bind()
 
         val events = cart.occurredEvents()
         carts.save(cart, currentVersion)

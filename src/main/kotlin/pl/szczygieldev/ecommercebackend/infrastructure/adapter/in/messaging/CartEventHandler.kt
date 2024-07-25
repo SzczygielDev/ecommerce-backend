@@ -46,7 +46,7 @@ class CartEventHandler(
                     cartsProjections.findById(domainEvent.cartId)?.copy(status = CartStatus.SUBMITTED)
                         ?: raise(CartNotFoundError.forId(domainEvent.cartId))
                 )
-                orderUseCase.createOrder(CreateOrderCommand(domainEvent.cartId,PaymentServiceProvider.MOCK_PSP,DeliveryProvider.MOCK_DELIVERY_SERVICE)) //!!!
+                orderUseCase.createOrder(CreateOrderCommand(domainEvent.cartId,domainEvent.paymentServiceProvider,domainEvent.deliveryProvider))
             }
 
             is ItemAddedToCart -> {
