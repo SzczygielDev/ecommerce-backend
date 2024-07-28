@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderShippingUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderUseCase
@@ -20,6 +21,7 @@ import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandId
 import java.net.URI
 import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandResult
 import pl.szczygieldev.ecommercebackend.application.model.OrderProjection
+import pl.szczygieldev.ecommercebackend.domain.CartId
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.OrderNotFoundError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.CommandNotFoundError
@@ -39,16 +41,31 @@ class OrderController(
     val orderPresenter: OrderPresenter
 ) {
     @GetMapping
-    fun getOrders(): ResponseEntity<*> {
+    fun getOrders(@RequestParam(required = false) orderId: UUID?,@RequestParam(required = false) cartId: UUID?): ResponseEntity<*> {
+        if(orderId!=null){
+            return getOrder(orderId)
+        }else if(cartId!=null){
+            return getOrderByCartId(cartId)
+        }
+
         return ResponseEntity.ok(
             ordersProjections.findAll().map { orderProjection -> orderPresenter.toDto(orderProjection) })
     }
 
-    @GetMapping("/{orderId}")
-    fun getOrder(@PathVariable orderId: UUID): ResponseEntity<*> {
+
+    private fun getOrder(orderId: UUID): ResponseEntity<*> {
         return either<AppError, OrderProjection> {
             val id = OrderId(orderId.toString())
             ordersProjections.findById(id) ?: raise(OrderNotFoundError.forId(id))
+        }.fold<ResponseEntity<*>>(
+            { mapToError(it) },
+            { ResponseEntity.ok(orderPresenter.toDto(it)) })
+    }
+
+    private fun getOrderByCartId(cartId: UUID): ResponseEntity<*> {
+        return either<AppError, OrderProjection> {
+            val id = CartId(cartId.toString())
+            ordersProjections.findByCartId(id) ?: raise(OrderNotFoundError.forCartId(id))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
             { ResponseEntity.ok(orderPresenter.toDto(it)) })

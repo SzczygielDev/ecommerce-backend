@@ -16,6 +16,8 @@ class OrderPresenter {
                 paymentProjection.amountPaid,
                 paymentProjection.paymentServiceProvider,
                 paymentProjection.status,
+                paymentProjection.paymentURL,
+
             )
         val delivery = orderProjection.delivery
         val deliveryDto = DeliveryDto(delivery.deliveryProvider, delivery.status)
@@ -41,7 +43,6 @@ class OrderPresenter {
                 paymentProjection.status, paymentProjection.transactions.map { paymentTransaction ->
                     PaymentFullDto.PaymentTransactionDto(
                         paymentTransaction.id.id,
-
                         paymentTransaction.amount,
                         paymentTransaction.timestamp
                     )

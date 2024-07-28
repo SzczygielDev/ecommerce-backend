@@ -1,5 +1,6 @@
 package pl.szczygieldev.ecommercebackend.domain.error
 
+import pl.szczygieldev.ecommercebackend.domain.CartId
 import pl.szczygieldev.ecommercebackend.domain.OrderId
 import pl.szczygieldev.ecommercebackend.domain.ParcelId
 import pl.szczygieldev.ecommercebackend.domain.PaymentId
@@ -67,6 +68,10 @@ data class OrderNotFoundError(override val message: String) : OrderError(message
 
         fun forPaymentId(paymentId: PaymentId): OrderNotFoundError {
             return OrderNotFoundError("Cannot find order with payment id='${paymentId.id}'.")
+        }
+
+        fun forCartId(cartId: CartId): OrderNotFoundError {
+            return OrderNotFoundError("Cannot find order with cart id='${cartId.id}'.")
         }
     }
 }

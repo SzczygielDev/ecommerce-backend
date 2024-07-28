@@ -18,7 +18,8 @@ import java.util.UUID
 @Component
 class MockPaymentService(val eventPublisher: ApplicationEventPublisher) : PaymentService {
     private val db = mutableMapOf<PaymentId, Payment>()
-
+    private val paymentUrlBase = "http://localhost:64427/#/mockPayment/"
+    private val paymentReturnUrl = URL( "http://localhost:64427/#/cart?paymentRedirect=true")
     companion object {
         private val log = KotlinLogging.logger { }
     }
@@ -28,12 +29,15 @@ class MockPaymentService(val eventPublisher: ApplicationEventPublisher) : Paymen
         paymentServiceProvider: PaymentServiceProvider
     ): PaymentRegistration {
         val result = when (paymentServiceProvider) {
-            PaymentServiceProvider.MOCK_PSP -> PaymentRegistration(
-                PaymentId(UUID.randomUUID().toString()),
-                URL("http://localhost:8080/")
-            )
+            PaymentServiceProvider.MOCK_PSP -> {
+                val paymentId =  PaymentId(UUID.randomUUID().toString())
+                PaymentRegistration(
+                    paymentId ,
+                    URL("$paymentUrlBase${paymentId.id()}"),
+                )
+            }
         }
-        db.put(result.id, Payment(result.id, amount, BigDecimal.ZERO, result.url, PaymentStatus.NOT_PAID))
+        db.put(result.id, Payment(result.id.id(), amount, BigDecimal.ZERO, result.url, PaymentStatus.NOT_PAID,paymentReturnUrl))
         return result
     }
 
@@ -49,4 +53,6 @@ class MockPaymentService(val eventPublisher: ApplicationEventPublisher) : Paymen
 
        eventPublisher.publishEvent(PaymentNotification(paymentTransactionId,paymentId, amount))
     }
+
+    fun getMockPayment(paymentId: PaymentId) : Payment? = db[paymentId]
 }

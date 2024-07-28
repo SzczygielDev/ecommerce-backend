@@ -3,6 +3,7 @@ package pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.persistence
 import org.springframework.stereotype.Repository
 import pl.szczygieldev.ecommercebackend.application.model.OrderProjection
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
+import pl.szczygieldev.ecommercebackend.domain.CartId
 import pl.szczygieldev.ecommercebackend.domain.OrderId
 import pl.szczygieldev.ecommercebackend.domain.ParcelId
 import pl.szczygieldev.ecommercebackend.domain.PaymentId
@@ -22,5 +23,7 @@ class OrderProjectionRepository : OrdersProjections {
 
     override fun findByPaymentId(paymentId: PaymentId): OrderProjection? =
         db.values.find { orderProjection -> orderProjection.paymentProjection.paymentId.sameValueAs(paymentId) }
+
+    override fun findByCartId(cartId: CartId): OrderProjection? =  db.values.find { orderProjection -> orderProjection.cartId.sameValueAs(cartId)}
 
 }
