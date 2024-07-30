@@ -9,15 +9,14 @@ import pl.szczygieldev.ecommercebackend.application.port.`in`.command.AddItemToC
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.RemoveItemFromCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.SubmitCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.out.CartsProjections
-import pl.szczygieldev.ecommercebackend.domain.CartId
-import pl.szczygieldev.ecommercebackend.domain.DeliveryProvider
-import pl.szczygieldev.ecommercebackend.domain.PaymentServiceProvider
+import pl.szczygieldev.ecommercebackend.domain.UserId
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.CartNotFoundError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.advice.mapToError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presenter.CartPresenter
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.AddItemToCartRequest
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.SubmitCartRequest
+import java.util.UUID
 
 @RequestMapping("/carts")
 @RestController
@@ -26,43 +25,49 @@ class CartController(
     val cartRepository: CartsProjections,
     val cartPresenter: CartPresenter
 ) {
-    @GetMapping("/{id}")
-    fun get(@PathVariable id: String): ResponseEntity<*> {
+    //TODO - replace when implementing users
+    private val mockUserId = UserId(UUID.randomUUID().toString())
+
+    @GetMapping
+    fun get(): ResponseEntity<*> {
         return either<AppError, CartProjection> {
-            val cartId = CartId(id)
+            cartRepository.findActiveForUser(mockUserId) ?: raise(CartNotFoundError.forUserId(mockUserId))
+        }.fold<ResponseEntity<*>>(
+            { mapToError(it) },
+            { ResponseEntity.ok(cartPresenter.toDto(it)) })
+    }
+
+    @PostMapping("/items")
+    fun addItem(@RequestBody request: AddItemToCartRequest): ResponseEntity<*> {
+        return either {
+            val cart = cartRepository.findActiveForUser(mockUserId) ?: raise(CartNotFoundError.forUserId(mockUserId))
+            val cartId = cart.cartId
+            cartUseCase.addProductToCart(AddItemToCartCommand(cartId.id(), request.productId, request.quantity)).bind()
             cartRepository.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
             { ResponseEntity.ok(cartPresenter.toDto(it)) })
     }
 
-    @PostMapping("/{id}/items")
-    fun addItem(@PathVariable id: String, @RequestBody request: AddItemToCartRequest): ResponseEntity<*> {
+    @DeleteMapping("/items/{productId}")
+    fun removeItem(@PathVariable productId: String): ResponseEntity<*> {
         return either {
-            val cartId = CartId(id)
-            cartUseCase.addProductToCart(AddItemToCartCommand(id, request.productId, request.quantity)).bind()
+            val cart = cartRepository.findActiveForUser(mockUserId) ?: raise(CartNotFoundError.forUserId(mockUserId))
+            val cartId = cart.cartId
+            cartUseCase.removeProductFromCart(RemoveItemFromCartCommand(cartId.id(), productId)).bind()
             cartRepository.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
             { ResponseEntity.ok(cartPresenter.toDto(it)) })
     }
 
-    @DeleteMapping("/{id}/items/{productId}")
-    fun removeItem(@PathVariable id: String,@PathVariable productId:String): ResponseEntity<*> {
+    @PostMapping("/submit")
+    fun submit(@RequestBody request: SubmitCartRequest): ResponseEntity<*> {
         return either {
-            val cartId = CartId(id)
-            cartUseCase.removeProductFromCart(RemoveItemFromCartCommand(id, productId)).bind()
-            cartRepository.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
-        }.fold<ResponseEntity<*>>(
-            { mapToError(it) },
-            { ResponseEntity.ok(cartPresenter.toDto(it)) })
-    }
-
-    @PostMapping("/{id}/submit")
-    fun submit(@PathVariable id: String, @RequestBody request: SubmitCartRequest): ResponseEntity<*> {
-        return either {
-            val cartId = CartId(id)
-            cartUseCase.submitCart(SubmitCartCommand(id,request.deliveryProvider,request.paymentServiceProvider)).bind()
+            val cart = cartRepository.findActiveForUser(mockUserId) ?: raise(CartNotFoundError.forUserId(mockUserId))
+            val cartId = cart.cartId
+            cartUseCase.submitCart(SubmitCartCommand(cartId.id(), request.deliveryProvider, request.paymentServiceProvider))
+                .bind()
             cartRepository.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },

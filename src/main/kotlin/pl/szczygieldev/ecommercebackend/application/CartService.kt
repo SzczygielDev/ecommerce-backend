@@ -7,8 +7,10 @@ import pl.szczygieldev.ecommercebackend.application.port.`in`.command.AddItemToC
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.RemoveItemFromCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.SubmitCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CreateCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.out.Carts
 import pl.szczygieldev.ecommercebackend.application.port.out.Products
+import pl.szczygieldev.ecommercebackend.domain.Cart
 import pl.szczygieldev.ecommercebackend.domain.CartId
 import pl.szczygieldev.ecommercebackend.domain.ProductId
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
@@ -22,6 +24,15 @@ class CartService(
     val carts: Carts,
     val products: Products,
     val cartEventPublisher: DomainEventPublisher<CartEvent> ) : CartUseCase {
+
+    override fun createCart(command: CreateCartCommand): Either<AppError, Unit> = either {
+        val cart = Cart.create(carts.nextIdentity())
+        val version = cart.version
+        val events = cart.occurredEvents()
+        carts.save(cart,version)
+        cartEventPublisher.publishBatch(events)
+    }
+
     override fun submitCart(command: SubmitCartCommand): Either<AppError, Unit> = either {
         val cartId = CartId(command.cartId)
         val cart = carts.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))

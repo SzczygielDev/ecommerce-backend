@@ -6,14 +6,14 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import pl.szczygieldev.shared.ddd.core.DomainEventHandler
 import pl.szczygieldev.ecommercebackend.application.model.CartProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.PriceCalculatorUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CalculateCartTotalCommand
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CreateCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CreateOrderCommand
 import pl.szczygieldev.ecommercebackend.application.port.out.CartsProjections
 import pl.szczygieldev.ecommercebackend.domain.CartStatus
-import pl.szczygieldev.ecommercebackend.domain.DeliveryProvider
-import pl.szczygieldev.ecommercebackend.domain.PaymentServiceProvider
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.CartNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.*
@@ -23,7 +23,8 @@ import java.math.BigDecimal
 class CartEventHandler(
     private val cartsProjections: CartsProjections,
     private val priceCalculatorUseCase: PriceCalculatorUseCase,
-    private val  orderUseCase:OrderUseCase
+    private val orderUseCase: OrderUseCase,
+    private val cartUseCase: CartUseCase
 ) : DomainEventHandler<CartEvent> {
     companion object {
         private val log = KotlinLogging.logger { }
@@ -46,7 +47,14 @@ class CartEventHandler(
                     cartsProjections.findById(domainEvent.cartId)?.copy(status = CartStatus.SUBMITTED)
                         ?: raise(CartNotFoundError.forId(domainEvent.cartId))
                 )
-                orderUseCase.createOrder(CreateOrderCommand(domainEvent.cartId,domainEvent.paymentServiceProvider,domainEvent.deliveryProvider))
+                cartUseCase.createCart(CreateCartCommand())
+                orderUseCase.createOrder(
+                    CreateOrderCommand(
+                        domainEvent.cartId,
+                        domainEvent.paymentServiceProvider,
+                        domainEvent.deliveryProvider
+                    )
+                )
             }
 
             is ItemAddedToCart -> {

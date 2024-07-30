@@ -19,14 +19,15 @@ import java.util.UUID
 class MockPaymentService(val eventPublisher: ApplicationEventPublisher) : PaymentService {
     private val db = mutableMapOf<PaymentId, Payment>()
     private val paymentUrlBase = "http://localhost:64427/#/mockPayment/"
-    private val paymentReturnUrl = URL( "http://localhost:64427/#/cart?paymentRedirect=true")
+    
     companion object {
         private val log = KotlinLogging.logger { }
     }
 
     override fun registerPayment(
         amount: BigDecimal,
-        paymentServiceProvider: PaymentServiceProvider
+        paymentServiceProvider: PaymentServiceProvider,
+        returnURL: URL
     ): PaymentRegistration {
         val result = when (paymentServiceProvider) {
             PaymentServiceProvider.MOCK_PSP -> {
@@ -37,7 +38,7 @@ class MockPaymentService(val eventPublisher: ApplicationEventPublisher) : Paymen
                 )
             }
         }
-        db.put(result.id, Payment(result.id.id(), amount, BigDecimal.ZERO, result.url, PaymentStatus.NOT_PAID,paymentReturnUrl))
+        db.put(result.id, Payment(result.id.id(), amount, BigDecimal.ZERO, result.url, PaymentStatus.NOT_PAID,returnURL))
         return result
     }
 

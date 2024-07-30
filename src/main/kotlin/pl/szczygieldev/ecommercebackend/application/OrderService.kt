@@ -15,6 +15,7 @@ import pl.szczygieldev.ecommercebackend.domain.error.CartNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.OrderEvent
 import pl.szczygieldev.shared.architecture.UseCase
 import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
+import java.net.URL
 
 @UseCase
 class OrderService(
@@ -27,15 +28,17 @@ class OrderService(
     val cancelOrderCommandHandler: CancelOrderCommandHandler,
     val returnOrderCommandHandler: ReturnOrderCommandHandler,
 ) : OrderUseCase {
+    private val paymentReturnUrlBase = "http://localhost:64427/#/paymentResult/"
     override suspend fun createOrder(command: CreateOrderCommand): Either<AppError, Unit> = either {
         val cartId = command.cartId
         val cart = cartProjections.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
         val paymentServiceProvider = command.paymentServiceProvider
 
-        val paymentRegistration = paymentService.registerPayment(cart.amount, paymentServiceProvider)
+        val orderId = orders.nextIdentity()
+        val paymentRegistration = paymentService.registerPayment(cart.amount, paymentServiceProvider, URL("$paymentReturnUrlBase${orderId.id()}"))
 
         val order = Order.create(
-            orders.nextIdentity(),
+            orderId,
             cart.cartId,
             cart.amount,
             PaymentDetails(
