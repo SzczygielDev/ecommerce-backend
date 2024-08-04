@@ -18,7 +18,7 @@ import java.util.UUID
 @Component
 class MockPaymentService(val eventPublisher: ApplicationEventPublisher) : PaymentService {
     private val db = mutableMapOf<PaymentId, Payment>()
-    private val paymentUrlBase = "http://localhost:64427/#/mockPayment/"
+    private val paymentUrlBase = "http://localhost:64427/mockPayment/"
     
     companion object {
         private val log = KotlinLogging.logger { }

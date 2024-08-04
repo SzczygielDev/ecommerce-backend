@@ -5,15 +5,16 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pl.szczygieldev.ecommercebackend.application.port.`in`.ProductUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CreateProductCommand
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.UpdateProductCommand
 import pl.szczygieldev.ecommercebackend.application.port.out.Products
-import pl.szczygieldev.ecommercebackend.domain.Product
-import pl.szczygieldev.ecommercebackend.domain.ProductId
+import pl.szczygieldev.ecommercebackend.domain.*
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.ProductNotFoundError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.advice.mapToError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presenter.ProductPresenter
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.CreateProductRequest
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.ProductDto
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.UpdateProductRequest
 
 @RequestMapping("/products")
 @RestController
@@ -47,5 +48,28 @@ class ProductController(
                 )
             )
         )
+    }
+
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable id: String): ResponseEntity<*> {
+        return either<AppError, Product> {
+            val productId = ProductId(id)
+            products.delete(productId) ?: raise(ProductNotFoundError(productId.id))
+        }.fold({ mapToError(it) }, { product -> return ResponseEntity.ok().body(productPresenter.toDto(product)) })
+    }
+
+    @PutMapping("/{id}")
+    fun update(@PathVariable id: String, @RequestBody request: UpdateProductRequest): ResponseEntity<*> {
+        return either<AppError, Product> {
+            val productId = ProductId(id)
+            productUseCase.update(
+                UpdateProductCommand(
+                    productId,
+                    ProductTitle(request.title),
+                    ProductDescription(request.description),
+                    ProductPrice(request.price)
+                )
+            ).bind()
+        }.fold({ mapToError(it) }, { product -> return ResponseEntity.ok().body(productPresenter.toDto(product)) })
     }
 }

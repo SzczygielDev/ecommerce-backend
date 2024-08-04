@@ -28,7 +28,7 @@ class OrderService(
     val cancelOrderCommandHandler: CancelOrderCommandHandler,
     val returnOrderCommandHandler: ReturnOrderCommandHandler,
 ) : OrderUseCase {
-    private val paymentReturnUrlBase = "http://localhost:64427/#/paymentResult/"
+    private val paymentReturnUrlBase = "http://localhost:64427/paymentResult/"
     override suspend fun createOrder(command: CreateOrderCommand): Either<AppError, Unit> = either {
         val cartId = command.cartId
         val cart = cartProjections.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))

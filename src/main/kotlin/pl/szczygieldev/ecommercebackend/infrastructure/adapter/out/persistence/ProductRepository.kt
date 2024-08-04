@@ -13,7 +13,12 @@ class ProductRepository : Products {
     override fun findById(id: ProductId): Product? = db[id.id()]
     override fun findAll(): List<Product> = db.values.toList()
 
-    override fun save(product: Product) {
+    override fun save(product: Product): Product{
         db[product.productId.id()] = product
+        return  product
+    }
+
+    override fun delete(productId: ProductId): Product? {
+       return db.remove(productId.id())
     }
 }
