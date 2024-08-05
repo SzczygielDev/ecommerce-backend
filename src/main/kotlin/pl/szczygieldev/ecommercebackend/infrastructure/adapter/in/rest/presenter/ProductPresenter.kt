@@ -11,7 +11,13 @@ class ProductPresenter {
             product.productId.id(),
             product.title.value,
             product.description.content,
-            product.price.amount
+            product.price.amount,
+            product.priceChanges.map { priceChange ->
+                ProductDto.ProductPriceChangeDto(
+                    priceChange.newPrice.amount,
+                    priceChange.timestamp
+                )
+            }
         )
     }
 }

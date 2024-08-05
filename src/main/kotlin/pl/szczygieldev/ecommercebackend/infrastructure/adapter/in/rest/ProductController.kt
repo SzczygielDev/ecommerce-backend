@@ -69,7 +69,8 @@ class ProductController(
                     ProductDescription(request.description),
                     ProductPrice(request.price)
                 )
-            ).bind()
+            )
+            products.findById(productId) ?: raise(ProductNotFoundError(productId.id))
         }.fold({ mapToError(it) }, { product -> return ResponseEntity.ok().body(productPresenter.toDto(product)) })
     }
 }

@@ -12,11 +12,13 @@ import pl.szczygieldev.ecommercebackend.domain.ProductPrice
 import pl.szczygieldev.ecommercebackend.domain.ProductTitle
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.ProductNotFoundError
+import pl.szczygieldev.ecommercebackend.domain.event.ProductEvent
 import pl.szczygieldev.shared.architecture.UseCase
+import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 import java.math.BigDecimal
 
 @UseCase
-class ProductService(val products: Products) : ProductUseCase {
+class ProductService(val products: Products, val productEventPublisher: DomainEventPublisher<ProductEvent>) : ProductUseCase {
     override fun create(command: CreateProductCommand): Product {
         val product = Product.create(
             products.nextIdentity(),
@@ -25,18 +27,21 @@ class ProductService(val products: Products) : ProductUseCase {
             ProductPrice(BigDecimal.valueOf(command.price))
         )
 
-        products.save(product)
+        products.save(product, product.version)
         return product
     }
 
-    override fun update(command: UpdateProductCommand): Either<AppError, Product> = either {
+    override fun update(command: UpdateProductCommand): Either<AppError, Unit> = either {
         val productId = command.productId
         val product = products.findById(productId) ?: raise(ProductNotFoundError(productId.id))
 
+        val version = product.version
+
         product.title = command.title
         product.description = command.description
-        product.price = command.price
+        product.updatePrice(command.price)
 
-        products.save(product)
+        products.save(product,version)
+        productEventPublisher.publishBatch(product.occurredEvents())
     }
 }
