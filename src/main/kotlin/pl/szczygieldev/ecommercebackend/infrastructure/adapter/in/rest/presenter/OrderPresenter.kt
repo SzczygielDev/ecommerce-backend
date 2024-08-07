@@ -16,9 +16,8 @@ class OrderPresenter {
                 paymentProjection.amountPaid,
                 paymentProjection.paymentServiceProvider,
                 paymentProjection.status,
-                paymentProjection.paymentURL,
-
-            )
+                paymentProjection.paymentURL
+                )
         val delivery = orderProjection.delivery
         val deliveryDto = DeliveryDto(delivery.deliveryProvider, delivery.status)
 
@@ -28,7 +27,7 @@ class OrderPresenter {
             orderProjection.status,
             paymentDto,
             deliveryDto,
-            orderProjection.createdAt.toString()
+            orderProjection.createdAt
         )
     }
 
@@ -56,7 +55,7 @@ class OrderPresenter {
             orderProjection.cartId.id(),
             orderProjection.status,
             paymentDto,
-            deliveryDto, orderProjection.createdAt.toString()
+            deliveryDto, orderProjection.createdAt
         )
     }
 }
