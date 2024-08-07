@@ -8,15 +8,21 @@ import pl.szczygieldev.ecommercebackend.application.model.OrderProjection
 import pl.szczygieldev.ecommercebackend.application.model.PaymentProjection
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
 import pl.szczygieldev.ecommercebackend.application.port.out.PaymentService
+import pl.szczygieldev.ecommercebackend.application.port.out.Products
 import pl.szczygieldev.ecommercebackend.domain.*
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.OrderNotFoundError
+import pl.szczygieldev.ecommercebackend.domain.error.ProductNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.*
 import pl.szczygieldev.shared.ddd.core.DomainEventHandler
 import java.math.BigDecimal
 
 @Component
-class OrderEventHandler(val ordersProjections: OrdersProjections, val paymentService: PaymentService) :
+class OrderEventHandler(
+    val ordersProjections: OrdersProjections,
+    val paymentService: PaymentService,
+    val products: Products
+) :
     DomainEventHandler<OrderEvent> {
     companion object {
         private val log = KotlinLogging.logger { }
@@ -27,6 +33,21 @@ class OrderEventHandler(val ordersProjections: OrdersProjections, val paymentSer
         when (domainEvent) {
             is OrderCreated -> {
                 val paymentDetails = domainEvent.paymentDetails
+
+                val orderItemsProjections = domainEvent.items.map { orderItem ->
+
+                    val productId = orderItem.productId
+                    val product = products.findById(productId) ?: raise(ProductNotFoundError.forId(productId))
+
+                    OrderProjection.OrderItemProjection(
+                        orderItem.productId,
+                        product.title,
+                        product.price,
+                        orderItem.quantity
+                    )
+
+                }.toList()
+
                 ordersProjections.save(
                     OrderProjection(
                         domainEvent.orderId,
@@ -41,7 +62,8 @@ class OrderEventHandler(val ordersProjections: OrdersProjections, val paymentSer
                             paymentDetails.url, emptyList()
                         ),
                         Delivery(domainEvent.deliveryProvider, DeliveryStatus.WAITING, null),
-                        domainEvent.occurredOn
+                        domainEvent.occurredOn,
+                        orderItemsProjections
                     )
                 )
             }

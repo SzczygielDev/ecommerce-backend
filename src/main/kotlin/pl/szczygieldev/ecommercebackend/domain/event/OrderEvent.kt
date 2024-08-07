@@ -12,9 +12,10 @@ class OrderCreated(
     val amount: BigDecimal,
     val paymentDetails: PaymentDetails,
     val deliveryProvider: DeliveryProvider,
+    val items : List<Order.OrderItem>
 ) : OrderEvent() {
     override fun toString(): String {
-        return "OrderCreated(id=$id occuredOn=$occurredOn orderId=$orderId)"
+        return "OrderCreated(id=$id occuredOn=$occurredOn orderId=$orderId cartId=$cartId amount=$amount paymentDetails=$paymentDetails deliveryProvider=$deliveryProvider items=$items)"
     }
 }
 

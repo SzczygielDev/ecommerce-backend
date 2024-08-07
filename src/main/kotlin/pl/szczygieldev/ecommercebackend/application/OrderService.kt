@@ -47,7 +47,8 @@ class OrderService(
                 paymentRegistration.url,
                 paymentServiceProvider
             ),
-            command.deliveryProvider
+            command.deliveryProvider,
+            cart.items.map { cartItem -> Order.OrderItem(cartItem.productId,cartItem.quantity) }
         )
 
         val orderVersion = order.version

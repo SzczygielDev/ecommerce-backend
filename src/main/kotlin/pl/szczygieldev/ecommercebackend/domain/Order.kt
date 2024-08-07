@@ -16,6 +16,9 @@ class Order private constructor(
     private lateinit var payment: Payment
     private lateinit var delivery: Delivery
     private lateinit var createdAt: Instant
+    private lateinit var items: List<OrderItem>
+
+    data class OrderItem(val productId: ProductId, val quantity: Int)
 
     companion object {
         fun create(
@@ -23,10 +26,10 @@ class Order private constructor(
             cartId: CartId,
             amount: BigDecimal,
             paymentDetails: PaymentDetails,
-            deliveryProvider: DeliveryProvider,
+            deliveryProvider: DeliveryProvider, items: List<OrderItem>
         ): Order {
             val order = Order(orderId)
-            order.raiseEvent(OrderCreated(orderId, cartId, amount, paymentDetails, deliveryProvider))
+            order.raiseEvent(OrderCreated(orderId, cartId, amount, paymentDetails, deliveryProvider, items))
             return order
         }
 
@@ -122,6 +125,7 @@ class Order private constructor(
             Payment(paymentDetails.id, paymentDetails.amount, paymentDetails.url, paymentDetails.paymentServiceProvider)
         delivery = Delivery(event.deliveryProvider, DeliveryStatus.WAITING, null)
         createdAt = event.occurredOn
+        items = event.items
     }
 
 
@@ -134,7 +138,7 @@ class Order private constructor(
     }
 
     private fun apply(event: OrderDeliveryStatusChanged) {
-        if(event.status != DeliveryStatus.WAITING){
+        if (event.status != DeliveryStatus.WAITING) {
             status = OrderStatus.SENT
         }
         delivery = delivery.copy(status = event.status)

@@ -17,7 +17,7 @@ class OrderPresenter {
                 paymentProjection.paymentServiceProvider,
                 paymentProjection.status,
                 paymentProjection.paymentURL
-                )
+            )
         val delivery = orderProjection.delivery
         val deliveryDto = DeliveryDto(delivery.deliveryProvider, delivery.status)
 
@@ -27,7 +27,15 @@ class OrderPresenter {
             orderProjection.status,
             paymentDto,
             deliveryDto,
-            orderProjection.createdAt
+            orderProjection.createdAt,
+            orderProjection.items.map { orderItemProjection ->
+                OrderDto.OrderItemDto(
+                    orderItemProjection.productId.id(),
+                    orderItemProjection.title.value,
+                    orderItemProjection.price.amount,
+                    orderItemProjection.quantity
+                )
+            }
         )
     }
 
@@ -55,7 +63,15 @@ class OrderPresenter {
             orderProjection.cartId.id(),
             orderProjection.status,
             paymentDto,
-            deliveryDto, orderProjection.createdAt
+            deliveryDto,
+            orderProjection.createdAt, orderProjection.items.map { orderItemProjection ->
+                OrderFullDto.OrderItemFullDto(
+                    orderItemProjection.productId.id(),
+                    orderItemProjection.title.value,
+                    orderItemProjection.price.amount,
+                    orderItemProjection.quantity
+                )
+            }
         )
     }
 }
