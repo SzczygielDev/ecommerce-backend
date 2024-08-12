@@ -47,7 +47,9 @@ class OrderPresenter {
                 paymentProjection.amount,
                 paymentProjection.amountPaid,
                 paymentProjection.paymentServiceProvider,
-                paymentProjection.status, paymentProjection.transactions.map { paymentTransaction ->
+                paymentProjection.status,
+                paymentProjection.paymentURL,
+                paymentProjection.transactions.map { paymentTransaction ->
                     PaymentFullDto.PaymentTransactionDto(
                         paymentTransaction.id.id,
                         paymentTransaction.amount,
