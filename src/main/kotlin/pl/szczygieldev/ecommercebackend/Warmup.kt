@@ -14,7 +14,7 @@ import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CreateProd
 class Warmup(val cartUseCase: CartUseCase, val productUseCase: ProductUseCase) {
 
     @EventListener(ApplicationReadyEvent::class)
-    fun initData() {
+    suspend fun initData() {
         cartUseCase.createCart(CreateCartCommand())
         productUseCase.create(CreateProductCommand("Produkt A", "Opis opis", 30.0))
         productUseCase.create(CreateProductCommand("Produkt B", "Testowy opis", 72.0))

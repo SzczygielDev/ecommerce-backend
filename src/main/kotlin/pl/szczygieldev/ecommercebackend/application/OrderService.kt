@@ -19,42 +19,18 @@ import java.net.URL
 
 @UseCase
 class OrderService(
-    val orders: Orders,
-    val cartProjections: CartsProjections,
-    val paymentService: PaymentService,
     val orderEventPublisher: DomainEventPublisher<OrderEvent>,
     val acceptOrderCommandHandler: AcceptOrderCommandHandler,
     val rejectOrderCommandHandler: RejectOrderCommandHandler,
     val cancelOrderCommandHandler: CancelOrderCommandHandler,
     val returnOrderCommandHandler: ReturnOrderCommandHandler,
+    val createOrderCommandHandler: CreateOrderCommandHandler,
+    val cartCreateCommandHandler: CartCreateCommandHandler
 ) : OrderUseCase {
-    private val paymentReturnUrlBase = "http://localhost:64427/paymentResult/"
+
     override suspend fun createOrder(command: CreateOrderCommand): Either<AppError, Unit> = either {
-        val cartId = command.cartId
-        val cart = cartProjections.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
-        val paymentServiceProvider = command.paymentServiceProvider
-
-        val orderId = orders.nextIdentity()
-        val paymentRegistration = paymentService.registerPayment(cart.amount, paymentServiceProvider, URL("$paymentReturnUrlBase${orderId.id()}"))
-
-        val order = Order.create(
-            orderId,
-            cart.cartId,
-            cart.amount,
-            PaymentDetails(
-                paymentRegistration.id,
-                cart.amount,
-                paymentRegistration.url,
-                paymentServiceProvider
-            ),
-            command.deliveryProvider,
-            cart.items.map { cartItem -> Order.OrderItem(cartItem.productId,cartItem.quantity) }
-        )
-
-        val orderVersion = order.version
-        val events = order.occurredEvents()
-        orders.save(order, orderVersion)
-        orderEventPublisher.publishBatch(events)
+        createOrderCommandHandler.execute(command).bind()
+        cartCreateCommandHandler.execute(CreateCartCommand())
     }
 
     override suspend fun acceptOrder(command: AcceptOrderCommand): Either<AppError, Unit> = either {

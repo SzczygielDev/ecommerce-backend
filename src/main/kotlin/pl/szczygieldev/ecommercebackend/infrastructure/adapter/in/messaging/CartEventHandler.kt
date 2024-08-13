@@ -47,7 +47,7 @@ class CartEventHandler(
                     cartsProjections.findById(domainEvent.cartId)?.copy(status = CartStatus.SUBMITTED)
                         ?: raise(CartNotFoundError.forId(domainEvent.cartId))
                 )
-                cartUseCase.createCart(CreateCartCommand())
+                 
                 orderUseCase.createOrder(
                     CreateOrderCommand(
                         domainEvent.cartId,
