@@ -18,7 +18,8 @@ import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 import java.math.BigDecimal
 
 @UseCase
-class ProductService(val products: Products, val productEventPublisher: DomainEventPublisher<ProductEvent>) : ProductUseCase {
+class ProductService(val products: Products, val productEventPublisher: DomainEventPublisher<ProductEvent>) :
+    ProductUseCase {
     override fun create(command: CreateProductCommand): Product {
         val product = Product.create(
             products.nextIdentity(),
@@ -41,7 +42,7 @@ class ProductService(val products: Products, val productEventPublisher: DomainEv
         product.description = command.description
         product.updatePrice(command.price)
 
-        products.save(product,version)
+        products.save(product, version)
         productEventPublisher.publishBatch(product.occurredEvents())
     }
 }
