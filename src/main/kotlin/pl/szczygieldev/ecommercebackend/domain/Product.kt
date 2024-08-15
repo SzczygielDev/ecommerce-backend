@@ -16,7 +16,7 @@ class Product private constructor(
     val price: ProductPrice get() = _price
 
     private var _priceChanges = mutableListOf<ProductPriceChange>()
-    val priceChanges get() = _priceChanges
+    val priceChanges get() = _priceChanges.toList()
 
     companion object {
         fun create(
