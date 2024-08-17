@@ -39,7 +39,6 @@ class CreateOrderCommandHandler(
         val order = Order.create(
             orderId,
             cart.cartId,
-            cart.amount,
             PaymentDetails(
                 paymentRegistration.id,
                 cart.amount,

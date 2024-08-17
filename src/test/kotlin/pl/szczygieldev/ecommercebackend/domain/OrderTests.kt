@@ -26,7 +26,6 @@ class OrderTests : BehaviorSpec({
         val order = Order.create(
             orderId,
             cartId,
-            orderAmount,
             PaymentDetails(
                 paymentId, orderAmount, URL("http://localhost:8080/"),
                 PaymentServiceProvider.MOCK_PSP

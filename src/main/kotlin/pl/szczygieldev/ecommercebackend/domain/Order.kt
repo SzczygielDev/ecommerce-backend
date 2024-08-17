@@ -24,12 +24,20 @@ class Order private constructor(
         fun create(
             orderId: OrderId,
             cartId: CartId,
-            amount: BigDecimal,
             paymentDetails: PaymentDetails,
             deliveryProvider: DeliveryProvider, items: List<OrderItem>
         ): Order {
             val order = Order(orderId)
-            order.raiseEvent(OrderCreated(orderId, cartId, amount, paymentDetails, deliveryProvider, items))
+            order.raiseEvent(
+                OrderCreated(
+                    orderId,
+                    cartId,
+                    paymentDetails.amount,
+                    paymentDetails,
+                    deliveryProvider,
+                    items
+                )
+            )
             return order
         }
 
