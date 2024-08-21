@@ -3,10 +3,20 @@ package pl.szczygieldev.ecommercebackend.domain
 import java.math.BigDecimal
 import java.net.URL
 
-class Payment(
+class Payment private constructor(
     val id: PaymentId, val amount: BigDecimal, val url: URL,
     val paymentServiceProvider: PaymentServiceProvider
 ) {
+    companion object {
+        fun create(
+            id: PaymentId, amount: BigDecimal, url: URL,
+            paymentServiceProvider: PaymentServiceProvider
+        ): Payment {
+            require(amount > BigDecimal.ZERO) { "Payment amount must be positive value, provided=$amount" }
+            return Payment(id, amount, url, paymentServiceProvider)
+        }
+    }
+
     private var _status: PaymentStatus = PaymentStatus.UNPAID
     val status: PaymentStatus
         get() = _status
