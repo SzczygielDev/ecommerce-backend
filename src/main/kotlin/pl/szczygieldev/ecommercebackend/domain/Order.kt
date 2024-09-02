@@ -5,18 +5,28 @@ import arrow.core.raise.either
 import pl.szczygieldev.ecommercebackend.domain.error.*
 import pl.szczygieldev.ecommercebackend.domain.event.*
 import pl.szczygieldev.shared.ddd.core.EventSourcedEntity
-import java.math.BigDecimal
 import java.time.Instant
 
 class Order private constructor(
     val orderId: OrderId
 ) : EventSourcedEntity<OrderEvent>() {
-    private var status: OrderStatus = OrderStatus.CREATED
-    private lateinit var cartId: CartId
-    private lateinit var payment: Payment
-    private lateinit var delivery: Delivery
-    private lateinit var createdAt: Instant
-    private lateinit var items: List<OrderItem>
+    private var _status: OrderStatus = OrderStatus.CREATED
+    val status: OrderStatus
+        get() = _status
+
+    private lateinit var _cartId: CartId
+
+    private lateinit var _payment: Payment
+    val payment: Payment
+        get() = _payment.copy()
+
+    private lateinit var _delivery: Delivery
+    val delivery: Delivery
+        get() = _delivery.copy()
+    private lateinit var _createdAt: Instant
+
+    private lateinit var _items: List<OrderItem>
+
 
     data class OrderItem(val productId: ProductId, val quantity: Int)
 
@@ -51,14 +61,14 @@ class Order private constructor(
     }
 
     fun accept(): Either<OrderError, Unit> = either {
-        if (status != OrderStatus.CREATED) {
+        if (_status != OrderStatus.CREATED) {
             raise(AlreadyAcceptedOrderError.forId(orderId))
         }
         raiseEvent(OrderAccepted(orderId))
     }
 
     fun reject(): Either<OrderError, Unit> = either {
-        if (status != OrderStatus.CREATED) {
+        if (_status != OrderStatus.CREATED) {
             raise(AlreadyAcceptedOrderError.forId(orderId))
         }
         raiseEvent(OrderRejected(orderId))
@@ -66,7 +76,7 @@ class Order private constructor(
 
 
     fun cancel(): Either<OrderError, Unit> = either {
-        if (status == OrderStatus.SENT) {
+        if (_status == OrderStatus.SENT) {
             raise(CannotCancelSentOrderError.forId(orderId))
         }
         raiseEvent(OrderCanceled(orderId))
@@ -74,17 +84,17 @@ class Order private constructor(
     }
 
     fun returnOrder(): Either<OrderError, Unit> = either {
-        if (delivery.status != DeliveryStatus.DELIVERED) {
+        if (_delivery.status != DeliveryStatus.DELIVERED) {
             raise(CannotReturnNotReceivedOrderError.forId(orderId))
         }
         //TODO
     }
 
     fun beginPacking(): Either<OrderError, Unit> = either {
-        if (status != OrderStatus.ACCEPTED) {
+        if (_status != OrderStatus.ACCEPTED) {
             raise(CannotPackageNotAcceptedOrderError.forId(orderId))
         }
-        if (!payment.isPaid) {
+        if (!_payment.isPaid) {
             raise(NotPaidOrderError.forId(orderId))
         }
         raiseEvent(OrderPackagingStarted(orderId))
@@ -94,7 +104,7 @@ class Order private constructor(
         parcelId: ParcelId,
         parcelDimensions: ParcelDimensions
     ): Either<OrderError, Unit> = either {
-        if (status != OrderStatus.IN_PROGRESS) {
+        if (_status != OrderStatus.IN_PROGRESS) {
             raise(PackingNotInProgressError.forId(orderId))
         }
         raiseEvent(OrderPackaged(orderId, parcelId, parcelDimensions))
@@ -129,54 +139,57 @@ class Order private constructor(
 
     private fun apply(event: OrderCreated) {
         val paymentDetails = event.paymentDetails
-        payment =
-            Payment(paymentDetails.id, paymentDetails.amount, paymentDetails.url, paymentDetails.paymentServiceProvider)
-        delivery = Delivery(event.deliveryProvider, DeliveryStatus.WAITING, null)
-        createdAt = event.occurredOn
-        items = event.items
+        _payment =
+            Payment.create(
+                paymentDetails.id,
+                paymentDetails.amount,
+                paymentDetails.url,
+                paymentDetails.paymentServiceProvider
+            )
+        _delivery = Delivery(event.deliveryProvider, DeliveryStatus.WAITING, null)
+        _createdAt = event.occurredOn
+        _items = event.items
     }
 
 
     private fun apply(event: OrderAccepted) {
-        status = OrderStatus.ACCEPTED
+        _status = OrderStatus.ACCEPTED
     }
 
     private fun apply(event: OrderCanceled) {
-        status = OrderStatus.CANCELLED
+        _status = OrderStatus.CANCELLED
     }
 
     private fun apply(event: OrderDeliveryStatusChanged) {
         if (event.status != DeliveryStatus.WAITING) {
-            status = OrderStatus.SENT
+            _status = OrderStatus.SENT
         }
-        delivery = delivery.copy(status = event.status)
+        _delivery = _delivery.copy(status = event.status)
     }
 
     private fun apply(event: OrderPackaged) {
-        status = OrderStatus.READY
+        _status = OrderStatus.READY
 
-        delivery =
-            delivery.copy(
+        _delivery =
+            _delivery.copy(
                 parcel = Parcel(event.parcelId, event.parcelDimensions)
             )
     }
 
     private fun apply(event: OrderPackagingStarted) {
-        status = OrderStatus.IN_PROGRESS
+        _status = OrderStatus.IN_PROGRESS
     }
 
     private fun apply(event: OrderPaymentReceived) {
-        payment.registerTransaction(event.paymentTransaction)
-        if (payment.isPaid) {
+        _payment.registerTransaction(event.paymentTransaction)
+        if (_payment.isPaid) {
             raiseEvent(OrderPaid(orderId))
         } else {
-            raiseEvent(OrderInvalidAmountPaid(orderId, payment.sumOfTransactions, payment.amount))
+            raiseEvent(OrderInvalidAmountPaid(orderId, _payment.sumOfTransactions, _payment.amount))
         }
     }
 
     private fun apply(event: OrderRejected) {
-        status = OrderStatus.REJECTED
+        _status = OrderStatus.REJECTED
     }
-
-
 }

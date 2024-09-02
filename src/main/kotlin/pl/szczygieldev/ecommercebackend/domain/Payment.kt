@@ -48,4 +48,11 @@ class Payment private constructor(
         }
     }
 
+    fun copy(): Payment {
+        val copy = create(id.copy(), amount, url, paymentServiceProvider)
+        transactions.forEach { paymentTransaction ->
+            copy.registerTransaction(paymentTransaction.copy())
+        }
+        return copy
+    }
 }
