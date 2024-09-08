@@ -1,5 +1,6 @@
 package pl.szczygieldev.ecommercebackend.usecase
 
+import arrow.core.raise.either
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -8,9 +9,7 @@ import io.mockk.*
 import pl.szczygieldev.ecommercebackend.application.CartService
 import pl.szczygieldev.ecommercebackend.application.handlers.CartCreateCommandHandler
 import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
-import pl.szczygieldev.ecommercebackend.application.port.`in`.command.AddItemToCartCommand
-import pl.szczygieldev.ecommercebackend.application.port.`in`.command.RemoveItemFromCartCommand
-import pl.szczygieldev.ecommercebackend.application.port.`in`.command.SubmitCartCommand
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.*
 import pl.szczygieldev.ecommercebackend.application.port.out.Carts
 import pl.szczygieldev.ecommercebackend.application.port.out.CommandResultStorage
 import pl.szczygieldev.ecommercebackend.application.port.out.Products
@@ -20,7 +19,6 @@ import pl.szczygieldev.ecommercebackend.domain.error.CartNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.error.ProductNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.CartEvent
 import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
-import pl.szczygieldev.shared.outbox.Outbox
 import java.math.BigDecimal
 import java.util.*
 
@@ -29,21 +27,22 @@ class CartUseCaseTests : FunSpec() {
     val cartsMock = mockk<Carts>()
     val eventPublisherMock = mockk<DomainEventPublisher<CartEvent>>()
     val commandResultStorage: CommandResultStorage = mockk<CommandResultStorage>()
+    val cartCreateCommandHandler = CartCreateCommandHandler(cartsMock, eventPublisherMock, commandResultStorage)
     val productUseCase: CartUseCase = CartService(
         cartsMock,
         productsMock,
         eventPublisherMock,
-        CartCreateCommandHandler(cartsMock, eventPublisherMock, commandResultStorage)
+        cartCreateCommandHandler
     )
 
     init {
         every { cartsMock.save(any(), any()) } just runs
         every { eventPublisherMock.publish(any()) } just runs
         every { eventPublisherMock.publishBatch(any()) } just runs
-        every { commandResultStorage.commandBegin(any()) } just awaits
-        every { commandResultStorage.commandSuccess(any()) } just awaits
-        every { commandResultStorage.commandFailed(any(), any<AppError>()) } just awaits
-        every { commandResultStorage.commandFailed(any(), any<List<AppError>>()) } just awaits
+        coEvery { commandResultStorage.commandBegin(any()) } returns either { }
+        coEvery { commandResultStorage.commandSuccess(any()) } returns either { }
+        coEvery { commandResultStorage.commandFailed(any(), any<AppError>()) } returns either { }
+        coEvery { commandResultStorage.commandFailed(any(), any<List<AppError>>()) } returns either { }
 
         test("Submitting cart should raise CartNotFoundError when cart not found") {
             //Arrange
@@ -170,6 +169,34 @@ class CartUseCaseTests : FunSpec() {
 
             //Assert
             verify { cart.removeItem(productId) }
+        }
+
+        context("CartCreateCommandHandler tests") {
+            test("Cart should be saved when no error occurred") {
+                //Arrange
+                val command = CreateCartCommand()
+                val cartId = CartId(UUID.randomUUID().toString())
+                every { cartsMock.nextIdentity() } returns cartId
+
+                //Act
+                cartCreateCommandHandler.execute(command)
+
+                //Assert
+                verify { cartsMock.save(any(), any()) }
+            }
+
+            test("Cart occurred events should be published when no error occurred"){
+                //Arrange
+                val command = CreateCartCommand()
+                val cartId = CartId(UUID.randomUUID().toString())
+                every { cartsMock.nextIdentity() } returns cartId
+
+                //Act
+                cartCreateCommandHandler.execute(command)
+
+                //Assert
+                verify { eventPublisherMock.publishBatch(any()) }
+            }
         }
     }
 }
