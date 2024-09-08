@@ -15,6 +15,8 @@ class Order private constructor(
         get() = _status
 
     private lateinit var _cartId: CartId
+    val cartId: CartId
+        get() = _cartId
 
     private lateinit var _payment: Payment
     val payment: Payment
@@ -26,7 +28,8 @@ class Order private constructor(
     private lateinit var _createdAt: Instant
 
     private lateinit var _items: List<OrderItem>
-
+    val items: List<OrderItem>
+        get() = _items.map { item -> item.copy() }.toList()
 
     data class OrderItem(val productId: ProductId, val quantity: Int)
 
@@ -139,6 +142,7 @@ class Order private constructor(
 
     private fun apply(event: OrderCreated) {
         val paymentDetails = event.paymentDetails
+        _cartId = event.cartId
         _payment =
             Payment.create(
                 paymentDetails.id,

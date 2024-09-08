@@ -23,7 +23,10 @@ class CreateOrderCommandHandler(
     val orderEventPublisher: DomainEventPublisher<OrderEvent>,
     commandResultStorage: CommandResultStorage
 ) : CommandHandler<CreateOrderCommand>(commandResultStorage) {
-    private val paymentReturnUrlBase = "http://localhost:64427/paymentResult/"
+    companion object {
+        val paymentReturnUrlBase = "http://localhost:64427/paymentResult/"
+    }
+
     override suspend fun processCommand(command: CreateOrderCommand): Either<AppError, Unit> = either {
         val cartId = command.cartId
         val cart = cartProjections.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
