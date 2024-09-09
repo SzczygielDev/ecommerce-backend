@@ -41,10 +41,13 @@ class OrderController(
     val orderPresenter: OrderPresenter
 ) {
     @GetMapping
-    fun getOrders(@RequestParam(required = false) orderId: UUID?,@RequestParam(required = false) cartId: UUID?): ResponseEntity<*> {
-        if(orderId!=null){
+    fun getOrders(
+        @RequestParam(required = false) orderId: UUID?,
+        @RequestParam(required = false) cartId: UUID?
+    ): ResponseEntity<*> {
+        if (orderId != null) {
             return getOrder(orderId)
-        }else if(cartId!=null){
+        } else if (cartId != null) {
             return getOrderByCartId(cartId)
         }
 
@@ -177,8 +180,9 @@ class OrderController(
         request: HttpServletRequest
     ): ResponseEntity<*> {
         return either<AppError, CommandResult> {
-            val commandId = CommandId(commandId.toString())
-            orderShippingUseCase.beginPacking(BeginOrderPackingCommand(commandId, OrderId(orderId.toString()))).bind()
+            val command = BeginOrderPackingCommand(OrderId(orderId.toString()))
+            val commandId = command.id
+            orderShippingUseCase.beginPacking(command).bind()
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
@@ -202,13 +206,13 @@ class OrderController(
         request: HttpServletRequest
     ): ResponseEntity<*> {
         return either<AppError, CommandResult> {
-            val commandId = CommandId(commandId.toString())
+            val command = CompleteOrderPackingCommand(
+                OrderId(orderId.toString()),
+                parcelDimensions
+            )
+            val commandId = command.id
             orderShippingUseCase.completePacking(
-                CompleteOrderPackingCommand(
-                    commandId,
-                    OrderId(orderId.toString()),
-                    parcelDimensions
-                )
+                command
             ).bind()
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
