@@ -1,4 +1,4 @@
-package pl.szczygieldev.ecommercebackend.usecase
+package pl.szczygieldev.ecommercebackend.application
 
 import arrow.core.raise.either
 import io.kotest.core.spec.style.FunSpec
@@ -6,7 +6,6 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
-import pl.szczygieldev.ecommercebackend.application.CartService
 import pl.szczygieldev.ecommercebackend.application.handlers.CartCreateCommandHandler
 import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.*
@@ -169,34 +168,6 @@ class CartUseCaseTests : FunSpec() {
 
             //Assert
             verify { cart.removeItem(productId) }
-        }
-
-        context("CartCreateCommandHandler tests") {
-            test("Cart should be saved when no error occurred") {
-                //Arrange
-                val command = CreateCartCommand()
-                val cartId = CartId(UUID.randomUUID().toString())
-                every { cartsMock.nextIdentity() } returns cartId
-
-                //Act
-                cartCreateCommandHandler.execute(command)
-
-                //Assert
-                verify { cartsMock.save(any(), any()) }
-            }
-
-            test("Cart occurred events should be published when no error occurred"){
-                //Arrange
-                val command = CreateCartCommand()
-                val cartId = CartId(UUID.randomUUID().toString())
-                every { cartsMock.nextIdentity() } returns cartId
-
-                //Act
-                cartCreateCommandHandler.execute(command)
-
-                //Assert
-                verify { eventPublisherMock.publishBatch(any()) }
-            }
         }
     }
 }

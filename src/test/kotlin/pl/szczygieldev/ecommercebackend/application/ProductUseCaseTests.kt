@@ -1,4 +1,4 @@
-package pl.szczygieldev.ecommercebackend.usecase
+package pl.szczygieldev.ecommercebackend.application
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.equals.shouldBeEqual
@@ -6,7 +6,6 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
-import pl.szczygieldev.ecommercebackend.application.ProductService
 import pl.szczygieldev.ecommercebackend.application.port.`in`.ProductUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CreateProductCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.UpdateProductCommand
