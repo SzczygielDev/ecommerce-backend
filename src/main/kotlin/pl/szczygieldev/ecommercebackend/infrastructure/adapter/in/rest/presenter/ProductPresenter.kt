@@ -3,6 +3,7 @@ package pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presen
 import org.springframework.stereotype.Component
 import pl.szczygieldev.ecommercebackend.domain.Product
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.ProductDto
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.ProductFullDto
 
 @Component
 class ProductPresenter {
@@ -12,6 +13,22 @@ class ProductPresenter {
             product.title.value,
             product.description.content,
             product.price.amount
+
+        )
+    }
+
+    fun toFullDto(product: Product): ProductFullDto {
+        return ProductFullDto(
+            product.productId.id(),
+            product.title.value,
+            product.description.content,
+            product.price.amount, product.priceChanges.map { priceChange ->
+                ProductFullDto.ProductPriceChangeDto(
+                    priceChange.newPrice.amount,
+                    priceChange.timestamp
+                )
+            }
+
         )
     }
 }

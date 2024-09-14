@@ -10,5 +10,7 @@ interface Products {
 
     fun findAll(): List<Product>
 
-    fun save(product: Product)
+    fun save(product: Product, version: Int): Product
+
+    fun delete(productId: ProductId): Product?
 }

@@ -1,3 +1,6 @@
 package pl.szczygieldev.ecommercebackend.application.port.`in`.command
 
-data class SubmitCartCommand(val cartId: String)
+import pl.szczygieldev.ecommercebackend.domain.DeliveryProvider
+import pl.szczygieldev.ecommercebackend.domain.PaymentServiceProvider
+
+data class SubmitCartCommand(val cartId: String, val deliveryProvider: DeliveryProvider, val paymentServiceProvider: PaymentServiceProvider)

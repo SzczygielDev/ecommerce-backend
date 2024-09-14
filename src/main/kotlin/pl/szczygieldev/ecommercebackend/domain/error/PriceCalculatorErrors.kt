@@ -2,9 +2,9 @@ package pl.szczygieldev.ecommercebackend.domain.error
 
 import pl.szczygieldev.ecommercebackend.domain.ProductId
 
-sealed interface PriceCalculatorError : AppError
-data class UnableToCalculateCartTotalError(val message: String) : PriceCalculatorError
-data class MissingProductForCalculateError(val message: String, val productId: ProductId) : PriceCalculatorError {
+sealed class PriceCalculatorError(message: String) : AppError(message)
+data class UnableToCalculateCartTotalError(override val message: String) : PriceCalculatorError(message)
+data class MissingProductForCalculateError(override val message: String, val productId: ProductId) : PriceCalculatorError(message) {
     companion object {
         fun forProduct(productId: ProductId): MissingProductForCalculateError =
             MissingProductForCalculateError(

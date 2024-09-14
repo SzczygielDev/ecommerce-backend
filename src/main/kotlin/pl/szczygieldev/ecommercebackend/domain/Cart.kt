@@ -23,6 +23,7 @@ class Cart private constructor(val cartId: CartId) : EventSourcedEntity<CartEven
         fun fromEvents(cartId: CartId, events: List<CartEvent>): Cart {
             val cart = Cart(cartId)
             cart.applyAll(events)
+            cart.clearOccurredEvents()
             return cart
         }
     }
@@ -44,11 +45,11 @@ class Cart private constructor(val cartId: CartId) : EventSourcedEntity<CartEven
         raiseEvent(ItemRemovedFromCart(productId, cartId))
     }
 
-    fun submit(): Either<CartError, Unit> = either {
+    fun submit(deliveryProvider: DeliveryProvider, paymentServiceProvider: PaymentServiceProvider): Either<CartError, Unit> = either {
         if (status == CartStatus.SUBMITTED) {
             raise(CartAlreadySubmittedError.forId(cartId))
         }
-        raiseEvent(CartSubmitted(cartId))
+        raiseEvent(CartSubmitted(cartId,paymentServiceProvider,deliveryProvider))
     }
 
     //region Event sourcing handlers

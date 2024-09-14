@@ -1,3 +1,5 @@
 package pl.szczygieldev.ecommercebackend.domain
 
-data class OrderId (val id: String)
+import pl.szczygieldev.shared.ddd.core.Identity
+
+data class OrderId (val id: String) : Identity<OrderId>(id)

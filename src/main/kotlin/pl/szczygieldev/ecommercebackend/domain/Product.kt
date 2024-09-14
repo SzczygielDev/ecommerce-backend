@@ -2,19 +2,21 @@ package pl.szczygieldev.ecommercebackend.domain
 
 import pl.szczygieldev.ecommercebackend.domain.event.ProductCreated
 import pl.szczygieldev.ecommercebackend.domain.event.ProductEvent
+import pl.szczygieldev.ecommercebackend.domain.event.ProductPriceUpdated
+import pl.szczygieldev.shared.ddd.core.EventSourcedEntity
 import java.math.BigDecimal
 
 class Product private constructor(
     val productId: ProductId,
     var title: ProductTitle,
     var description: ProductDescription,
-    var price: ProductPrice
-) {
-    private val events = mutableListOf<ProductEvent>()
+    val basePrice: ProductPrice
+) : EventSourcedEntity<ProductEvent>() {
+    private var _price: ProductPrice = basePrice
+    val price: ProductPrice get() = _price
 
-    private fun addEvent(event: ProductEvent) {
-        events.add(event)
-    }
+    private var _priceChanges = mutableListOf<ProductPriceChange>()
+    val priceChanges get() = _priceChanges.toList()
 
     companion object {
         fun create(
@@ -24,9 +26,41 @@ class Product private constructor(
             price: ProductPrice
         ): Product {
             require(price.amount > BigDecimal.ZERO) { "Product price must be positive value, provided='$price'" }
-            return Product(productId, title, description, price).also {
-                it.addEvent(ProductCreated())
-            }
+            val product = Product(productId, title, description, price)
+            product.raiseEvent(ProductCreated(productId, title, description, price))
+            return product
         }
+
+        fun fromSnapshot(
+            productId: ProductId,
+            title: ProductTitle,
+            description: ProductDescription,
+            price: ProductPrice
+        ): Product {
+            return Product(productId, title, description, price)
+        }
+    }
+
+    fun applyEvents(events: List<ProductEvent>) {
+        applyAll(events)
+        clearOccurredEvents()
+    }
+
+    fun updatePrice(newPrice: ProductPrice) {
+        if (newPrice != price) {
+            raiseEvent(ProductPriceUpdated(productId, newPrice))
+        }
+    }
+
+    override fun applyEvent(event: ProductEvent) {
+        when (event) {
+            is ProductCreated -> {}
+            is ProductPriceUpdated -> apply(event)
+        }
+    }
+
+    private fun apply(event: ProductPriceUpdated) {
+        _price = event.newPrice
+        _priceChanges.add(ProductPriceChange(event.newPrice, event.occurredOn))
     }
 }
