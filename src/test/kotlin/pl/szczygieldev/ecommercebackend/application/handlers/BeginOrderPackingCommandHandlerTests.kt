@@ -7,6 +7,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
+import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandId
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.BeginOrderPackingCommand
 import pl.szczygieldev.ecommercebackend.application.port.out.CommandResultStorage
 import pl.szczygieldev.ecommercebackend.application.port.out.Orders
@@ -66,7 +67,7 @@ class BeginOrderPackingCommandHandlerTests : FunSpec() {
             PaymentTransaction(PaymentTransactionId(UUID.randomUUID().toString()), amount, Instant.now())
         order.pay(paymentTransaction)
 
-        val command = BeginOrderPackingCommand(orderId)
+        val command = BeginOrderPackingCommand(CommandId(),orderId)
 
         test("OrderNotFoundError should be raised when order not found") {
             //Arrange

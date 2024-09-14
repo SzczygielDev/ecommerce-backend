@@ -11,6 +11,7 @@ import pl.szczygieldev.ecommercebackend.application.model.PaymentProjection
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.ProcessPaymentCommand
 import pl.szczygieldev.ecommercebackend.application.port.out.Orders
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
+import pl.szczygieldev.ecommercebackend.application.port.out.PaymentService
 import pl.szczygieldev.ecommercebackend.domain.*
 import pl.szczygieldev.ecommercebackend.domain.error.OrderNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.OrderEvent
@@ -24,8 +25,8 @@ class OrderPaymentUseCaseTests : FunSpec() {
     val ordersMock = mockk<Orders>()
     val ordersProjections = mockk<OrdersProjections>()
     val orderEventPublisherMock = mockk<DomainEventPublisher<OrderEvent>>()
-
-    val orderPaymentService = OrderPaymentService(ordersProjections, ordersMock, orderEventPublisherMock)
+    val paymentServiceMock = mockk<PaymentService>()
+    val orderPaymentService = OrderPaymentService(ordersProjections, ordersMock, orderEventPublisherMock,paymentServiceMock)
 
     init {
         isolationMode = IsolationMode.InstancePerLeaf
@@ -83,6 +84,7 @@ class OrderPaymentUseCaseTests : FunSpec() {
         val orderSlot = slot<Order>()
         every { ordersMock.save(capture(orderSlot), any()) } just runs
         every { orderEventPublisherMock.publishBatch(any()) } just runs
+        every { paymentServiceMock.verifyPayment(paymentId) } just runs
 
         test("OrderNotFoundError should be raised when OrderProjection for provided payment id was not found") {
             //Arrange
@@ -125,6 +127,19 @@ class OrderPaymentUseCaseTests : FunSpec() {
 
             //Assert
             verify { order.pay(paymentTransaction) }
+        }
+
+        test("Payment verification should be called"){
+            //Arrange
+            every { ordersProjections.findByPaymentId(paymentId) } returns orderProjection
+            every { ordersMock.findById(orderId) } returns order
+            val command = ProcessPaymentCommand(paymentId, paymentTransaction)
+
+            //Act
+            orderPaymentService.pay(command)
+
+            //Assert
+            verify { paymentServiceMock.verifyPayment(paymentId) }
         }
 
         test("Order should be saved when no error occurred") {

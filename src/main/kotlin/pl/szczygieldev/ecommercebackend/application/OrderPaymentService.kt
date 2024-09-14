@@ -6,6 +6,7 @@ import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderPaymentUseCas
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.ProcessPaymentCommand
 import pl.szczygieldev.ecommercebackend.application.port.out.Orders
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
+import pl.szczygieldev.ecommercebackend.application.port.out.PaymentService
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.OrderNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.OrderEvent
@@ -17,6 +18,7 @@ class OrderPaymentService(
     val ordersProjections: OrdersProjections,
     val orders: Orders,
     val orderEventPublisher: DomainEventPublisher<OrderEvent>,
+    val paymentService: PaymentService,
 ) : OrderPaymentUseCase {
     override fun pay(command: ProcessPaymentCommand): Either<AppError, Unit> = either {
         val paymentId = command.paymentId
@@ -28,6 +30,8 @@ class OrderPaymentService(
 
         val orderVersion = order.version
         order.pay(paymentTransaction)
+
+        paymentService.verifyPayment(orderProjection.paymentProjection.paymentId)
 
         val events = order.occurredEvents()
         orders.save(order, orderVersion)

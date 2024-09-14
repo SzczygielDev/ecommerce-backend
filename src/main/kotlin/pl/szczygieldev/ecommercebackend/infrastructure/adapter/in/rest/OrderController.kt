@@ -180,7 +180,7 @@ class OrderController(
         request: HttpServletRequest
     ): ResponseEntity<*> {
         return either<AppError, CommandResult> {
-            val command = BeginOrderPackingCommand(OrderId(orderId.toString()))
+            val command = BeginOrderPackingCommand( CommandId(commandId.toString()),OrderId(orderId.toString()))
             val commandId = command.id
             orderShippingUseCase.beginPacking(command).bind()
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
@@ -207,6 +207,7 @@ class OrderController(
     ): ResponseEntity<*> {
         return either<AppError, CommandResult> {
             val command = CompleteOrderPackingCommand(
+                CommandId(commandId.toString()),
                 OrderId(orderId.toString()),
                 parcelDimensions
             )

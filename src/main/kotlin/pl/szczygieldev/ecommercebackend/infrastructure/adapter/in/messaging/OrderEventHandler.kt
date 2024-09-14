@@ -20,7 +20,6 @@ import java.math.BigDecimal
 @Component
 class OrderEventHandler(
     val ordersProjections: OrdersProjections,
-    val paymentService: PaymentService,
     val products: Products
 ) :
     DomainEventHandler<OrderEvent> {
@@ -134,7 +133,6 @@ class OrderEventHandler(
             is OrderPaid -> {
                 val orderId = domainEvent.orderId
                 val foundOrder = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
-                paymentService.verifyPayment(foundOrder.paymentProjection.paymentId)
                 ordersProjections.save(foundOrder.copy(paymentProjection = foundOrder.paymentProjection.copy(status = PaymentStatus.PAID)))
             }
 

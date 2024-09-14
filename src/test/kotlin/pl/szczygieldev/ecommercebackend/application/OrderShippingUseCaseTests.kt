@@ -7,6 +7,7 @@ import io.mockk.*
 import pl.szczygieldev.ecommercebackend.application.handlers.BeginOrderPackingCommandHandler
 import pl.szczygieldev.ecommercebackend.application.handlers.ChangeOrderDeliveryStatusCommandHandler
 import pl.szczygieldev.ecommercebackend.application.handlers.CompleteOrderPackingCommandHandler
+import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandId
 import pl.szczygieldev.ecommercebackend.application.model.OrderProjection
 import pl.szczygieldev.ecommercebackend.application.model.PaymentProjection
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.BeginOrderPackingCommand
@@ -130,7 +131,7 @@ class OrderShippingUseCaseTests : FunSpec() {
         test("Order packing begin should call BeginOrderPackingCommandHandler") {
             //Arrange
             every { ordersMock.findById(orderId) } returns order
-            val command = BeginOrderPackingCommand(orderId)
+            val command = BeginOrderPackingCommand(CommandId(),orderId)
 
             //Act
             orderShippingUseCase.beginPacking(command)
@@ -144,7 +145,7 @@ class OrderShippingUseCaseTests : FunSpec() {
             every { ordersMock.findById(orderId) } returns order
             every { orderProjections.findById(orderId) } returns orderProjection
             every { shippingService.registerParcel(any(), any()) } returns parcelId
-            val command = CompleteOrderPackingCommand(orderId, dimensions)
+            val command = CompleteOrderPackingCommand(CommandId(),orderId, dimensions)
             order.beginPacking()
 
             //Act

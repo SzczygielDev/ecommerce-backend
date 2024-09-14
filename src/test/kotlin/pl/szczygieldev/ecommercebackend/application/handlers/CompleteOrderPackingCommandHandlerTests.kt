@@ -7,6 +7,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
+import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandId
 import pl.szczygieldev.ecommercebackend.application.model.OrderProjection
 import pl.szczygieldev.ecommercebackend.application.model.PaymentProjection
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CompleteOrderPackingCommand
@@ -111,7 +112,7 @@ class CompleteOrderPackingCommandHandlerTests : FunSpec() {
             )
         )
 
-        val command = CompleteOrderPackingCommand(orderId, dimensions)
+        val command = CompleteOrderPackingCommand(CommandId(),orderId, dimensions)
         order.beginPacking()
 
         test("OrderNotFoundError should be raised when order was not found") {
