@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity
 import pl.szczygieldev.ecommercebackend.domain.error.*
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.CommandAlreadyProcessingError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.CommandNotFoundError
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.ImageUploadError
 
 internal fun mapToError(error: AppError): ResponseEntity<*> {
     return when (error) {
@@ -60,6 +61,8 @@ internal fun mapToError(error: AppError): ResponseEntity<*> {
                 .body(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.message))
             is CommandAlreadyProcessingError -> ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, error.message))
+            is ImageUploadError -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, error.message))
             else -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, error.message))
         }

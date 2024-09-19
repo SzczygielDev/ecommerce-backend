@@ -44,6 +44,7 @@ dependencies {
 	testImplementation("io.mockk:mockk:1.13.11")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
 	runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.9.0-RC")
+	implementation("io.minio:minio:8.5.12")
 }
 
 tasks.withType<KotlinCompile> {
