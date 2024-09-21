@@ -4,8 +4,10 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.minio.*
 import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Repository
+import org.springframework.web.multipart.MultipartFile
 import pl.szczygieldev.ecommercebackend.domain.ImageId
-import java.io.InputStream
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.persistence.model.ImageMetadata
+import java.time.Instant
 import java.util.UUID
 
 @Repository
@@ -13,6 +15,8 @@ class ImageRepository {
     companion object {
         private val log = KotlinLogging.logger { }
     }
+
+    private val db = mutableMapOf<String, ImageMetadata>()
 
     private val storageUrl = "http://localhost:8333"
     private val imageBucketName = "images"
@@ -43,32 +47,23 @@ class ImageRepository {
         }
     }
 
-    fun uploadImage(input: InputStream, size: Long): ImageId? {
+    fun uploadImage(file: MultipartFile, mediaType: String): ImageId? {
         val imageId = ImageId(UUID.randomUUID().toString())
+        db[imageId.id()] = ImageMetadata(imageId, mediaType, file.size, Instant.now())
+
         try {
             minioClient.putObject(
                 PutObjectArgs.builder()
+                    .contentType(mediaType)
                     .bucket(imageBucketName)
-                    .`object`(imageId.id)
-                    .stream(input, size, -1)
+                    .`object`(imageId.id())
+                    .stream(file.inputStream, file.size, -1)
                     .build()
             )
         } catch (e: Exception) {
             log.error { e }
             return null
         }
-        return imageId;
-    }
-
-    fun getImage(id: ImageId): ByteArray? {
-        try {
-            val response =
-                minioClient.getObject(GetObjectArgs.builder().bucket(imageBucketName).`object`(id.id).build())
-                    ?: return null
-            return response.readAllBytes()
-        } catch (e: Exception) {
-            log.error { "Error while fetching image id='${id.id}' error='$e'" }
-            return null
-        }
+        return imageId
     }
 }

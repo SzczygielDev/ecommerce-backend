@@ -1,1 +1,50 @@
 services:
+  master:
+    image: chrislusf/seaweedfs:dev
+    ports:
+      - 9333:9333
+      - 19333:19333
+    command: "master -ip=master"
+  volume:
+    image: chrislusf/seaweedfs:dev
+    ports:
+      - 18080:18080
+    command: 'volume -mserver="master:9333" -port=18080 -ip=volume'
+    depends_on:
+      - master
+  filer:
+    image: chrislusf/seaweedfs:dev
+    ports:
+      - 8888:8888
+      - 18888:18888
+    command: 'filer -master="master:9333" -ip.bind=0.0.0.0'
+    depends_on:
+      - master
+      - volume
+  s3:
+    image: chrislusf/seaweedfs:dev
+    ports:
+      - 8333:8333
+    command: 's3 -filer="filer:8888" -ip.bind=0.0.0.0'
+    depends_on:
+      - master
+      - volume
+      - filer
+  s3-proxy:
+    image: "nginxinc/nginx-s3-gateway"
+    ports:
+      - 8334:80
+    environment:
+      - ALLOW_DIRECTORY_LIST=false
+      - AWS_SIGS_VERSION=4
+      - AWS_ACCESS_KEY_ID=accesskey
+      - AWS_SECRET_ACCESS_KEY=secretkey
+      - S3_BUCKET_NAME=images
+      - S3_REGION=us-east-1
+      - S3_SERVER_PORT=8333
+      - S3_SERVER_PROTO=http
+      - S3_SERVER=host.docker.internal
+      - S3_STYLE=path
+      - S3_SERVICE=s3
+    depends_on:
+      - s3
