@@ -4,9 +4,9 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.minio.*
 import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Repository
-import org.springframework.web.multipart.MultipartFile
 import pl.szczygieldev.ecommercebackend.domain.ImageId
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.persistence.model.ImageMetadata
+import java.io.InputStream
 import java.time.Instant
 import java.util.UUID
 
@@ -47,9 +47,9 @@ class ImageRepository {
         }
     }
 
-    fun uploadImage(file: MultipartFile, mediaType: String): ImageId? {
+    fun uploadImage(inputStream: InputStream, size: Long, mediaType: String): ImageId? {
         val imageId = ImageId(UUID.randomUUID().toString())
-        db[imageId.id()] = ImageMetadata(imageId, mediaType, file.size, Instant.now())
+        db[imageId.id()] = ImageMetadata(imageId, mediaType, size, Instant.now())
 
         try {
             minioClient.putObject(
@@ -57,7 +57,7 @@ class ImageRepository {
                     .contentType(mediaType)
                     .bucket(imageBucketName)
                     .`object`(imageId.id())
-                    .stream(file.inputStream, file.size, -1)
+                    .stream(inputStream, size, -1)
                     .build()
             )
         } catch (e: Exception) {

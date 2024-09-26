@@ -17,6 +17,7 @@ data class OrderDto(
         val productId: String,
         var title: String,
         val price: BigDecimal,
-        val quantity: Int
+        val quantity: Int,
+        val imageId: String
     )
 }

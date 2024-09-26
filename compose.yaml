@@ -46,5 +46,7 @@ services:
       - S3_SERVER=host.docker.internal
       - S3_STYLE=path
       - S3_SERVICE=s3
+      - CORS_ENABLED=true
+      - CORS_ALLOWED_ORIGIN=http://localhost:64427
     depends_on:
       - s3

@@ -100,6 +100,7 @@ class OrderShippingUseCaseTests : FunSpec() {
 
         val dimensions = ParcelDimensions(10.0, 25.0, 30.0, 5.0)
         val parcelId = ParcelId(UUID.randomUUID().toString())
+        val imageId = ImageId(UUID.randomUUID().toString())
 
         val orderProjection = OrderProjection(
             orderId,
@@ -123,7 +124,7 @@ class OrderShippingUseCaseTests : FunSpec() {
                     ),
                     ProductTitle(""),
                     ProductPrice(amount),
-                    1
+                    1, imageId
                 )
             )
         )

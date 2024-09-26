@@ -33,7 +33,8 @@ class OrderPresenter {
                     orderItemProjection.productId.id(),
                     orderItemProjection.title.value,
                     orderItemProjection.price.amount,
-                    orderItemProjection.quantity
+                    orderItemProjection.quantity,
+                    orderItemProjection.imageId.id()
                 )
             }
         )
@@ -71,7 +72,8 @@ class OrderPresenter {
                     orderItemProjection.productId.id(),
                     orderItemProjection.title.value,
                     orderItemProjection.price.amount,
-                    orderItemProjection.quantity
+                    orderItemProjection.quantity,
+                    orderItemProjection.imageId.id()
                 )
             }
         )

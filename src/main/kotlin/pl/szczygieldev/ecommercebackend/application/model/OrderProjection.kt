@@ -19,6 +19,7 @@ data class OrderProjection(
         val productId: ProductId,
         var title: ProductTitle,
         val price: ProductPrice,
-        val quantity: Int
+        val quantity: Int,
+        val imageId: ImageId
     )
 }

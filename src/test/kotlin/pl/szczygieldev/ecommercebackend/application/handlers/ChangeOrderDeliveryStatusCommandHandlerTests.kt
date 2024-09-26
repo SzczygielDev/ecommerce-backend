@@ -78,6 +78,7 @@ class ChangeOrderDeliveryStatusCommandHandlerTests : FunSpec() {
 
 
         val parcelId = ParcelId(UUID.randomUUID().toString())
+        val imageId = ImageId(UUID.randomUUID().toString())
 
         val orderProjection = OrderProjection(
             orderId,
@@ -101,7 +102,7 @@ class ChangeOrderDeliveryStatusCommandHandlerTests : FunSpec() {
                     ),
                     ProductTitle(""),
                     ProductPrice(amount),
-                    1
+                    1, imageId
                 )
             )
         )

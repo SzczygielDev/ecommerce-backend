@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component
 import pl.szczygieldev.ecommercebackend.application.model.OrderProjection
 import pl.szczygieldev.ecommercebackend.application.model.PaymentProjection
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
-import pl.szczygieldev.ecommercebackend.application.port.out.PaymentService
 import pl.szczygieldev.ecommercebackend.application.port.out.Products
 import pl.szczygieldev.ecommercebackend.domain.*
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
@@ -42,7 +41,8 @@ class OrderEventHandler(
                         orderItem.productId,
                         product.title,
                         product.price,
-                        orderItem.quantity
+                        orderItem.quantity,
+                        product.imageId
                     )
 
                 }.toList()

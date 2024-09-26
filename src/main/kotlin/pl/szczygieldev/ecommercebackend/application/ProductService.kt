@@ -6,10 +6,7 @@ import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CreateProd
 import pl.szczygieldev.ecommercebackend.application.port.`in`.ProductUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.UpdateProductCommand
 import pl.szczygieldev.ecommercebackend.application.port.out.Products
-import pl.szczygieldev.ecommercebackend.domain.Product
-import pl.szczygieldev.ecommercebackend.domain.ProductDescription
-import pl.szczygieldev.ecommercebackend.domain.ProductPrice
-import pl.szczygieldev.ecommercebackend.domain.ProductTitle
+import pl.szczygieldev.ecommercebackend.domain.*
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.ProductNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.ProductEvent
@@ -25,7 +22,8 @@ class ProductService(val products: Products, val productEventPublisher: DomainEv
             products.nextIdentity(),
             ProductTitle(command.title),
             ProductDescription(command.description),
-            ProductPrice(BigDecimal.valueOf(command.price))
+            ProductPrice(BigDecimal.valueOf(command.price)),
+            command.imageId
         )
 
         products.save(product, product.version)
@@ -41,6 +39,7 @@ class ProductService(val products: Products, val productEventPublisher: DomainEv
         product.title = command.title
         product.description = command.description
         product.updatePrice(command.price)
+        product.imageId = command.imageId
 
         products.save(product, version)
         productEventPublisher.publishBatch(product.occurredEvents())

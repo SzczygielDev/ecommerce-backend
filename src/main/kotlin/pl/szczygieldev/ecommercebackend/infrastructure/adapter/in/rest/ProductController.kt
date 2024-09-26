@@ -43,7 +43,8 @@ class ProductController(
                     CreateProductCommand(
                         request.title,
                         request.description,
-                        request.price
+                        request.price,
+                        ImageId(request.imageId)
                     )
                 )
             )
@@ -67,7 +68,8 @@ class ProductController(
                     productId,
                     ProductTitle(request.title),
                     ProductDescription(request.description),
-                    ProductPrice(request.price)
+                    ProductPrice(request.price),
+                    ImageId(request.imageId)
                 )
             )
             products.findById(productId) ?: raise(ProductNotFoundError(productId.id))

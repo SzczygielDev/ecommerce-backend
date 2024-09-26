@@ -21,11 +21,11 @@ class ImageController(val imageRepository: ImageRepository) {
         return either {
             val mediaType = MediaTypeFactory.getMediaType(file.resource).getOrNull()
                 ?: raise(ImageUploadError.mediaTypeNotFound())
-            if (mediaType != MediaType.IMAGE_JPEG && mediaType != MediaType.IMAGE_PNG){
+            if (mediaType != MediaType.IMAGE_JPEG && mediaType != MediaType.IMAGE_PNG) {
                 raise(ImageUploadError.mediaTypeNotSupported())
             }
 
-            val extension = if (mediaType == MediaType.IMAGE_JPEG) {
+            val mediaTypeValue = if (mediaType == MediaType.IMAGE_JPEG) {
                 MediaType.IMAGE_JPEG_VALUE
             } else if (mediaType == MediaType.IMAGE_PNG) {
                 MediaType.IMAGE_PNG_VALUE
@@ -34,7 +34,7 @@ class ImageController(val imageRepository: ImageRepository) {
             }
 
             val uploadDetails = imageRepository.uploadImage(
-                file, extension
+                file.inputStream, file.size, mediaTypeValue
             ) ?: raise(ImageUploadError.storageError())
 
             uploadDetails

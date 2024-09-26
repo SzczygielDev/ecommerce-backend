@@ -41,6 +41,7 @@ class OrderPaymentUseCaseTests : FunSpec() {
         val cartId = CartId(UUID.randomUUID().toString())
 
         val paymentUrl = URL("http://localhost:3000/")
+        val imageId = ImageId(UUID.randomUUID().toString())
 
         val order = Order.create(
             orderId,
@@ -74,7 +75,7 @@ class OrderPaymentUseCaseTests : FunSpec() {
                     ),
                     ProductTitle(""),
                     ProductPrice(amount),
-                    1
+                    1, imageId
                 )
             )
         )
