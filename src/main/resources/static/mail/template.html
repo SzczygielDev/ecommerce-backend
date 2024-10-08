@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" style="color-scheme: light dark;">
+<head>
+  <meta charset="utf-8">
+  <meta name="x-apple-disable-message-reformatting">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="format-detection" content="telephone=no, date=no, address=no, email=no, url=no">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings xmlns:o="urn:schemas-microsoft-com:office:office">
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <style>
+    td,th,div,p,a,h1,h2,h3,h4,h5,h6 {font-family: "Segoe UI", sans-serif; mso-line-height-rule: exactly;}
+  </style>
+  <![endif]-->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700&display=swap" rel="stylesheet" media="screen">
+  <style>
+    .purchase_heading p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 24px;
+      color: #85878E;
+    }
+    .body-sub {
+      margin-top: 25px;
+      border-top-width: 1px;
+      padding-top: 25px;
+      border-top-color: #EAEAEC;
+      border-top-style: solid;
+    }
+    @media (prefers-color-scheme: dark) {
+      body,
+      .email-body,
+      .email-body_inner,
+      .email-content,
+      .email-wrapper,
+      .email-masthead,
+      .email-footer {
+        background-color: #333333 !important;
+        color: #fff !important;
+      }
+      p,
+      ul,
+      ol,
+      blockquote,
+      h1,
+      h2,
+      h3 {
+        color: #fff !important;
+      }
+      .email-masthead_name {
+        text-shadow: none !important;
+      }
+    }
+    :root {
+      color-scheme: light dark;
+    }
+    @media (max-width: 600px) {
+      .sm-w-full {
+        width: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body style="margin: 0; width: 100%; padding: 0; -webkit-font-smoothing: antialiased; word-break: break-word">
+<div role="article" aria-roledescription="email" aria-label lang="en">
+  <table class="email-wrapper" style="width: 100%; font-family: 'Nunito Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" cellpadding="0" cellspacing="0" role="none">
+    <tr>
+      <td align="center">
+        <table class="email-content" style="width: 100%" cellpadding="0" cellspacing="0" role="none">
+          <tr>
+            <td align="center" class="email-masthead" style="padding-top: 25px; padding-bottom: 25px; text-align: center; font-size: 16px">
+              <a href="http://localhost:64427/" class="email-masthead_name" style="font-size: 16px; font-weight: 700; color: #A8AAAF; text-decoration: none; text-shadow: 0 1px 0 #FFF">
+                <img src="http://localhost:8080/images/logo.png" style="width: 20%" alt="">
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td class="email-body" style="width: 100%; background-color: #fff">
+              <table align="center" class="email-body_inner sm-w-full" style="margin-left: auto; margin-right: auto; width: 570px; background-color: #fff" cellpadding="0" cellspacing="0" role="none">
+                <tr>
+                  <td style="padding: 45px">
+                    <div style="font-size: 16px;">
+                      <h1 style="margin-top: 0; text-align: left; font-size: 24px; font-weight: 700; color: #333333">
+                        Cześć {{name}},
+                      </h1>
+                      <p style="margin-bottom: 5px; margin-top: 6px; font-size: 16px; line-height: 24px; color: #51545E">
+                        Przyjęliśmy Twoje zamówienie. O zmianach statusu
+                        będziemy informować w kolejnych mailach.
+                      </p>
+                      <table style="width: 100%; padding-top: 35px; padding-bottom: 35px" cellpadding="0" cellspacing="0" role="none">
+                        <tr>
+                          <td>
+                            <h3 align="left" style="margin-top: 0; text-align: left; font-size: 14px; font-weight: 700; color: #333333">
+                              Zamówienie {{orderId}}
+                            </h3>
+                          </td>
+                          <td>
+                            <h3 align="right" style="margin-top: 0; text-align: right; font-size: 14px; font-weight: 700; color: #333333">
+                              {{date}}
+                            </h3>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td colspan="2">
+                            <table style="width: 100%; padding-top: 25px" cellpadding="0" cellspacing="0" role="none">
+                              <tr>
+                                <th align="left" style="border-bottom: 1px solid #eaeaec; padding-bottom: 8px">
+                                  <p style="margin: 0; font-size: 12px; line-height: 24px; color: #85878E">
+                                    Produkt
+                                  </p>
+                                </th>
+                                <th align="right" class="purchase_heading" style="border-bottom: 1px solid #eaeaec; padding-bottom: 8px;">
+                                  <p style="margin: 0; font-size: 12px; line-height: 24px; color: #85878E">
+                                    Wartość
+                                  </p>
+                                </th>
+                              </tr>
+                              {{#products}}
+                              <tr>
+                                <td style="width: 80%; padding-top: 10px; padding-bottom: 10px; font-size: 16px; line-height: 18px; color: #51545E">
+                                  {{productName}}
+                                </td>
+                                <td align="right" style="width: 20%; text-align: right; font-size: 16px;">
+                                  {{productQuantity}} x {{amount}}
+                                </td>
+                              </tr>
+                              {{/products}}
+                              <tr>
+                                <td style="padding-top: 16px; vertical-align: middle; font-size: 16px; border-top: 1px solid #eaeaec; width: 80%">
+                                  <p align="right" style="margin: 0; padding-right: 16px; text-align: right; font-size: 16px; font-weight: 700; line-height: 24px; color: #333333">
+                                    Suma
+                                  </p>
+                                </td>
+                                <td style="padding-top: 16px; vertical-align: middle; font-size: 16px; border-top: 1px solid #eaeaec; width: 20%;">
+                                  <p align="right" style="margin: 0; text-align: right; font-size: 16px; font-weight: 700; line-height: 24px; color: #333333">
+                                    {{total}}
+                                  </p>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                      <p style="margin-bottom: 5px; margin-top: 6px; font-size: 16px; line-height: 24px; color: #51545E">
+                        W przypadku dodatkowych pytań dotyczących
+                        zamówienia,
+                        <a href="http://localhost:64427/" style="color: #3869D4">skontaktuj się z nami</a>.
+                      </p>
+                      <p style="margin-bottom: 5px; margin-top: 6px; font-size: 16px; line-height: 24px; color: #51545E">
+                        Dziękujemy za zakupy w naszym sklepie.
+                        <br>Zespół ECOMMERCE
+                      </p>
+                      <table align="center" style="margin: 30px auto; width: 100%; text-align: center" cellpadding="0" cellspacing="0" role="none"></table>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <table align="center" class="email-footer sm-w-full" style="margin-left: auto; margin-right: auto; width: 570px; text-align: center" cellpadding="0" cellspacing="0" role="none">
+                <tr>
+                  <td align="center" style="padding: 45px; font-size: 16px;">
+                    <p style="margin-bottom: 20px; margin-top: 6px; text-align: center; font-size: 12px; line-height: 24px; color: #A8AAAF">
+                      2024 SzczygielDev.pl
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>

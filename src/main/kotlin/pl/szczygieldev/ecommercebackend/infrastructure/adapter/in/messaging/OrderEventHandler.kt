@@ -6,6 +6,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import pl.szczygieldev.ecommercebackend.application.model.OrderProjection
 import pl.szczygieldev.ecommercebackend.application.model.PaymentProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderMailUseCase
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
 import pl.szczygieldev.ecommercebackend.application.port.out.Products
 import pl.szczygieldev.ecommercebackend.domain.*
@@ -19,7 +20,8 @@ import java.math.BigDecimal
 @Component
 class OrderEventHandler(
     val ordersProjections: OrdersProjections,
-    val products: Products
+    val products: Products,
+    val orderMailUseCase: OrderMailUseCase
 ) :
     DomainEventHandler<OrderEvent> {
     companion object {
@@ -134,6 +136,7 @@ class OrderEventHandler(
                 val orderId = domainEvent.orderId
                 val foundOrder = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
                 ordersProjections.save(foundOrder.copy(paymentProjection = foundOrder.paymentProjection.copy(status = PaymentStatus.PAID)))
+                orderMailUseCase.sendConfirmationMail(domainEvent.orderId)
             }
 
             is OrderDeliveryStatusChanged -> {

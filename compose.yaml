@@ -50,3 +50,13 @@ services:
       - CORS_ALLOWED_ORIGIN=http://localhost:64427
     depends_on:
       - s3
+  mailpit:
+    image: axllent/mailpit
+    volumes:
+      - ./data:/data
+    ports:
+      - 8025:8025
+      - 1025:1025
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1

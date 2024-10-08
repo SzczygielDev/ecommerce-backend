@@ -25,12 +25,16 @@ class ImageController(val imageRepository: ImageRepository) {
                 raise(ImageUploadError.mediaTypeNotSupported())
             }
 
-            val mediaTypeValue = if (mediaType == MediaType.IMAGE_JPEG) {
-                MediaType.IMAGE_JPEG_VALUE
-            } else if (mediaType == MediaType.IMAGE_PNG) {
-                MediaType.IMAGE_PNG_VALUE
-            } else {
-                raise(ImageUploadError.mediaTypeNotSupported())
+            val mediaTypeValue = when (mediaType) {
+                MediaType.IMAGE_JPEG -> {
+                    MediaType.IMAGE_JPEG_VALUE
+                }
+                MediaType.IMAGE_PNG -> {
+                    MediaType.IMAGE_PNG_VALUE
+                }
+                else -> {
+                    raise(ImageUploadError.mediaTypeNotSupported())
+                }
             }
 
             val uploadDetails = imageRepository.uploadImage(

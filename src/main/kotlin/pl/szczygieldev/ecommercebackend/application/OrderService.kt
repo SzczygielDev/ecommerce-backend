@@ -30,7 +30,7 @@ class OrderService(
 
     override suspend fun createOrder(command: CreateOrderCommand): Either<AppError, Unit> = either {
         createOrderCommandHandler.execute(command).bind()
-        cartCreateCommandHandler.execute(CreateCartCommand())
+        cartCreateCommandHandler.execute(CreateCartCommand()).bind()
     }
 
     override suspend fun acceptOrder(command: AcceptOrderCommand): Either<AppError, Unit> = either {
