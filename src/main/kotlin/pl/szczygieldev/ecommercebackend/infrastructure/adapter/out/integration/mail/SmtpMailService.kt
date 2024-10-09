@@ -29,7 +29,7 @@ class SmtpMailService(val mailSender: JavaMailSender, val ordersProjections: Ord
 
         val data = OrderConfirmationTemplateData(
             username,
-            order.orderId.id(),
+            order.orderId.id().uppercase(),
             order.paymentProjection.amount.setScale(2, RoundingMode.HALF_UP).toPlainString(),
             Instant.now().atZone(ZoneId.systemDefault()).format(formatter),
             order.items.map { item ->
@@ -55,7 +55,7 @@ class SmtpMailService(val mailSender: JavaMailSender, val ordersProjections: Ord
         val helper = MimeMessageHelper(mimeMessage)
         helper.setFrom("system@example.com")
         helper.setTo("user@example.com")
-        helper.setSubject("Zamówienie ${order.orderId.id()}")
+        helper.setSubject("Zamówienie ${order.orderId.id().uppercase()}")
         helper.setText(payload, true)
 
         mailSender.send(mimeMessage)
