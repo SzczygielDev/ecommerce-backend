@@ -6,4 +6,5 @@ interface Outbox {
     fun insertEvent(event: DomainEvent<*>)
     fun insertEvents(events: List<DomainEvent<*>>)
     fun markAsProcessed(event: DomainEvent<*>)
+    fun getEventsForProcessing(): List<OutboxMessage>
 }

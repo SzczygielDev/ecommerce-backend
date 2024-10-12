@@ -1,4 +1,4 @@
-package pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.outbox.model
+package pl.szczygieldev.shared.outbox
 
 import java.time.Instant
 
