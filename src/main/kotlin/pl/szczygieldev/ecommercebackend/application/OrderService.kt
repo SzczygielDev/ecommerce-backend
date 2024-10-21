@@ -3,6 +3,7 @@ package pl.szczygieldev.ecommercebackend.application
 import arrow.core.Either
 import arrow.core.raise.either
 import pl.szczygieldev.ecommercebackend.application.handlers.*
+import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.*
 import pl.szczygieldev.ecommercebackend.application.port.out.CartsProjections
@@ -25,12 +26,12 @@ class OrderService(
     val cancelOrderCommandHandler: CancelOrderCommandHandler,
     val returnOrderCommandHandler: ReturnOrderCommandHandler,
     val createOrderCommandHandler: CreateOrderCommandHandler,
-    val cartCreateCommandHandler: CartCreateCommandHandler
+    val cartUseCase: CartUseCase
 ) : OrderUseCase {
 
     override suspend fun createOrder(command: CreateOrderCommand): Either<AppError, Unit> = either {
         createOrderCommandHandler.execute(command).bind()
-        cartCreateCommandHandler.execute(CreateCartCommand()).bind()
+        cartUseCase.createCart(CreateCartCommand()).bind()
     }
 
     override suspend fun acceptOrder(command: AcceptOrderCommand): Either<AppError, Unit> = either {

@@ -7,6 +7,7 @@ import io.mockk.*
 import pl.szczygieldev.ecommercebackend.application.handlers.*
 import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandId
 import pl.szczygieldev.ecommercebackend.application.model.CartProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.*
 import pl.szczygieldev.ecommercebackend.application.port.out.*
 import pl.szczygieldev.ecommercebackend.domain.*
@@ -44,9 +45,7 @@ class OrderUseCaseTests : FunSpec() {
             commandResultStorage
         )
     )
-    val cartCreateCommandHandler: CartCreateCommandHandler =
-        spyk(CartCreateCommandHandler(cartsMock, cartEventPublisherMock, commandResultStorage))
-
+    val cartUseCase = mockk<CartUseCase>()
     val orderService = OrderService(
         orderEventPublisherMock,
         acceptOrderCommandHandler,
@@ -54,7 +53,7 @@ class OrderUseCaseTests : FunSpec() {
         cancelOrderCommandHandler,
         returnOrderCommandHandler,
         createOrderCommandHandler,
-        cartCreateCommandHandler
+        cartUseCase
     )
 
     init {
@@ -66,7 +65,7 @@ class OrderUseCaseTests : FunSpec() {
         coEvery { commandResultStorage.commandSuccess(any()) } returns either { }
         coEvery { commandResultStorage.commandFailed(any(), any<AppError>()) } returns either { }
         coEvery { commandResultStorage.commandFailed(any(), any<List<AppError>>()) } returns either { }
-
+        coEvery { cartUseCase.createCart(any()) } returns either { }
         val orderId = OrderId(UUID.randomUUID().toString())
         val amount = BigDecimal.TEN
         val psp = PaymentServiceProvider.MOCK_PSP
@@ -120,7 +119,7 @@ class OrderUseCaseTests : FunSpec() {
             coVerify { createOrderCommandHandler.execute(command) }
         }
 
-        test("Creating order should call CartCreateCommandHandler") {
+        test("Creating order should create cart") {
             //Arrange
             val command = CreateOrderCommand(cartId, psp, deliveryProvider)
 
@@ -128,12 +127,12 @@ class OrderUseCaseTests : FunSpec() {
             orderService.createOrder(command)
 
             //Assert
-            coVerify { cartCreateCommandHandler.execute(any()) }
+            coVerify { cartUseCase.createCart(any()) }
         }
 
         test("Accepting order should call AcceptOrderCommandHandler") {
             //Arrange
-            val command = AcceptOrderCommand(CommandId(),orderId)
+            val command = AcceptOrderCommand(CommandId(), orderId)
 
             //Act
             orderService.acceptOrder(command)
@@ -144,7 +143,7 @@ class OrderUseCaseTests : FunSpec() {
 
         test("Rejecting order should call RejectOrderCommandHandler") {
             //Arrange
-            val command = RejectOrderCommand(CommandId(),orderId)
+            val command = RejectOrderCommand(CommandId(), orderId)
 
             //Act
             orderService.rejectOrder(command)
@@ -155,7 +154,7 @@ class OrderUseCaseTests : FunSpec() {
 
         test("Canceling order should call CancelOrderCommandHandler") {
             //Arrange
-            val command = CancelOrderCommand(CommandId(),orderId)
+            val command = CancelOrderCommand(CommandId(), orderId)
 
             //Act
             orderService.cancelOrder(command)
@@ -166,7 +165,7 @@ class OrderUseCaseTests : FunSpec() {
 
         test("Returning order should call ReturnOrderCommandHandler") {
             //Arrange
-            val command = ReturnOrderCommand(CommandId(),orderId)
+            val command = ReturnOrderCommand(CommandId(), orderId)
 
             //Act
             orderService.returnOrder(command)
