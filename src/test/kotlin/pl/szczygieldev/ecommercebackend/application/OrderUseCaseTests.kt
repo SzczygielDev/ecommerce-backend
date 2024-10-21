@@ -85,9 +85,9 @@ class OrderUseCaseTests : FunSpec() {
         every { cartsProjectionsMock.findById(cartId) } returns cartProjection
 
         context("Order create") {
+            val command = CreateOrderCommand(cartId, psp, deliveryProvider)
             test("CartNotFoundError should be raised when cart was not found") {
                 //Arrange
-                val command = CreateOrderCommand(cartId, psp, deliveryProvider)
                 every { cartsProjectionsMock.findById(cartId) } returns null
 
                 //Act
@@ -101,7 +101,6 @@ class OrderUseCaseTests : FunSpec() {
 
             test("PaymentService should be called with provided amount, payment service provided and return url") {
                 //Arrange
-                val command = CreateOrderCommand(cartId, psp, deliveryProvider)
 
                 //Act
                 val result = orderService.createOrder(command)
@@ -155,9 +154,9 @@ class OrderUseCaseTests : FunSpec() {
         }
 
         context("Order accept") {
+            val command = AcceptOrderCommand(CommandId(), orderId)
             test("OrderNotFoundError should be raised when order not found") {
                 //Arrange
-                val command = AcceptOrderCommand(CommandId(), orderId)
                 every { ordersMock.findById(any()) } returns null
 
                 //Act
@@ -171,7 +170,6 @@ class OrderUseCaseTests : FunSpec() {
 
             test("Order accept should be called when order was found") {
                 //Arrange
-                val command = AcceptOrderCommand(CommandId(), orderId)
                 val order = spyk(order)
                 every { ordersMock.findById(orderId) } returns order
 
@@ -184,7 +182,6 @@ class OrderUseCaseTests : FunSpec() {
 
             test("Order should be saved when no error occurred") {
                 //Arrange
-                val command = AcceptOrderCommand(CommandId(), orderId)
                 every { ordersMock.findById(orderId) } returns order
 
                 //Act
@@ -196,7 +193,6 @@ class OrderUseCaseTests : FunSpec() {
 
             test("Order occurred events should be published when no error occurred") {
                 //Arrange
-                val command = AcceptOrderCommand(CommandId(), orderId)
                 every { ordersMock.findById(orderId) } returns order
 
                 //Act
