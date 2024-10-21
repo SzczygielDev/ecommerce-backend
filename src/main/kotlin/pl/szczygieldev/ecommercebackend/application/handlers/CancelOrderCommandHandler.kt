@@ -8,22 +8,16 @@ import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.OrderNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.OrderEvent
 import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandHandler
+import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderUseCase
 import pl.szczygieldev.ecommercebackend.application.port.out.CommandResultStorage
 import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 
 class CancelOrderCommandHandler(
-    val orders: Orders,
-    val orderEventPublisher: DomainEventPublisher<OrderEvent>,
+    val orderUseCase: OrderUseCase,
     commandResultStorage: CommandResultStorage,
 ) :
     CommandHandler<CancelOrderCommand>(commandResultStorage) {
     override suspend fun processCommand(command: CancelOrderCommand): Either<AppError, Unit> = either {
-        val orderId = command.orderId
-        val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
-        val orderVersion = order.version
-        order.cancel().bind()
-        val events = order.occurredEvents()
-        orders.save(order, orderVersion)
-        orderEventPublisher.publishBatch(events)
+        orderUseCase.cancelOrder(command).bind()
     }
 }

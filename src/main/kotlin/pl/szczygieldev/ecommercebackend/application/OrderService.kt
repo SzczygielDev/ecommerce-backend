@@ -13,6 +13,7 @@ import pl.szczygieldev.ecommercebackend.domain.Order
 import pl.szczygieldev.ecommercebackend.domain.PaymentDetails
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.CartNotFoundError
+import pl.szczygieldev.ecommercebackend.domain.error.OrderNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.OrderEvent
 import pl.szczygieldev.shared.architecture.UseCase
 import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
@@ -21,32 +22,94 @@ import java.net.URL
 @UseCase
 class OrderService(
     val orderEventPublisher: DomainEventPublisher<OrderEvent>,
-    val acceptOrderCommandHandler: AcceptOrderCommandHandler,
-    val rejectOrderCommandHandler: RejectOrderCommandHandler,
-    val cancelOrderCommandHandler: CancelOrderCommandHandler,
-    val returnOrderCommandHandler: ReturnOrderCommandHandler,
-    val createOrderCommandHandler: CreateOrderCommandHandler,
-    val cartUseCase: CartUseCase
+    val orders: Orders,
+
+
+
+
+    val cartUseCase: CartUseCase,
+    val cartProjections: CartsProjections,
+    val paymentService: PaymentService,
 ) : OrderUseCase {
+    companion object {
+        val paymentReturnUrlBase = "http://localhost:64427/paymentResult/"
+    }
 
     override suspend fun createOrder(command: CreateOrderCommand): Either<AppError, Unit> = either {
-        createOrderCommandHandler.execute(command).bind()
+        val cartId = command.cartId
+        val cart = cartProjections.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
+        val paymentServiceProvider = command.paymentServiceProvider
+
+        val orderId = orders.nextIdentity()
+        val paymentRegistration = paymentService.registerPayment(
+            cart.amount,
+            paymentServiceProvider,
+            URL("${paymentReturnUrlBase}${orderId.id()}")
+        )
+
+        val order = Order.create(
+            orderId,
+            cart.cartId,
+            PaymentDetails(
+                paymentRegistration.id,
+                cart.amount,
+                paymentRegistration.url,
+                paymentServiceProvider
+            ),
+            command.deliveryProvider,
+            cart.items.map { cartItem -> Order.OrderItem(cartItem.productId, cartItem.quantity) }
+        )
+
+        val orderVersion = order.version
+        val events = order.occurredEvents()
+        orders.save(order, orderVersion)
+        orderEventPublisher.publishBatch(events)
+
         cartUseCase.createCart(CreateCartCommand()).bind()
     }
 
     override suspend fun acceptOrder(command: AcceptOrderCommand): Either<AppError, Unit> = either {
-        acceptOrderCommandHandler.executeInBackground(command).bind()
+        val orderId = command.orderId
+        val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
+        val orderVersion = order.version
+        order.accept().bind()
+        val events = order.occurredEvents()
+        orders.save(order, orderVersion)
+        orderEventPublisher.publishBatch(events)
     }
 
     override suspend fun rejectOrder(command: RejectOrderCommand): Either<AppError, Unit> = either {
-        rejectOrderCommandHandler.executeInBackground(command).bind()
+        val orderId = command.orderId
+        val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
+        val orderVersion = order.version
+
+        order.reject().bind()
+
+        val events = order.occurredEvents()
+        orders.save(order, orderVersion)
+        orderEventPublisher.publishBatch(events)
+
     }
 
     override suspend fun cancelOrder(command: CancelOrderCommand): Either<AppError, Unit> = either {
-        cancelOrderCommandHandler.executeInBackground(command).bind()
+        val orderId = command.orderId
+        val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
+        val orderVersion = order.version
+        order.cancel().bind()
+        val events = order.occurredEvents()
+        orders.save(order, orderVersion)
+        orderEventPublisher.publishBatch(events)
     }
 
     override suspend fun returnOrder(command: ReturnOrderCommand): Either<AppError, Unit> = either {
-        returnOrderCommandHandler.executeInBackground(command).bind()
+        val orderId = command.orderId
+        val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
+        val orderVersion = order.version
+
+        order.returnOrder().bind()
+
+        val events = order.occurredEvents()
+        orders.save(order, orderVersion)
+        orderEventPublisher.publishBatch(events)
     }
 }
