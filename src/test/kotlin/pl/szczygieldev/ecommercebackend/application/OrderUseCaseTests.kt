@@ -34,7 +34,6 @@ class OrderUseCaseTests : FunSpec() {
     val orderService = OrderService(
         orderEventPublisherMock,
         ordersMock,
-        cartUseCase,
         cartsProjectionsMock,
         paymentServiceMock
     )
@@ -139,17 +138,6 @@ class OrderUseCaseTests : FunSpec() {
                 payment.amount.shouldBe(amount)
                 payment.url.shouldBe(paymentUrl)
                 payment.paymentServiceProvider.shouldBe(psp)
-            }
-
-            test("Creating order should create cart") {
-                //Arrange
-                val command = CreateOrderCommand(cartId, psp, deliveryProvider)
-
-                //Act
-                orderService.createOrder(command)
-
-                //Assert
-                coVerify { cartUseCase.createCart(any()) }
             }
         }
 

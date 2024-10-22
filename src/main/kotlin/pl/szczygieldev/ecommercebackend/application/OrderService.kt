@@ -23,11 +23,6 @@ import java.net.URL
 class OrderService(
     val orderEventPublisher: DomainEventPublisher<OrderEvent>,
     val orders: Orders,
-
-
-
-
-    val cartUseCase: CartUseCase,
     val cartProjections: CartsProjections,
     val paymentService: PaymentService,
 ) : OrderUseCase {
@@ -64,8 +59,6 @@ class OrderService(
         val events = order.occurredEvents()
         orders.save(order, orderVersion)
         orderEventPublisher.publishBatch(events)
-
-        cartUseCase.createCart(CreateCartCommand()).bind()
     }
 
     override suspend fun acceptOrder(command: AcceptOrderCommand): Either<AppError, Unit> = either {
