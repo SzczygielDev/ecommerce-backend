@@ -17,9 +17,9 @@ import java.math.BigDecimal
 @UseCase
 class ProductService(val products: Products, val productEventPublisher: DomainEventPublisher<ProductEvent>) :
     ProductUseCase {
-    override fun create(command: CreateProductCommand): Product {
+    override fun create(command: CreateProductCommand): Either<AppError, Unit> = either {
         val product = Product.create(
-            products.nextIdentity(),
+            command.productId,
             ProductTitle(command.title),
             ProductDescription(command.description),
             ProductPrice(BigDecimal.valueOf(command.price)),
@@ -27,7 +27,6 @@ class ProductService(val products: Products, val productEventPublisher: DomainEv
         )
 
         products.save(product, product.version)
-        return product
     }
 
     override fun update(command: UpdateProductCommand): Either<AppError, Unit> = either {

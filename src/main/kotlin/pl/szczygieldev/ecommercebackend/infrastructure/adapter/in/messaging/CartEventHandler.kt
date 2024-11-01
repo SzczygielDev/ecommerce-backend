@@ -23,7 +23,6 @@ import java.math.BigDecimal
 @Component
 class CartEventHandler(
     private val cartsProjections: CartsProjections,
-    private val priceCalculatorUseCase: PriceCalculatorUseCase,
     private val mediator: MediatorFacade
 ) : DomainEventHandler<CartEvent> {
     companion object {
@@ -75,7 +74,7 @@ class CartEventHandler(
                     } ?: raise(CartNotFoundError.forId(domainEvent.cartId))
                 cartsProjections.save(cartProjection)
 
-                priceCalculatorUseCase.calculateCartTotal(CalculateCartTotalCommand(domainEvent.cartId)).bind()
+                mediator.send(CalculateCartTotalCommand(domainEvent.cartId)).bind()
             }
 
             is ItemRemovedFromCart -> {
@@ -88,7 +87,7 @@ class CartEventHandler(
                 } ?: raise(CartNotFoundError.forId(domainEvent.cartId))
                 cartsProjections.save(cartProjection)
 
-                priceCalculatorUseCase.calculateCartTotal(CalculateCartTotalCommand(domainEvent.cartId)).bind()
+                mediator.send(CalculateCartTotalCommand(domainEvent.cartId)).bind()
             }
 
 

@@ -7,7 +7,7 @@ import pl.szczygieldev.ecommercebackend.domain.Product
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 
 interface ProductUseCase {
-    fun create(command: CreateProductCommand) : Product
+    fun create(command: CreateProductCommand): Either<AppError, Unit>
 
     fun update(command: UpdateProductCommand): Either<AppError, Unit>
 }

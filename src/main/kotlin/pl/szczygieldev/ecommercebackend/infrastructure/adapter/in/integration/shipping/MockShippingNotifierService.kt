@@ -6,15 +6,16 @@ import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderShippingUseCa
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.ChangeOrderDeliveryStatusCommand
 import pl.szczygieldev.ecommercebackend.domain.DeliveryStatus
 import pl.szczygieldev.ecommercebackend.domain.ParcelId
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.command.MediatorFacade
 import pl.szczygieldev.ecommercebackend.infrastructure.integration.shipping.ParcelStatus
 import pl.szczygieldev.ecommercebackend.infrastructure.integration.shipping.ParcelStatusChangeNotification
 
 @Component
-class MockShippingNotifierService(val orderShippingUseCase: OrderShippingUseCase) {
+class MockShippingNotifierService(val mediatorFacade: MediatorFacade) {
 
     @EventListener
     suspend fun handleParcelStatusChangeNotification(notification: ParcelStatusChangeNotification) {
-        orderShippingUseCase.changeDeliveryStatus(
+        mediatorFacade.send(
             ChangeOrderDeliveryStatusCommand(
                 ParcelId(notification.parcelId),
                 mapParcelStatus(notification.parcelStatus)

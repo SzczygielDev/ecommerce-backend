@@ -1,5 +1,6 @@
 package pl.szczygieldev.ecommercebackend.application.port.`in`.command
 
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.common.Command
 import pl.szczygieldev.ecommercebackend.domain.*
 
 data class UpdateProductCommand(
@@ -8,4 +9,4 @@ data class UpdateProductCommand(
     val description: ProductDescription,
     val price: ProductPrice,
     val imageId: ImageId
-)
+) : Command()

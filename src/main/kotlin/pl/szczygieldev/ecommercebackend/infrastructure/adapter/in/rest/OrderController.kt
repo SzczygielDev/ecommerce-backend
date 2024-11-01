@@ -34,9 +34,7 @@ import java.util.UUID
 @RestController
 @RequestMapping("/orders")
 class OrderController(
-    val orderUseCase: OrderUseCase,
     val ordersProjections: OrdersProjections,
-    val orderShippingUseCase: OrderShippingUseCase,
     val commandResultStorage: CommandResultStorage,
     val commandPresenter: CommandPresenter,
     val orderPresenter: OrderPresenter,
