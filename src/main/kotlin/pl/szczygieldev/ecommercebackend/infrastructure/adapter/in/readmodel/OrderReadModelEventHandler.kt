@@ -4,8 +4,8 @@ import arrow.core.raise.either
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
-import pl.szczygieldev.ecommercebackend.application.model.OrderProjection
-import pl.szczygieldev.ecommercebackend.application.model.PaymentProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.query.model.OrderProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.query.model.PaymentProjection
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
 import pl.szczygieldev.ecommercebackend.application.port.out.Products
 import pl.szczygieldev.ecommercebackend.domain.*

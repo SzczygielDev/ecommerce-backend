@@ -2,7 +2,6 @@ package pl.szczygieldev.ecommercebackend.application
 
 import arrow.core.Either
 import arrow.core.raise.either
-import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandHandler
 import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.AddItemToCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.RemoveItemFromCartCommand

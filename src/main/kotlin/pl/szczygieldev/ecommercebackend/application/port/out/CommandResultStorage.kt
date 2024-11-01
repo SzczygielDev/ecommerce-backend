@@ -2,9 +2,9 @@ package pl.szczygieldev.ecommercebackend.application.port.out
 
 import arrow.core.Either
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
-import pl.szczygieldev.ecommercebackend.application.handlers.common.Command
-import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandId
-import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandResult
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.common.Command
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.common.CommandId
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.command.common.CommandResult
 
 interface CommandResultStorage {
     fun commandBegin(command: Command): Either<AppError,Unit>

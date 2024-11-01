@@ -1,7 +1,7 @@
 package pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presenter
 
 import org.springframework.stereotype.Component
-import pl.szczygieldev.ecommercebackend.application.model.OrderProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.query.model.OrderProjection
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.*
 
 @Component

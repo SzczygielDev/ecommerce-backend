@@ -6,8 +6,8 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
-import pl.szczygieldev.ecommercebackend.application.model.OrderProjection
-import pl.szczygieldev.ecommercebackend.application.model.PaymentProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.query.model.OrderProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.query.model.PaymentProjection
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.ProcessPaymentCommand
 import pl.szczygieldev.ecommercebackend.application.port.out.Orders
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections

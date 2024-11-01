@@ -19,8 +19,8 @@ class CartRepository(val eventStore: EventStore) : Carts {
     }
 
     override fun save(cart: Cart, version: Int) {
-        val occuredEvents = cart.occurredEvents()
-        eventStore.appendEvents(cart.cartId,occuredEvents,version)
+        val occurredEvents = cart.occurredEvents()
+        eventStore.appendEvents(cart.cartId,occurredEvents,version)
         cart.clearOccurredEvents()
     }
 }

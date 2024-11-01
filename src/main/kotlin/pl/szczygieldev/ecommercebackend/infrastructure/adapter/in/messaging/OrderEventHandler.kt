@@ -5,13 +5,14 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderMailUseCase
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.SendOrderConfirmationMailCommand
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.event.*
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.command.MediatorFacade
 import pl.szczygieldev.shared.ddd.core.DomainEventHandler
-
 @Component
 class OrderEventHandler(
-    val orderMailUseCase: OrderMailUseCase
+    val mediator: MediatorFacade
 ) :
     DomainEventHandler<OrderEvent> {
     companion object {
@@ -30,7 +31,7 @@ class OrderEventHandler(
             is OrderPaymentReceived -> {}
             is OrderInvalidAmountPaid -> {}
             is OrderPaid -> {
-                orderMailUseCase.sendConfirmationMail(domainEvent.orderId)
+                mediator.sendAsync(SendOrderConfirmationMailCommand(domainEvent.orderId))
             }
             is OrderDeliveryStatusChanged -> {}
         }

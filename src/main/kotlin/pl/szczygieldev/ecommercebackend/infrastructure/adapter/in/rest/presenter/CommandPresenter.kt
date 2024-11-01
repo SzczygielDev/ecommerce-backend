@@ -2,7 +2,7 @@ package pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presen
 
 import org.springframework.stereotype.Component
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.CommandResultDto
-import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandResult
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.command.common.CommandResult
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.CommandResultFullDto
 
 @Component

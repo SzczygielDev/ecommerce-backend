@@ -1,7 +1,7 @@
 package pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presenter
 
 import org.springframework.stereotype.Component
-import pl.szczygieldev.ecommercebackend.application.model.CartProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.query.model.CartProjection
 import pl.szczygieldev.ecommercebackend.domain.Cart
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.CartDto
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.CartEntryDto

@@ -1,4 +1,4 @@
-package pl.szczygieldev.ecommercebackend.application.model
+package pl.szczygieldev.ecommercebackend.application.port.`in`.query.model
 
 import pl.szczygieldev.ecommercebackend.domain.*
 import java.time.Instant

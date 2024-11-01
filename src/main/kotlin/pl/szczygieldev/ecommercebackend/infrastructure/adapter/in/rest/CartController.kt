@@ -3,7 +3,7 @@ package pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest
 import arrow.core.raise.either
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import pl.szczygieldev.ecommercebackend.application.model.CartProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.query.model.CartProjection
 import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.AddItemToCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.RemoveItemFromCartCommand
@@ -12,16 +12,16 @@ import pl.szczygieldev.ecommercebackend.application.port.out.CartsProjections
 import pl.szczygieldev.ecommercebackend.domain.UserId
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.CartNotFoundError
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.command.MediatorFacade
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.advice.mapToError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presenter.CartPresenter
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.AddItemToCartRequest
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.SubmitCartRequest
 import java.util.UUID
-
 @RequestMapping("/carts")
 @RestController
 class CartController(
-    val cartUseCase: CartUseCase,
+    val mediator: MediatorFacade,
     val cartRepository: CartsProjections,
     val cartPresenter: CartPresenter
 ) {
@@ -38,11 +38,11 @@ class CartController(
     }
 
     @PostMapping("/items")
-    fun addItem(@RequestBody request: AddItemToCartRequest): ResponseEntity<*> {
+    suspend fun addItem(@RequestBody request: AddItemToCartRequest): ResponseEntity<*> {
         return either {
             val cart = cartRepository.findActiveForUser(mockUserId) ?: raise(CartNotFoundError.forUserId(mockUserId))
             val cartId = cart.cartId
-            cartUseCase.addProductToCart(AddItemToCartCommand(cartId.id(), request.productId, request.quantity)).bind()
+            mediator.send(AddItemToCartCommand(cartId.id(), request.productId, request.quantity)).bind()
             cartRepository.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
@@ -50,11 +50,11 @@ class CartController(
     }
 
     @DeleteMapping("/items/{productId}")
-    fun removeItem(@PathVariable productId: String): ResponseEntity<*> {
+    suspend fun removeItem(@PathVariable productId: String): ResponseEntity<*> {
         return either {
             val cart = cartRepository.findActiveForUser(mockUserId) ?: raise(CartNotFoundError.forUserId(mockUserId))
             val cartId = cart.cartId
-            cartUseCase.removeProductFromCart(RemoveItemFromCartCommand(cartId.id(), productId)).bind()
+            mediator.send(RemoveItemFromCartCommand(cartId.id(), productId)).bind()
             cartRepository.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
@@ -62,11 +62,11 @@ class CartController(
     }
 
     @PostMapping("/submit")
-    fun submit(@RequestBody request: SubmitCartRequest): ResponseEntity<*> {
+    suspend fun submit(@RequestBody request: SubmitCartRequest): ResponseEntity<*> {
         return either {
             val cart = cartRepository.findActiveForUser(mockUserId) ?: raise(CartNotFoundError.forUserId(mockUserId))
             val cartId = cart.cartId
-            cartUseCase.submitCart(SubmitCartCommand(cartId.id(), request.deliveryProvider, request.paymentServiceProvider))
+            mediator.send(SubmitCartCommand(cartId.id(), request.deliveryProvider, request.paymentServiceProvider))
                 .bind()
             cartRepository.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
         }.fold<ResponseEntity<*>>(

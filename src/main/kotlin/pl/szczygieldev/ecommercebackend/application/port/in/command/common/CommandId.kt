@@ -1,4 +1,4 @@
-package pl.szczygieldev.ecommercebackend.application.handlers.common
+package pl.szczygieldev.ecommercebackend.application.port.`in`.command.common
 
 import java.util.UUID
 

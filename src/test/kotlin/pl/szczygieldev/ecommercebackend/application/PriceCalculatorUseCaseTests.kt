@@ -5,7 +5,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
-import pl.szczygieldev.ecommercebackend.application.model.CartProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.query.model.CartProjection
 import pl.szczygieldev.ecommercebackend.application.port.`in`.PriceCalculatorUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CalculateCartTotalCommand
 import pl.szczygieldev.ecommercebackend.application.port.out.CartsProjections

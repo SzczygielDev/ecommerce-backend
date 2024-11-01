@@ -1,7 +1,7 @@
 package pl.szczygieldev.ecommercebackend.infrastructure.adapter.error
 
 import pl.szczygieldev.ecommercebackend.domain.error.InfrastructureError
-import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandId
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.common.CommandId
 
 sealed class CommandStorageError(message: String) : InfrastructureError(message)
 

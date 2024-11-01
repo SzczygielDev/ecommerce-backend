@@ -1,4 +1,4 @@
-package pl.szczygieldev.ecommercebackend.application.model
+package pl.szczygieldev.ecommercebackend.application.port.`in`.query.model
 
 import pl.szczygieldev.ecommercebackend.domain.PaymentId
 import pl.szczygieldev.ecommercebackend.domain.PaymentServiceProvider

@@ -1,10 +1,10 @@
 package pl.szczygieldev.ecommercebackend.infrastructure.config
 
+import com.trendyol.kediatr.CommandWithResultHandler
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
 import pl.szczygieldev.shared.architecture.UseCase
-import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandHandler
 
 @Configuration
 @ComponentScan(
@@ -17,7 +17,7 @@ import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandHandl
         ),
         ComponentScan.Filter(
             type = FilterType.ASSIGNABLE_TYPE,
-            value = [CommandHandler::class]
+            value = [CommandWithResultHandler::class]
         )
     ]
 )

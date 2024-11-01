@@ -5,7 +5,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import pl.szczygieldev.shared.ddd.core.DomainEventHandler
-import pl.szczygieldev.ecommercebackend.application.model.CartProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.query.model.CartProjection
 import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.PriceCalculatorUseCase
@@ -17,14 +17,14 @@ import pl.szczygieldev.ecommercebackend.domain.CartStatus
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.CartNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.*
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.command.MediatorFacade
 import java.math.BigDecimal
 
 @Component
 class CartEventHandler(
     private val cartsProjections: CartsProjections,
     private val priceCalculatorUseCase: PriceCalculatorUseCase,
-    private val orderUseCase: OrderUseCase,
-    private val cartUseCase: CartUseCase
+    private val mediator: MediatorFacade
 ) : DomainEventHandler<CartEvent> {
     companion object {
         private val log = KotlinLogging.logger { }
@@ -47,8 +47,7 @@ class CartEventHandler(
                     cartsProjections.findById(domainEvent.cartId)?.copy(status = CartStatus.SUBMITTED)
                         ?: raise(CartNotFoundError.forId(domainEvent.cartId))
                 )
-                 
-                orderUseCase.createOrder(
+                mediator.send(
                     CreateOrderCommand(
                         domainEvent.cartId,
                         domainEvent.paymentServiceProvider,
