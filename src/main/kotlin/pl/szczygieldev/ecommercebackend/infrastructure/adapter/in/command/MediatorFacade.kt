@@ -16,7 +16,7 @@ import pl.szczygieldev.ecommercebackend.domain.error.AppError
 class MediatorFacade(val kediatr: Mediator, val commandResultStorage: CommandResultStorage) {
     private val log = KotlinLogging.logger(javaClass.name)
     private val coroutineScope =
-        CoroutineScope(Job() + CoroutineExceptionHandler { context, throwable -> log.error { "Exception while processing handler in background: $throwable" } })
+        CoroutineScope(Job() + CoroutineExceptionHandler { context, throwable -> log.error { "Exception while processing command in background: $throwable" } })
 
     suspend fun send(command: Command): Either<AppError, Unit> {
         commandResultStorage.commandBegin(command)

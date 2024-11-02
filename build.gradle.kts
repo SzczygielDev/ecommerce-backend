@@ -48,7 +48,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-mail:3.3.4")
     implementation("com.github.spullara.mustache.java:compiler:0.9.14")
 
-    // https://mvnrepository.com/artifact/com.h2database/h2
     implementation("com.h2database:h2:2.3.232")
 
     implementation("org.jetbrains.exposed:exposed-core:0.55.0")

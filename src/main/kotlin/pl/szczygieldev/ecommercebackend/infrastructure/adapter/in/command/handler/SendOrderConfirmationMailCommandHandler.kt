@@ -10,6 +10,6 @@ import pl.szczygieldev.ecommercebackend.domain.error.AppError
 class SendOrderConfirmationMailCommandHandler(val orderMailUseCase: OrderMailUseCase) :
     CommandWithResultHandler<SendOrderConfirmationMailCommand, Either<AppError, Unit>> {
     override suspend fun handle(command: SendOrderConfirmationMailCommand): Either<AppError, Unit> = either {
-        orderMailUseCase.sendConfirmationMail(command)
+        orderMailUseCase.sendConfirmationMail(command).bind()
     }
 }

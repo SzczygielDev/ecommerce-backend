@@ -1,5 +1,6 @@
 package pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.integration.mail
 
+import arrow.core.raise.either
 import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.MustacheFactory
 import org.springframework.mail.javamail.JavaMailSender
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component
 import pl.szczygieldev.ecommercebackend.application.port.out.MailService
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
 import pl.szczygieldev.ecommercebackend.domain.OrderId
+import pl.szczygieldev.ecommercebackend.domain.error.OrderNotFoundError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.integration.mail.model.OrderConfirmationTemplateData
 import java.io.StringReader
 import java.io.StringWriter
@@ -23,9 +25,9 @@ class SmtpMailService(val mailSender: JavaMailSender, val ordersProjections: Ord
     private val mf: MustacheFactory = DefaultMustacheFactory("static/mail")
     private val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
-    override fun sendOrderConfirmationMail(orderId: OrderId) {
+    override fun sendOrderConfirmationMail(orderId: OrderId) = either{
         val username = "Jan"
-        val order = ordersProjections.findById(orderId)!!
+        val order = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
 
         val data = OrderConfirmationTemplateData(
             username,
