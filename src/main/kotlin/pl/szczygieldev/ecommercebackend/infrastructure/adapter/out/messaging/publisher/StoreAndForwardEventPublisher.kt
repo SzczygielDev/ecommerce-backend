@@ -15,23 +15,14 @@ abstract class StoreAndForwardEventPublisher<T : DomainEvent<T>>(
     }
 
     override fun publish(domainEvent: T) {
+        eventPublisher.publishEvent(domainEvent)
         outbox.insertEvent(domainEvent)
-        processOutbox(listOf(domainEvent))
     }
 
     override fun publishBatch(events: List<T>) {
-        outbox.insertEvents(events)
-        processOutbox(events)
-    }
-
-    /*
-    * Due to learning purposes for now executing outbox processing is done on every publish call, in future will be from background worker.
-    */
-    private fun processOutbox(events: List<T>) {
         events.forEach { event ->
-            log.info { "publishing event='$event'" }
             eventPublisher.publishEvent(event)
-            outbox.markAsProcessed(event)
+            outbox.insertEvent(event)
         }
     }
 }

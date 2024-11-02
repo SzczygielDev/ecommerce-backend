@@ -15,12 +15,13 @@ class ProductTests : FunSpec() {
         test("Creating product with price equal zero should throw IllegalArgumentException") {
             //Arrange
             val productId = ProductId(UUID.randomUUID().toString())
+            val imageId = ImageId(UUID.randomUUID().toString())
 
             //Act & Assert
             assertThrows<IllegalArgumentException> {
                 Product.create(
                     productId,
-                    ProductTitle("title"), ProductDescription("description"), ProductPrice(BigDecimal.ZERO)
+                    ProductTitle("title"), ProductDescription("description"), ProductPrice(BigDecimal.ZERO),imageId
                 )
             }
         }
@@ -28,12 +29,13 @@ class ProductTests : FunSpec() {
         test("Creating product with negative price should throw IllegalArgumentException") {
             //Arrange
             val productId = ProductId(UUID.randomUUID().toString())
+            val imageId = ImageId(UUID.randomUUID().toString())
 
             //Act & Assert
             assertThrows<IllegalArgumentException> {
                 Product.create(
                     productId,
-                    ProductTitle("title"), ProductDescription("description"), ProductPrice(BigDecimal.valueOf(-100))
+                    ProductTitle("title"), ProductDescription("description"), ProductPrice(BigDecimal.valueOf(-100)),imageId
                 )
             }
         }
@@ -41,11 +43,12 @@ class ProductTests : FunSpec() {
         test("Creating product should raise ProductCreated event") {
             //Arrange
             val productId = ProductId(UUID.randomUUID().toString())
+            val imageId = ImageId(UUID.randomUUID().toString())
 
             //Act
             val product = Product.create(
                 productId,
-                ProductTitle("title"), ProductDescription("description"), ProductPrice(BigDecimal.TEN)
+                ProductTitle("title"), ProductDescription("description"), ProductPrice(BigDecimal.TEN),imageId
             )
 
             // Assert
@@ -55,9 +58,10 @@ class ProductTests : FunSpec() {
         test("Applied events on product should not be present in occurredEvents of product") {
             //Arrange
             val productId = ProductId(UUID.randomUUID().toString())
+            val imageId = ImageId(UUID.randomUUID().toString())
             val product = Product.create(
                 productId,
-                ProductTitle("title"), ProductDescription("description"), ProductPrice(BigDecimal.TEN)
+                ProductTitle("title"), ProductDescription("description"), ProductPrice(BigDecimal.TEN),imageId
             )
             val priceChangeEvents = listOf(ProductPriceUpdated(productId, ProductPrice(BigDecimal.valueOf(20.0))))
 
@@ -72,9 +76,10 @@ class ProductTests : FunSpec() {
             //Arrange
             val productId = ProductId(UUID.randomUUID().toString())
             val price = ProductPrice(BigDecimal.TEN)
+            val imageId = ImageId(UUID.randomUUID().toString())
             val product = Product.create(
                 productId,
-                ProductTitle("title"), ProductDescription("description"), price
+                ProductTitle("title"), ProductDescription("description"), price,imageId
             )
 
             //Act
@@ -88,9 +93,10 @@ class ProductTests : FunSpec() {
         test("Updating product price when new price is different should update price") {
             //Arrange
             val productId = ProductId(UUID.randomUUID().toString())
+            val imageId = ImageId(UUID.randomUUID().toString())
             val product = Product.create(
                 productId,
-                ProductTitle("title"), ProductDescription("description"), ProductPrice(BigDecimal.TEN)
+                ProductTitle("title"), ProductDescription("description"), ProductPrice(BigDecimal.TEN),imageId
             )
             val newPrice = ProductPrice(BigDecimal.valueOf(20))
 

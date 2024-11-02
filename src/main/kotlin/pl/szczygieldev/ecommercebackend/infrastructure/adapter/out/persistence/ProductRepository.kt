@@ -19,7 +19,8 @@ class ProductRepository(val eventStore: EventStore) : Products {
             snapshot.productId,
             snapshot.title,
             snapshot.description,
-            snapshot.basePrice
+            snapshot.basePrice,
+            snapshot.imageId
         )
 
         val events = eventStore.getEvents<ProductEvent>(product.productId) ?: return null
@@ -34,7 +35,8 @@ class ProductRepository(val eventStore: EventStore) : Products {
                 it.productId,
                 it.title,
                 it.description,
-                it.basePrice
+                it.basePrice,
+                it.imageId
             )
 
             val events =

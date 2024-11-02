@@ -26,13 +26,15 @@ class ProductUseCaseTests : FunSpec() {
         context("Product create tests") {
             test("Product should be saved on create") {
                 //Arrange
-                val command = CreateProductCommand("Product A", "description", 100.0)
+                val imageId = ImageId(UUID.randomUUID().toString())
                 val productId = ProductId(UUID.randomUUID().toString())
+                val command = CreateProductCommand(productId,"Product A", "description", 100.0, imageId)
+
 
                 val savedProduct = slot<Product>()
                 every { productsMock.save(capture(savedProduct), any()) } returns Product.create(
                     productId, ProductTitle(command.title),
-                    ProductDescription(command.description), ProductPrice(BigDecimal.valueOf(command.price))
+                    ProductDescription(command.description), ProductPrice(BigDecimal.valueOf(command.price)), imageId
                 )
                 every { productsMock.nextIdentity() } returns productId
 
@@ -40,7 +42,6 @@ class ProductUseCaseTests : FunSpec() {
                 val result = productUseCase.create(command)
 
                 //Assert
-                result.productId.sameValueAs(productId).shouldBe(true)
                 savedProduct.captured.productId.sameValueAs(productId).shouldBe(true)
                 verify { productsMock.save(any(), any()) }
             }
@@ -48,15 +49,18 @@ class ProductUseCaseTests : FunSpec() {
 
         context("Product update tests") {
             val productId = ProductId(UUID.randomUUID().toString())
+            val imageId = ImageId(UUID.randomUUID().toString())
             val product = Product.create(
                 productId, ProductTitle("Product title"),
                 ProductDescription("Product description"),
-                ProductPrice(BigDecimal.TEN)
+                ProductPrice(BigDecimal.TEN), imageId
             )
             val newTitle = ProductTitle("Product new title")
             val newDescription = ProductDescription("Product new description")
             val newPrice = ProductPrice(BigDecimal.valueOf(20))
-            val command = UpdateProductCommand(productId, newTitle, newDescription, newPrice)
+            val newImageId = ImageId(UUID.randomUUID().toString())
+
+            val command = UpdateProductCommand(productId, newTitle, newDescription, newPrice, newImageId)
             test("Product update should raise ProductNotFoundError when product was not found") {
                 //Arrange
                 every { productsMock.findById(productId) } returns null
@@ -70,7 +74,7 @@ class ProductUseCaseTests : FunSpec() {
                 error.shouldBeInstanceOf<ProductNotFoundError>()
             }
 
-            test("Product title, description and price should be updated") {
+            test("Product title, description, price and image should be updated") {
                 //Arrange
                 every { productsMock.findById(productId) } returns product
                 val savedProductSlot = slot<Product>()
@@ -86,6 +90,7 @@ class ProductUseCaseTests : FunSpec() {
                 updatedProduct.title.value.shouldBeEqual(newTitle.value)
                 updatedProduct.description.content.shouldBeEqual(newDescription.content)
                 updatedProduct.price.amount.compareTo(newPrice.amount).shouldBe(0)
+                updatedProduct.imageId.sameValueAs(newImageId).shouldBe(true)
             }
 
             test("Product should be saved when no error occurred") {
@@ -98,7 +103,7 @@ class ProductUseCaseTests : FunSpec() {
                 productUseCase.update(command)
 
                 //Assert
-                verify { productsMock.save(product,any()) }
+                verify { productsMock.save(product, any()) }
             }
 
             test("Product occurred events should be published when no error occurred") {

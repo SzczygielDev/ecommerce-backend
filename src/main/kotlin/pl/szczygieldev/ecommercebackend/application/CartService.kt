@@ -2,7 +2,6 @@ package pl.szczygieldev.ecommercebackend.application
 
 import arrow.core.Either
 import arrow.core.raise.either
-import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandHandler
 import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.AddItemToCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.RemoveItemFromCartCommand
@@ -25,11 +24,14 @@ class CartService(
     val carts: Carts,
     val products: Products,
     val cartEventPublisher: DomainEventPublisher<CartEvent>,
-    val cartCreateCommandHandler: CommandHandler<CreateCartCommand>
 ) : CartUseCase {
 
     override suspend fun createCart(command: CreateCartCommand): Either<AppError, Unit> = either {
-        cartCreateCommandHandler.execute(command).bind()
+        val cart = Cart.create(carts.nextIdentity())
+        val version = cart.version
+        val events = cart.occurredEvents()
+        carts.save(cart, version)
+        cartEventPublisher.publishBatch(events)
     }
 
     override fun submitCart(command: SubmitCartCommand): Either<AppError, Unit> = either {

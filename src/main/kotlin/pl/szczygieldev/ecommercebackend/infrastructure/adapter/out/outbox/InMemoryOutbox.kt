@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Component
 import pl.szczygieldev.shared.ddd.core.DomainEvent
 import pl.szczygieldev.shared.outbox.Outbox
-import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.outbox.model.OutboxMessage
-import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.outbox.model.OutboxMessageStatus
+import pl.szczygieldev.shared.outbox.OutboxMessage
+import pl.szczygieldev.shared.outbox.OutboxMessageStatus
 
 @Component
 class InMemoryOutbox(val objectMapper: ObjectMapper) : Outbox {
@@ -23,12 +23,15 @@ class InMemoryOutbox(val objectMapper: ObjectMapper) : Outbox {
     }
 
     override fun insertEvents(events: List<DomainEvent<*>>) {
-        events.forEach {
-            event -> insertEvent(event)
+        events.forEach { event ->
+            insertEvent(event)
         }
     }
 
     override fun markAsProcessed(event: DomainEvent<*>) {
         db.find { message -> message.eventId == event.id }?.status = OutboxMessageStatus.PROCESSED
     }
+
+    override fun getEventsForProcessing(): List<OutboxMessage> =
+        db.filter { message -> message.status == OutboxMessageStatus.PENDING }
 }

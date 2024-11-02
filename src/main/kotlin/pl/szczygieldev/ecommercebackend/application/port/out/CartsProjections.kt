@@ -1,6 +1,6 @@
 package pl.szczygieldev.ecommercebackend.application.port.out
 
-import pl.szczygieldev.ecommercebackend.application.model.CartProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.query.model.CartProjection
 import pl.szczygieldev.ecommercebackend.domain.CartId
 import pl.szczygieldev.ecommercebackend.domain.UserId
 

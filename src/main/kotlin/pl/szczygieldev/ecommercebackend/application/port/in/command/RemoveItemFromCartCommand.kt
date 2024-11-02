@@ -1,3 +1,5 @@
 package pl.szczygieldev.ecommercebackend.application.port.`in`.command
 
-data class RemoveItemFromCartCommand(val cartId: String, val productId: String)
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.common.Command
+
+data class RemoveItemFromCartCommand(val cartId: String, val productId: String) : Command()

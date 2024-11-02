@@ -10,6 +10,7 @@ import pl.szczygieldev.ecommercebackend.application.port.out.Products
 import pl.szczygieldev.ecommercebackend.domain.*
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.ProductNotFoundError
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.command.MediatorFacade
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.advice.mapToError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presenter.ProductPresenter
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resource.CreateProductRequest
@@ -19,7 +20,7 @@ import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.resourc
 @RequestMapping("/products")
 @RestController
 class ProductController(
-    val productUseCase: ProductUseCase,
+    val mediator: MediatorFacade,
     val products: Products,
     val productPresenter: ProductPresenter
 ) {
@@ -36,18 +37,20 @@ class ProductController(
     }
 
     @PostMapping
-    fun create(@RequestBody request: CreateProductRequest): ResponseEntity<ProductDto> {
-        return ResponseEntity.ok(
-            productPresenter.toDto(
-                productUseCase.create(
-                    CreateProductCommand(
-                        request.title,
-                        request.description,
-                        request.price
-                    )
+    suspend fun create(@RequestBody request: CreateProductRequest): ResponseEntity<*> {
+        return either<AppError, Product> {
+            val productId = products.nextIdentity()
+            mediator.send(
+                CreateProductCommand(
+                    productId,
+                    request.title,
+                    request.description,
+                    request.price,
+                    ImageId(request.imageId)
                 )
             )
-        )
+            products.findById(productId) ?: raise(ProductNotFoundError(productId.id))
+        }.fold({ mapToError(it) }, { product -> return ResponseEntity.ok().body(productPresenter.toDto(product)) })
     }
 
     @DeleteMapping("/{id}")
@@ -59,15 +62,16 @@ class ProductController(
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable id: String, @RequestBody request: UpdateProductRequest): ResponseEntity<*> {
+    suspend fun update(@PathVariable id: String, @RequestBody request: UpdateProductRequest): ResponseEntity<*> {
         return either<AppError, Product> {
             val productId = ProductId(id)
-            productUseCase.update(
+            mediator.send(
                 UpdateProductCommand(
                     productId,
                     ProductTitle(request.title),
                     ProductDescription(request.description),
-                    ProductPrice(request.price)
+                    ProductPrice(request.price),
+                    ImageId(request.imageId)
                 )
             )
             products.findById(productId) ?: raise(ProductNotFoundError(productId.id))

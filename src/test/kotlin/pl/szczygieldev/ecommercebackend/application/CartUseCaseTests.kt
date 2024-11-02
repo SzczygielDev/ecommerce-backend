@@ -6,7 +6,6 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
-import pl.szczygieldev.ecommercebackend.application.handlers.CartCreateCommandHandler
 import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.*
 import pl.szczygieldev.ecommercebackend.application.port.out.Carts
@@ -25,23 +24,17 @@ class CartUseCaseTests : FunSpec() {
     val productsMock = mockk<Products>()
     val cartsMock = mockk<Carts>()
     val eventPublisherMock = mockk<DomainEventPublisher<CartEvent>>()
-    val commandResultStorage: CommandResultStorage = mockk<CommandResultStorage>()
-    val cartCreateCommandHandler = CartCreateCommandHandler(cartsMock, eventPublisherMock, commandResultStorage)
-    val productUseCase: CartUseCase = CartService(
+    val cartUseCase: CartUseCase = CartService(
         cartsMock,
         productsMock,
         eventPublisherMock,
-        cartCreateCommandHandler
     )
 
     init {
         every { cartsMock.save(any(), any()) } just runs
         every { eventPublisherMock.publish(any()) } just runs
         every { eventPublisherMock.publishBatch(any()) } just runs
-        coEvery { commandResultStorage.commandBegin(any()) } returns either { }
-        coEvery { commandResultStorage.commandSuccess(any()) } returns either { }
-        coEvery { commandResultStorage.commandFailed(any(), any<AppError>()) } returns either { }
-        coEvery { commandResultStorage.commandFailed(any(), any<List<AppError>>()) } returns either { }
+
 
         test("Submitting cart should raise CartNotFoundError when cart not found") {
             //Arrange
@@ -53,7 +46,7 @@ class CartUseCaseTests : FunSpec() {
 
             //Act
             val result =
-                productUseCase.submitCart(SubmitCartCommand(cartId.id(), deliveryProvider, paymentServiceProvider))
+                cartUseCase.submitCart(SubmitCartCommand(cartId.id(), deliveryProvider, paymentServiceProvider))
 
             //Assert
             result.isLeft().shouldBe(true)
@@ -69,7 +62,7 @@ class CartUseCaseTests : FunSpec() {
             val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
 
             //Act
-            productUseCase.submitCart(SubmitCartCommand(cartId.id(), deliveryProvider, paymentServiceProvider))
+            cartUseCase.submitCart(SubmitCartCommand(cartId.id(), deliveryProvider, paymentServiceProvider))
 
             //Assert
             verify { cart.submit(deliveryProvider, paymentServiceProvider) }
@@ -82,7 +75,7 @@ class CartUseCaseTests : FunSpec() {
             every { cartsMock.findById(cartId) } returns null
 
             //Act
-            val result = productUseCase.addProductToCart(AddItemToCartCommand(cartId.id(), productId.id(), 1))
+            val result = cartUseCase.addProductToCart(AddItemToCartCommand(cartId.id(), productId.id(), 1))
 
             //Assert
             result.isLeft().shouldBe(true)
@@ -99,7 +92,7 @@ class CartUseCaseTests : FunSpec() {
             every { productsMock.findById(productId) } returns null
 
             //Act
-            val result = productUseCase.addProductToCart(AddItemToCartCommand(cartId.id(), productId.id(), 1))
+            val result = cartUseCase.addProductToCart(AddItemToCartCommand(cartId.id(), productId.id(), 1))
 
             //Assert
             result.isLeft().shouldBe(true)
@@ -118,14 +111,15 @@ class CartUseCaseTests : FunSpec() {
                 ProductDescription("description"),
                 ProductPrice(
                     BigDecimal.valueOf(250)
-                )
+                ),
+                ImageId(UUID.randomUUID().toString())
             )
             every { cartsMock.findById(cartId) } returns cart
             every { productsMock.findById(productId) } returns product
             val command = AddItemToCartCommand(cartId.id(), productId.id(), 1)
 
             //Act
-            val result = productUseCase.addProductToCart(command)
+            val result = cartUseCase.addProductToCart(command)
 
             //Assert
             verify { cart.addItem(productId, 1) }
@@ -138,7 +132,7 @@ class CartUseCaseTests : FunSpec() {
             every { cartsMock.findById(cartId) } returns null
 
             //Act
-            val result = productUseCase.removeProductFromCart(RemoveItemFromCartCommand(cartId.id(), productId.id()))
+            val result = cartUseCase.removeProductFromCart(RemoveItemFromCartCommand(cartId.id(), productId.id()))
 
             //Assert
             result.isLeft().shouldBe(true)
@@ -157,17 +151,44 @@ class CartUseCaseTests : FunSpec() {
                 ProductDescription("description"),
                 ProductPrice(
                     BigDecimal.valueOf(250)
-                )
+                ),
+                ImageId(UUID.randomUUID().toString())
             )
             every { cartsMock.findById(cartId) } returns cart
             every { productsMock.findById(productId) } returns product
             val command = RemoveItemFromCartCommand(cartId.id(), productId.id())
 
             //Act
-            val result = productUseCase.removeProductFromCart(command)
+            val result = cartUseCase.removeProductFromCart(command)
 
             //Assert
             verify { cart.removeItem(productId) }
+        }
+
+        test("Cart should be saved when no error occurred") {
+            //Arrange
+            val command = CreateCartCommand()
+            val cartId = CartId(UUID.randomUUID().toString())
+            every { cartsMock.nextIdentity() } returns cartId
+
+            //Act
+            cartUseCase.createCart(command)
+
+            //Assert
+            verify { cartsMock.save(any(), any()) }
+        }
+
+        test("Cart occurred events should be published when no error occurred"){
+            //Arrange
+            val command = CreateCartCommand()
+            val cartId = CartId(UUID.randomUUID().toString())
+            every { cartsMock.nextIdentity() } returns cartId
+
+            //Act
+            cartUseCase.createCart(command)
+
+            //Assert
+            verify { eventPublisherMock.publishBatch(any()) }
         }
     }
 }

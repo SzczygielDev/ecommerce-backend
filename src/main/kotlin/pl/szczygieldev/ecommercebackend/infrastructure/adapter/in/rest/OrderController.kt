@@ -17,14 +17,15 @@ import pl.szczygieldev.ecommercebackend.application.port.out.CommandResultStorag
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
 import pl.szczygieldev.ecommercebackend.domain.OrderId
 import pl.szczygieldev.ecommercebackend.domain.ParcelDimensions
-import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandId
+import pl.szczygieldev.ecommercebackend.application.port.`in`.command.common.CommandId
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.command.common.CommandResult
 import java.net.URI
-import pl.szczygieldev.ecommercebackend.application.handlers.common.CommandResult
-import pl.szczygieldev.ecommercebackend.application.model.OrderProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.query.model.OrderProjection
 import pl.szczygieldev.ecommercebackend.domain.CartId
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.OrderNotFoundError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.CommandNotFoundError
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.command.MediatorFacade
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.advice.mapToError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presenter.CommandPresenter
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.rest.presenter.OrderPresenter
@@ -33,12 +34,11 @@ import java.util.UUID
 @RestController
 @RequestMapping("/orders")
 class OrderController(
-    val orderUseCase: OrderUseCase,
     val ordersProjections: OrdersProjections,
-    val orderShippingUseCase: OrderShippingUseCase,
     val commandResultStorage: CommandResultStorage,
     val commandPresenter: CommandPresenter,
-    val orderPresenter: OrderPresenter
+    val orderPresenter: OrderPresenter,
+    val mediator: MediatorFacade
 ) {
     @GetMapping
     fun getOrders(
@@ -83,7 +83,7 @@ class OrderController(
         return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
             val command = AcceptOrderCommand(commandId, OrderId(orderId.toString()))
-            orderUseCase.acceptOrder(command).bind()
+            mediator.sendAsync(command)
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
@@ -108,7 +108,7 @@ class OrderController(
     ): ResponseEntity<*> {
         return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
-            orderUseCase.rejectOrder(RejectOrderCommand(commandId, OrderId(orderId.toString()))).bind()
+            mediator.sendAsync(RejectOrderCommand(commandId, OrderId(orderId.toString())))
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
@@ -132,7 +132,7 @@ class OrderController(
     ): ResponseEntity<*> {
         return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
-            orderUseCase.cancelOrder(CancelOrderCommand(commandId, OrderId(orderId.toString()))).bind()
+            mediator.sendAsync(CancelOrderCommand(commandId, OrderId(orderId.toString())))
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
@@ -156,7 +156,7 @@ class OrderController(
     ): ResponseEntity<*> {
         return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
-            orderUseCase.returnOrder(ReturnOrderCommand(commandId, OrderId(orderId.toString()))).bind()
+            mediator.sendAsync(ReturnOrderCommand(commandId, OrderId(orderId.toString())))
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
@@ -182,7 +182,7 @@ class OrderController(
         return either<AppError, CommandResult> {
             val command = BeginOrderPackingCommand( CommandId(commandId.toString()),OrderId(orderId.toString()))
             val commandId = command.id
-            orderShippingUseCase.beginPacking(command).bind()
+            mediator.send(command).bind()
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
@@ -212,7 +212,7 @@ class OrderController(
                 parcelDimensions
             )
             val commandId = command.id
-            orderShippingUseCase.completePacking(
+            mediator.send(
                 command
             ).bind()
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))

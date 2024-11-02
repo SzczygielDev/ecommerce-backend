@@ -12,8 +12,8 @@ class ProductPresenter {
             product.productId.id(),
             product.title.value,
             product.description.content,
-            product.price.amount
-
+            product.price.amount,
+            product.imageId.id()
         )
     }
 
@@ -22,13 +22,14 @@ class ProductPresenter {
             product.productId.id(),
             product.title.value,
             product.description.content,
-            product.price.amount, product.priceChanges.map { priceChange ->
+            product.price.amount,
+            product.priceChanges.map { priceChange ->
                 ProductFullDto.ProductPriceChangeDto(
                     priceChange.newPrice.amount,
                     priceChange.timestamp
                 )
-            }
-
+            },
+            product.imageId.id()
         )
     }
 }

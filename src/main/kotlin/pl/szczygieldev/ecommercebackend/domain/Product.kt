@@ -10,7 +10,8 @@ class Product private constructor(
     val productId: ProductId,
     var title: ProductTitle,
     var description: ProductDescription,
-    val basePrice: ProductPrice
+    val basePrice: ProductPrice,
+    var imageId: ImageId
 ) : EventSourcedEntity<ProductEvent>() {
     private var _price: ProductPrice = basePrice
     val price: ProductPrice get() = _price
@@ -23,11 +24,12 @@ class Product private constructor(
             productId: ProductId,
             title: ProductTitle,
             description: ProductDescription,
-            price: ProductPrice
+            price: ProductPrice,
+            imageId: ImageId
         ): Product {
             require(price.amount > BigDecimal.ZERO) { "Product price must be positive value, provided='$price'" }
-            val product = Product(productId, title, description, price)
-            product.raiseEvent(ProductCreated(productId, title, description, price))
+            val product = Product(productId, title, description, price,imageId)
+            product.raiseEvent(ProductCreated(productId, title, description, price,imageId))
             return product
         }
 
@@ -35,9 +37,10 @@ class Product private constructor(
             productId: ProductId,
             title: ProductTitle,
             description: ProductDescription,
-            price: ProductPrice
+            price: ProductPrice,
+            imageId: ImageId
         ): Product {
-            return Product(productId, title, description, price)
+            return Product(productId, title, description, price,imageId)
         }
     }
 

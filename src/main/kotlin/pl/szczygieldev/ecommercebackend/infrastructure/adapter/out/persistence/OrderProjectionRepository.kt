@@ -1,7 +1,7 @@
 package pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.persistence
 
 import org.springframework.stereotype.Repository
-import pl.szczygieldev.ecommercebackend.application.model.OrderProjection
+import pl.szczygieldev.ecommercebackend.application.port.`in`.query.model.OrderProjection
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
 import pl.szczygieldev.ecommercebackend.domain.CartId
 import pl.szczygieldev.ecommercebackend.domain.OrderId
