@@ -1,6 +1,5 @@
 package pl.szczygieldev.ecommercebackend.application
 
-import arrow.core.raise.either
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -9,10 +8,8 @@ import io.mockk.*
 import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.*
 import pl.szczygieldev.ecommercebackend.application.port.out.Carts
-import pl.szczygieldev.ecommercebackend.application.port.out.CommandResultStorage
 import pl.szczygieldev.ecommercebackend.application.port.out.Products
 import pl.szczygieldev.ecommercebackend.domain.*
-import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.CartNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.error.ProductNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.event.CartEvent
@@ -105,14 +102,11 @@ class CartUseCaseTests : FunSpec() {
             val cartId = CartId(UUID.randomUUID().toString())
             val cart = spyk<Cart>(Cart.create(cartId))
             val productId = ProductId(UUID.randomUUID().toString())
-            val product = Product.create(
+            val product = Product(
                 productId,
-                ProductTitle("product A"),
-                ProductDescription("description"),
-                ProductPrice(
-                    BigDecimal.valueOf(250)
-                ),
-                ImageId(UUID.randomUUID().toString())
+                "product A",
+                BigDecimal.valueOf(250),
+                ImageId(UUID.randomUUID().toString()),
             )
             every { cartsMock.findById(cartId) } returns cart
             every { productsMock.findById(productId) } returns product
@@ -145,15 +139,13 @@ class CartUseCaseTests : FunSpec() {
             val cartId = CartId(UUID.randomUUID().toString())
             val cart = spyk<Cart>(Cart.create(cartId))
             val productId = ProductId(UUID.randomUUID().toString())
-            val product = Product.create(
+            val product = Product(
                 productId,
-                ProductTitle("product A"),
-                ProductDescription("description"),
-                ProductPrice(
-                    BigDecimal.valueOf(250)
-                ),
-                ImageId(UUID.randomUUID().toString())
+                "product A",
+                BigDecimal.valueOf(250),
+                ImageId(UUID.randomUUID().toString()),
             )
+
             every { cartsMock.findById(cartId) } returns cart
             every { productsMock.findById(productId) } returns product
             val command = RemoveItemFromCartCommand(cartId.id(), productId.id())

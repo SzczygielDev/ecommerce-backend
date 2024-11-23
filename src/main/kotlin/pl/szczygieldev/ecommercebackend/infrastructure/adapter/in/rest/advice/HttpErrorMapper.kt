@@ -7,6 +7,7 @@ import pl.szczygieldev.ecommercebackend.domain.error.*
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.CommandAlreadyProcessingError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.CommandNotFoundError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.ImageUploadError
+import pl.szczygieldev.ecommercebackend.domain.error.InfrastructureError
 
 internal fun mapToError(error: AppError): ResponseEntity<*> {
     return when (error) {
@@ -18,11 +19,6 @@ internal fun mapToError(error: AppError): ResponseEntity<*> {
             .body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, error.message))
 
         is CartNotFoundError -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.message))
-        //endregion
-
-        //region Product
-        is ProductNotFoundError -> ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.message))
         //endregion
 

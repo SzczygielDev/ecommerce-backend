@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pl.szczygieldev.ecommercebackend.application.port.`in`.query.model.OrderProjection
-import pl.szczygieldev.ecommercebackend.application.port.out.CommandResultStorage
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.command.CommandResultStorage
 import pl.szczygieldev.ecommercebackend.application.port.out.OrdersProjections
 import pl.szczygieldev.ecommercebackend.domain.CartId
 import pl.szczygieldev.ecommercebackend.domain.OrderId

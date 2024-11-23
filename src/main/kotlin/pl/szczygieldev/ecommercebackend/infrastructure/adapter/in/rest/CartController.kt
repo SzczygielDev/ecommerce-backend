@@ -4,7 +4,6 @@ import arrow.core.raise.either
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import pl.szczygieldev.ecommercebackend.application.port.`in`.query.model.CartProjection
-import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.AddItemToCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.RemoveItemFromCartCommand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.SubmitCartCommand

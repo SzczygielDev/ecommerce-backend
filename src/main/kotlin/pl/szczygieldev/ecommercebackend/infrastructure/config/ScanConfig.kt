@@ -8,7 +8,7 @@ import pl.szczygieldev.shared.architecture.UseCase
 
 @Configuration
 @ComponentScan(
-    basePackages = ["pl.szczygieldev.ecommercebackend"],
+    basePackages = ["pl.szczygieldev.ecommercebackend","pl.szczygieldev.product"],
     includeFilters = [
         ComponentScan.Filter(
             type = FilterType.ANNOTATION,

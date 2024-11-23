@@ -1,6 +1,7 @@
 package pl.szczygieldev.ecommercebackend.application.port.`in`.query.model
 
 import pl.szczygieldev.ecommercebackend.domain.*
+import java.math.BigDecimal
 import java.time.Instant
 
 data class OrderProjection(
@@ -17,8 +18,8 @@ data class OrderProjection(
     * */
     data class OrderItemProjection(
         val productId: ProductId,
-        var title: ProductTitle,
-        val price: ProductPrice,
+        var title: String,
+        val price: BigDecimal,
         val quantity: Int,
         val imageId: ImageId
     )

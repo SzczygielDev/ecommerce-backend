@@ -96,8 +96,8 @@ class OrderShippingUseCaseTests : FunSpec() {
                     ProductId(
                         UUID.randomUUID().toString(),
                     ),
-                    ProductTitle(""),
-                    ProductPrice(amount),
+                    "",
+                    amount,
                     1, imageId
                 )
             )

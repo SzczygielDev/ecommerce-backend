@@ -31,8 +31,8 @@ class OrderPresenter {
             orderProjection.items.map { orderItemProjection ->
                 OrderDto.OrderItemDto(
                     orderItemProjection.productId.id(),
-                    orderItemProjection.title.value,
-                    orderItemProjection.price.amount,
+                    orderItemProjection.title,
+                    orderItemProjection.price,
                     orderItemProjection.quantity,
                     orderItemProjection.imageId.id()
                 )
@@ -70,8 +70,8 @@ class OrderPresenter {
             orderProjection.createdAt, orderProjection.items.map { orderItemProjection ->
                 OrderFullDto.OrderItemFullDto(
                     orderItemProjection.productId.id(),
-                    orderItemProjection.title.value,
-                    orderItemProjection.price.amount,
+                    orderItemProjection.title,
+                    orderItemProjection.price,
                     orderItemProjection.quantity,
                     orderItemProjection.imageId.id()
                 )

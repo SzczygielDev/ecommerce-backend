@@ -14,10 +14,8 @@ import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.*
 import pl.szczygieldev.ecommercebackend.application.port.out.*
 import pl.szczygieldev.ecommercebackend.domain.*
-import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.domain.error.CartNotFoundError
 import pl.szczygieldev.ecommercebackend.domain.error.OrderNotFoundError
-import pl.szczygieldev.ecommercebackend.domain.event.CartEvent
 import pl.szczygieldev.ecommercebackend.domain.event.OrderEvent
 import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 import java.math.BigDecimal

@@ -36,9 +36,9 @@ class SmtpMailService(val mailSender: JavaMailSender, val ordersProjections: Ord
             Instant.now().atZone(ZoneId.systemDefault()).format(formatter),
             order.items.map { item ->
                 OrderConfirmationTemplateData.ProductItem(
-                    item.title.value,
+                    item.title,
                     item.quantity,
-                    item.price.amount.setScale(2, RoundingMode.HALF_UP).toPlainString()
+                    item.price.setScale(2, RoundingMode.HALF_UP).toPlainString()
                 )
             }
         )

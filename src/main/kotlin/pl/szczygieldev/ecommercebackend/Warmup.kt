@@ -6,12 +6,12 @@ import org.springframework.core.io.ClassPathResource
 import org.springframework.http.MediaTypeFactory
 import org.springframework.stereotype.Component
 import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
-import pl.szczygieldev.ecommercebackend.application.port.`in`.ProductUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CreateCartCommand
-import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CreateProductCommand
-import pl.szczygieldev.ecommercebackend.application.port.out.Products
-import pl.szczygieldev.ecommercebackend.domain.ImageId
-import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.persistence.ImageRepository
+import pl.szczygieldev.product.application.port.out.Products
+import pl.szczygieldev.product.domain.ImageId
+import pl.szczygieldev.product.infrastructure.adapter.out.persistence.ImageRepository
+import pl.szczygieldev.product.application.port.`in`.ProductUseCase
+import pl.szczygieldev.product.application.port.`in`.command.CreateProductCommand
 import kotlin.jvm.optionals.getOrNull
 
 

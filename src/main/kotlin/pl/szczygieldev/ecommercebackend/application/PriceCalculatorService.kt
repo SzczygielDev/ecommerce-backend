@@ -28,7 +28,7 @@ class PriceCalculatorService(
             val product = products.findById(productId)
                 ?: raise(MissingProductForCalculateError.forProduct(productId))
 
-            return@mapOrAccumulate product.price.amount * cartEntry.quantity.toBigDecimal()
+            return@mapOrAccumulate product.price * cartEntry.quantity.toBigDecimal()
         }.fold({
             errors ->
             val ids = errors.map { error -> error.productId.id() }.toList().toString()

@@ -78,22 +78,16 @@ class PriceCalculatorUseCaseTests() : FunSpec() {
 
         test("Calculating cart total should return correct amount inside CartTotalRecalculated event") {
             //Arrange
-            val productA = Product.create(
+            val productA = Product(
                 ProductId(UUID.randomUUID().toString()),
-                ProductTitle("product A"),
-                ProductDescription("description"),
-                ProductPrice(
-                    BigDecimal.valueOf(250)
-                ),
+                "product A",
+                BigDecimal.valueOf(250),
                 ImageId(UUID.randomUUID().toString())
             )
-            val productB = Product.create(
+            val productB = Product(
                 ProductId(UUID.randomUUID().toString()),
-                ProductTitle("product B"),
-                ProductDescription("description"),
-                ProductPrice(
-                    BigDecimal.valueOf(500)
-                ),
+                "product B",
+                BigDecimal.valueOf(500),
                 ImageId(UUID.randomUUID().toString())
             )
             val cartId = CartId(UUID.randomUUID().toString())

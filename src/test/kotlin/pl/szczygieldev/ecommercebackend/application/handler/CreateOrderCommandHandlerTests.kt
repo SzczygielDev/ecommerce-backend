@@ -10,11 +10,12 @@ import pl.szczygieldev.ecommercebackend.infrastructure.adapter.`in`.command.hand
 import pl.szczygieldev.ecommercebackend.application.port.`in`.CartUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.OrderUseCase
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.CreateOrderCommand
-import pl.szczygieldev.ecommercebackend.application.port.out.CommandResultStorage
+import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.command.CommandResultStorage
 import pl.szczygieldev.ecommercebackend.domain.CartId
 import pl.szczygieldev.ecommercebackend.domain.DeliveryProvider
 import pl.szczygieldev.ecommercebackend.domain.PaymentServiceProvider
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
+
 
 class CreateOrderCommandHandlerTests : FunSpec() {
     val orderUseCaseMock = mockk<OrderUseCase>();

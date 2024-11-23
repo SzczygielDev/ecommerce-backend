@@ -5,7 +5,6 @@ import arrow.core.raise.either
 import org.springframework.stereotype.Repository
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.common.Command
 import pl.szczygieldev.ecommercebackend.application.port.`in`.command.common.CommandId
-import pl.szczygieldev.ecommercebackend.application.port.out.CommandResultStorage
 import pl.szczygieldev.ecommercebackend.domain.error.AppError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.CommandAlreadyProcessingError
 import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.CommandNotFoundError
