@@ -1,4 +1,4 @@
-package pl.szczygieldev.ecommercebackend.application.port.`in`.command.common
+package pl.szczygieldev.product.application.port.`in`.command.common
 
 import arrow.core.Either
 import com.trendyol.kediatr.CommandWithResult

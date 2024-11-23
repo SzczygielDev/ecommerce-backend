@@ -6,7 +6,7 @@ import org.springframework.http.MediaTypeFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.ImageUploadError
+import pl.szczygieldev.product.infrastructure.adapter.error.ImageUploadError
 import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.advice.mapToError
 import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.resource.ImageUploadResponse
 import pl.szczygieldev.product.infrastructure.adapter.out.persistence.ImageRepository

@@ -1,4 +1,4 @@
-package pl.szczygieldev.ecommercebackend.infrastructure.adapter.error
+package pl.szczygieldev.product.infrastructure.adapter.error
 
 import pl.szczygieldev.product.domain.error.InfrastructureError
 

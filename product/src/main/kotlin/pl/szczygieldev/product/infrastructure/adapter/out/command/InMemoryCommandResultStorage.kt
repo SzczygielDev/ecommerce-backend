@@ -1,21 +1,20 @@
-package pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.command
+package pl.szczygieldev.product.infrastructure.adapter.out.command
 
 import arrow.core.Either
 import arrow.core.raise.either
 import org.springframework.stereotype.Repository
-import pl.szczygieldev.ecommercebackend.application.port.`in`.command.common.Command
-import pl.szczygieldev.ecommercebackend.application.port.`in`.command.common.CommandId
-import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.CommandAlreadyProcessingError
-import pl.szczygieldev.ecommercebackend.infrastructure.adapter.error.CommandNotFoundError
+import pl.szczygieldev.product.application.port.`in`.command.common.Command
+import pl.szczygieldev.product.application.port.`in`.command.common.CommandId
+import pl.szczygieldev.product.infrastructure.adapter.error.CommandAlreadyProcessingError
+import pl.szczygieldev.product.infrastructure.adapter.error.CommandNotFoundError
 import pl.szczygieldev.product.domain.error.AppError
 import pl.szczygieldev.product.infrastructure.adapter.`in`.command.common.CommandResult
 import pl.szczygieldev.product.infrastructure.adapter.`in`.command.common.CommandResultError
 import pl.szczygieldev.product.infrastructure.adapter.`in`.command.common.CommandResultStatus
-import pl.szczygieldev.product.infrastructure.adapter.out.command.CommandResultStorage
 import java.time.Duration
 import java.time.Instant
 
-@Repository
+@Repository("product.InMemoryCommandResultStorage")
 class InMemoryCommandResultStorage : CommandResultStorage{
     private val db = mutableMapOf<CommandId, CommandResult  >()
 

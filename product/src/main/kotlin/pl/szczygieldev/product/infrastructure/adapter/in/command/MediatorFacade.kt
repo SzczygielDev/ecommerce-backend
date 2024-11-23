@@ -8,8 +8,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.springframework.stereotype.Component
-import pl.szczygieldev.ecommercebackend.application.port.`in`.command.common.Command
-import pl.szczygieldev.ecommercebackend.infrastructure.adapter.out.command.InMemoryCommandResultStorage
+import pl.szczygieldev.product.application.port.`in`.command.common.Command
+import pl.szczygieldev.product.infrastructure.adapter.out.command.InMemoryCommandResultStorage
 import pl.szczygieldev.product.domain.error.AppError
 
 @Component("productModule.MediatorFacade")
