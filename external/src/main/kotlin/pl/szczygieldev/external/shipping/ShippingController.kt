@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pl.szczygieldev.external.shipping.model.ParcelDimensions
-import pl.szczygieldev.external.shipping.model.ParcelLabelResponse
-import pl.szczygieldev.external.shipping.model.RegisterParcelRequest
-import pl.szczygieldev.external.shipping.model.RegisterParcelResponse
+import pl.szczygieldev.external.shipping.dto.ParcelLabelResponse
+import pl.szczygieldev.external.shipping.dto.RegisterParcelRequest
+import pl.szczygieldev.external.shipping.dto.RegisterParcelResponse
 import java.util.*
 
 @RestController
 @RequestMapping(("/external/shipping/"))
-class ShippingController(val shippingService: ShippingService) {
+internal class ShippingController(val shippingService: ShippingService) {
 
     @PostMapping("/register")
     fun registerParcel(@RequestBody request: RegisterParcelRequest): ResponseEntity<*> {

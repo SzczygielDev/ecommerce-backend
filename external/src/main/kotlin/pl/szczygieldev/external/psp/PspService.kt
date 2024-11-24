@@ -6,14 +6,14 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import pl.szczygieldev.external.psp.model.Payment
-import pl.szczygieldev.external.psp.model.PaymentNotificationRequest
+import pl.szczygieldev.external.psp.dto.PaymentNotificationRequest
 import pl.szczygieldev.external.psp.model.PaymentStatus
 import java.math.BigDecimal
 import java.net.URL
 import java.util.UUID
 
 @Service
-class PspService {
+internal class PspService {
     private val db = mutableMapOf<UUID, Payment>()
     private val paymentUrlBase = "http://localhost:64427/mockPayment/"
     private val notificationUrl = "http://localhost:8080/payments/notification"

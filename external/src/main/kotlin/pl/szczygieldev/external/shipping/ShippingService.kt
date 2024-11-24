@@ -1,17 +1,17 @@
 package pl.szczygieldev.external.shipping
 
-import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.http.HttpHeaders
+ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import pl.szczygieldev.external.shipping.dto.ParcelStatusChangeNotificationRequest
 import pl.szczygieldev.external.shipping.model.*
 import java.net.URL
 import java.util.*
 
 @Service
-class ShippingService {
+internal class ShippingService {
     private val db = mutableMapOf<UUID, Parcel>()
 
     private val notificationUrl = "http://localhost:8080/delivery/notification"

@@ -2,16 +2,16 @@ package pl.szczygieldev.external.psp
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import pl.szczygieldev.external.psp.model.RegisterPaymentRequest
-import pl.szczygieldev.external.psp.model.RegisterPaymentResponse
-import pl.szczygieldev.external.psp.model.VerifyPaymentRequest
+import pl.szczygieldev.external.psp.dto.RegisterPaymentRequest
+import pl.szczygieldev.external.psp.dto.RegisterPaymentResponse
+import pl.szczygieldev.external.psp.dto.VerifyPaymentRequest
 import java.math.BigDecimal
 import java.net.URL
 import java.util.UUID
 
 @RestController
 @RequestMapping(("/external/psp/"))
-class PspController(val pspService: PspService) {
+internal class PspController(val pspService: PspService) {
     @PostMapping("/register")
     fun register(@RequestBody registerPaymentRequest: RegisterPaymentRequest): ResponseEntity<*> {
         val registeredPayment = pspService.register(
