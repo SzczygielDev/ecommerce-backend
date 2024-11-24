@@ -1,62 +1,73 @@
 package pl.szczygieldev.order.infrastructure.adapter.out.integration.shipping
 
-import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.context.ApplicationEventPublisher
-import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToMono
 import pl.szczygieldev.order.application.port.out.ShippingService
 import pl.szczygieldev.order.domain.DeliveryProvider
 import pl.szczygieldev.order.domain.ParcelDimensions
 import pl.szczygieldev.order.domain.ParcelId
 import pl.szczygieldev.order.domain.ParcelLabel
-import pl.szczygieldev.order.infrastructure.integration.shipping.Parcel
-import pl.szczygieldev.order.infrastructure.integration.shipping.ParcelSize
-import pl.szczygieldev.order.infrastructure.integration.shipping.ParcelStatus
-import pl.szczygieldev.order.infrastructure.integration.shipping.ParcelStatusChangeNotification
+import pl.szczygieldev.order.infrastructure.adapter.out.integration.shipping.model.ParcelLabelResponse
+import pl.szczygieldev.order.infrastructure.adapter.out.integration.shipping.model.RegisterParcelRequest
+import pl.szczygieldev.order.infrastructure.adapter.out.integration.shipping.model.RegisterParcelResponse
 import java.net.URL
-import java.util.UUID
 
 @Component
-class MockShippingService(val eventPublisher: ApplicationEventPublisher) : ShippingService {
-    companion object {
-        private val log = KotlinLogging.logger { }
-    }
-    private val db = mutableMapOf<String, Parcel>()
+class MockShippingService : ShippingService {
+    private val webClient = WebClient.builder()
+        .baseUrl("http://localhost:8080/external/shipping/")
+        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .build()
+
     override fun registerParcel(parcelDimensions: ParcelDimensions, deliveryProvider: DeliveryProvider): ParcelId? {
-        val parcel = Parcel(
-            UUID.randomUUID().toString(),
-            ParcelStatus.PREPARING,
-            generateLabel(),
-            ParcelSize(
-                parcelDimensions.width,
-                parcelDimensions.length,
-                parcelDimensions.height,
-                parcelDimensions.weight
-            )
-        )
+        return when (deliveryProvider) {
+            DeliveryProvider.MOCK_DELIVERY_PROVIDER -> {
+                val response = webClient.post()
+                    .uri("/register")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .bodyValue(
+                        RegisterParcelRequest(
+                            parcelDimensions.width,
+                            parcelDimensions.length,
+                            parcelDimensions.height,
+                            parcelDimensions.weight
+                        )
+                    )
+                    .exchangeToMono<RegisterParcelResponse?> { response ->
 
-        db.put(
-            parcel.id,
-            parcel
-        )
+                        if (!response.statusCode().is2xxSuccessful) {
+                            return@exchangeToMono null
+                        }
 
-        return ParcelId(parcel.id)
-    }
+                        return@exchangeToMono response.bodyToMono<RegisterParcelResponse>()
+                    }
+                    .onErrorComplete()
+                    .block() ?: return null
 
-    override fun getLabel(parcelId: ParcelId): ParcelLabel? = db.get(parcelId.id)?.parcelLabel
-
-
-    @Scheduled(fixedRate = 1000 * 60)
-    private fun processParcels() {
-       val parcelsToProcess =  db.values
-        parcelsToProcess.forEach { parcel ->
-            if(parcel.status!=ParcelStatus.DELIVERED){
-                parcel.status=ParcelStatus.entries.get(parcel.status.ordinal+1)
-                eventPublisher.publishEvent(ParcelStatusChangeNotification(parcel.id,parcel.status))
+                ParcelId(response.parcelId)
             }
         }
     }
 
-    private fun generateLabel(): ParcelLabel = ParcelLabel(URL("http://localhost:8080/"))
+    override fun getLabel(parcelId: ParcelId): ParcelLabel? {
+        val response = webClient.get()
+            .uri("/label")
+            .accept(MediaType.APPLICATION_JSON)
+            .exchangeToMono<ParcelLabelResponse?> { response ->
+
+                if (!response.statusCode().is2xxSuccessful) {
+                    return@exchangeToMono null
+                }
+
+                return@exchangeToMono response.bodyToMono<ParcelLabelResponse>()
+            }
+            .onErrorComplete()
+            .block() ?: return null
+
+        return ParcelLabel(URL(response.url))
+    }
 }
 

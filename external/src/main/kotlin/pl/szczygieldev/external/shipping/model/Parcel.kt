@@ -1,5 +1,3 @@
-package pl.szczygieldev.order.infrastructure.integration.shipping
-
-import pl.szczygieldev.order.domain.ParcelLabel
+package pl.szczygieldev.external.shipping.model
 
 data class Parcel(val id: String, var status: ParcelStatus, val parcelLabel: ParcelLabel, val parcelSize: ParcelSize)
