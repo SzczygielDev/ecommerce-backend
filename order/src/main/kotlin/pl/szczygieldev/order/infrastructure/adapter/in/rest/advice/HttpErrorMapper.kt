@@ -49,6 +49,8 @@ internal fun mapToError(error: AppError): ResponseEntity<*> {
             .body(ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, error.message))
         is PackingNotInProgressError -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, error.message))
+        is CannotRegisterPaymentError -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, error.message))
         //endregion
 
         //region Infrastructure errors

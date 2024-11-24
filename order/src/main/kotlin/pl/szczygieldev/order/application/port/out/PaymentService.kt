@@ -7,7 +7,7 @@ import java.math.BigDecimal
 import java.net.URL
 
 interface PaymentService {
-    fun registerPayment(amount: BigDecimal, paymentServiceProvider: PaymentServiceProvider, returnURL: URL): PaymentRegistration
+    fun registerPayment(amount: BigDecimal, paymentServiceProvider: PaymentServiceProvider, returnURL: URL): PaymentRegistration?
 
     fun verifyPayment(paymentId: PaymentId)
 }

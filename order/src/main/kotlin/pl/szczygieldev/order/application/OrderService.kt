@@ -10,6 +10,7 @@ import pl.szczygieldev.order.application.port.out.PaymentService
 import pl.szczygieldev.order.domain.Order
 import pl.szczygieldev.order.domain.PaymentDetails
 import pl.szczygieldev.order.domain.error.AppError
+import pl.szczygieldev.order.domain.error.CannotRegisterPaymentError
 import pl.szczygieldev.order.domain.error.CartNotFoundError
 import pl.szczygieldev.order.domain.error.OrderNotFoundError
 import pl.szczygieldev.order.domain.event.OrderEvent
@@ -37,8 +38,8 @@ class OrderService(
         val paymentRegistration = paymentService.registerPayment(
             cart.amount,
             paymentServiceProvider,
-            URL("${pl.szczygieldev.order.application.OrderService.Companion.paymentReturnUrlBase}${orderId.id()}")
-        )
+            URL("${paymentReturnUrlBase}${orderId.id()}")
+        ) ?: raise(CannotRegisterPaymentError.forPsp(paymentServiceProvider))
 
         val order = Order.create(
             orderId,

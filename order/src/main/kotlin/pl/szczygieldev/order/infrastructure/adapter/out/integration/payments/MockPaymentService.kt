@@ -1,59 +1,72 @@
 package pl.szczygieldev.order.infrastructure.adapter.out.integration.payments
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.context.ApplicationEventPublisher
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToMono
 import pl.szczygieldev.order.application.port.out.PaymentService
 import pl.szczygieldev.order.domain.PaymentId
 import pl.szczygieldev.order.domain.PaymentRegistration
 import pl.szczygieldev.order.domain.PaymentServiceProvider
-import pl.szczygieldev.order.domain.PaymentTransactionId
-import pl.szczygieldev.order.infrastructure.integration.payments.Payment
-import pl.szczygieldev.order.infrastructure.integration.payments.PaymentStatus
-import pl.szczygieldev.order.infrastructure.integration.payments.PaymentNotification
+import pl.szczygieldev.order.infrastructure.adapter.out.integration.payments.model.RegisterPaymentRequest
+import pl.szczygieldev.order.infrastructure.adapter.out.integration.payments.model.RegisterPaymentResponse
+import pl.szczygieldev.order.infrastructure.adapter.out.integration.payments.model.VerifyPaymentRequest
 import java.math.BigDecimal
 import java.net.URL
-import java.util.UUID
 
 @Component
-class MockPaymentService(val eventPublisher: ApplicationEventPublisher) : PaymentService {
-    private val db = mutableMapOf<PaymentId, Payment>()
-    private val paymentUrlBase = "http://localhost:64427/mockPayment/"
-    
+class MockPaymentService : PaymentService {
     companion object {
         private val log = KotlinLogging.logger { }
+        private val webClient = WebClient.builder()
+            .baseUrl("http://localhost:8080/external/psp/")
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .build()
     }
 
     override fun registerPayment(
         amount: BigDecimal,
         paymentServiceProvider: PaymentServiceProvider,
         returnURL: URL
-    ): PaymentRegistration {
+    ): PaymentRegistration? {
         val result = when (paymentServiceProvider) {
             PaymentServiceProvider.MOCK_PSP -> {
-                val paymentId =  PaymentId(UUID.randomUUID().toString())
+                val response = webClient.post()
+                    .uri("/register")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .bodyValue(RegisterPaymentRequest(amount, returnURL.toString()))
+                    .exchangeToMono<RegisterPaymentResponse?> {
+                            response ->
+
+                        if(!response.statusCode().is2xxSuccessful){
+                            return@exchangeToMono null
+                        }
+
+                        return@exchangeToMono response.bodyToMono<RegisterPaymentResponse>()
+                    }
+                    .onErrorComplete()
+                    .block() ?: return null
+
+                val paymentId = PaymentId(response.paymentId)
                 PaymentRegistration(
-                    paymentId ,
-                    URL("$paymentUrlBase${paymentId.id()}"),
+                    paymentId,
+                    URL(response.paymentUrl),
                 )
             }
         }
-        db.put(result.id, Payment(result.id.id(), amount, BigDecimal.ZERO, result.url, PaymentStatus.NOT_PAID,returnURL))
+
         return result
     }
 
     override fun verifyPayment(paymentId: PaymentId) {
-        log.info { "Payment verified " }
+        webClient.post()
+            .uri("/verify")
+            .accept(MediaType.APPLICATION_JSON)
+            .bodyValue(VerifyPaymentRequest(paymentId.id()))
+            .retrieve()
+            .toBodilessEntity()
+            .block()
     }
-
-
-    fun mockPayment(paymentId: PaymentId, amount: BigDecimal) {
-        val foundPayment = db[paymentId] ?: throw RuntimeException("Payment for id='${paymentId.id}' not found!")
-        val paymentTransactionId =PaymentTransactionId(UUID.randomUUID().toString())
-        foundPayment.pay(amount)
-
-       eventPublisher.publishEvent(PaymentNotification(paymentTransactionId,paymentId, amount))
-    }
-
-    fun getMockPayment(paymentId: PaymentId) : Payment? = db[paymentId]
 }

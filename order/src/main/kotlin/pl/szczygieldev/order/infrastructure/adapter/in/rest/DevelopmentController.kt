@@ -18,23 +18,9 @@ import java.math.BigDecimal
 class DevelopmentController(
     val commandResultStorage: CommandResultStorage,
     val commandPresenter: CommandPresenter,
-    val mockPaymentService: MockPaymentService,
 ) {
     @GetMapping("/commands")
     fun getCommands(): ResponseEntity<*> {
         return ResponseEntity.ok(commandResultStorage.findAll().map { commandPresenter.toFullDto(it) })
-    }
-
-    @GetMapping("/mockPayment/{paymentId}")
-    fun getMockPayment(@PathVariable paymentId: String,): ResponseEntity<*> {
-        val paymentId = PaymentId(paymentId)
-        return ResponseEntity.ok(mockPaymentService.getMockPayment(paymentId))
-    }
-
-    @PostMapping("/mockPayment/{paymentId}")
-    fun mockPayment(@PathVariable paymentId: String, @RequestParam amount: BigDecimal): ResponseEntity<*> {
-        val paymentId = PaymentId(paymentId)
-        mockPaymentService.mockPayment(paymentId, amount)
-        return ResponseEntity.ok(mockPaymentService.getMockPayment(paymentId))
     }
 }

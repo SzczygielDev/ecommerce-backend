@@ -1,4 +1,4 @@
-package pl.szczygieldev.order.infrastructure.integration.payments
+package pl.szczygieldev.external.psp.model
 
 import java.math.BigDecimal
 import java.net.URL

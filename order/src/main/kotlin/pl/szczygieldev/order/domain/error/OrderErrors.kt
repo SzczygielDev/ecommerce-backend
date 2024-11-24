@@ -1,9 +1,6 @@
 package pl.szczygieldev.order.domain.error
 
-import pl.szczygieldev.order.domain.CartId
-import pl.szczygieldev.order.domain.OrderId
-import pl.szczygieldev.order.domain.ParcelId
-import pl.szczygieldev.order.domain.PaymentId
+import pl.szczygieldev.order.domain.*
 import java.math.BigDecimal
 
 sealed class OrderError(message: String) : AppError(message)
@@ -87,6 +84,14 @@ data class PackingNotInProgressError(override val message: String) : OrderError(
     companion object {
         fun forId(id: OrderId): PackingNotInProgressError {
             return PackingNotInProgressError("Cannot finish packing order with id='${id.id()}' because packing is not started")
+        }
+    }
+}
+
+data class CannotRegisterPaymentError(override val message: String) : OrderError(message)  {
+    companion object {
+        fun forPsp(psp: PaymentServiceProvider): CannotRegisterPaymentError {
+            return CannotRegisterPaymentError("Failed to register payment for psp='$psp''")
         }
     }
 }
