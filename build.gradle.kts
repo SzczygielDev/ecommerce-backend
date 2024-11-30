@@ -22,13 +22,17 @@ configurations {
 
 repositories {
     mavenCentral()
+}
 
-    maven {
-        name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/szczygieldev/ecommerce-library")
-        credentials {
-            username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-            password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+allprojects {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/szczygieldev/ecommerce-library")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+            }
         }
     }
 }
