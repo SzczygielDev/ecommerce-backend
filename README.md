@@ -1,5 +1,8 @@
 # Ecommerce backend
 
+## Building
+To build this application, you'll need to be [authenticated to GitHub Packages](https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages#authenticating-to-github-packages), this is necessary to access internal library required for the project.
+
 ## Licences
 
 Demo images [Unsplash Licence](https://unsplash.com/license)\
