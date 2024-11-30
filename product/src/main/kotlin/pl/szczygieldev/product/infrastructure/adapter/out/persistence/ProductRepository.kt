@@ -1,11 +1,11 @@
 package pl.szczygieldev.product.infrastructure.adapter.out.persistence
 
 import org.springframework.stereotype.Repository
+import pl.szczygieldev.ecommercelibrary.eventstore.EventStore
 import pl.szczygieldev.product.application.port.out.Products
 import pl.szczygieldev.product.domain.Product
 import pl.szczygieldev.product.domain.ProductId
 import pl.szczygieldev.product.domain.event.ProductEvent
-import pl.szczygieldev.shared.eventstore.EventStore
 import java.util.UUID
 
 @Repository("productModule.ProductRepository")

@@ -2,6 +2,8 @@ package pl.szczygieldev.product.application
 
 import arrow.core.Either
 import arrow.core.raise.either
+import pl.szczygieldev.ecommercelibrary.architecture.UseCase
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventPublisher
 import pl.szczygieldev.product.application.port.`in`.ProductUseCase
 import pl.szczygieldev.product.application.port.`in`.command.CreateProductCommand
 import pl.szczygieldev.product.application.port.`in`.command.UpdateProductCommand
@@ -13,8 +15,6 @@ import pl.szczygieldev.product.domain.ProductTitle
 import pl.szczygieldev.product.domain.error.AppError
 import pl.szczygieldev.product.domain.error.ProductNotFoundError
 import pl.szczygieldev.product.domain.event.ProductEvent
-import pl.szczygieldev.shared.architecture.UseCase
-import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 import java.math.BigDecimal
 
 @UseCase

@@ -1,7 +1,7 @@
 package pl.szczygieldev.product.domain.event
 
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEvent
 import pl.szczygieldev.product.domain.*
-import pl.szczygieldev.shared.ddd.core.DomainEvent
 
 sealed class ProductEvent : DomainEvent<ProductEvent>()
 

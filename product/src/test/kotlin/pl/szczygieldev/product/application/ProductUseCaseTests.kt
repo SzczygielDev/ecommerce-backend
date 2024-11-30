@@ -6,6 +6,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventPublisher
 import pl.szczygieldev.product.application.port.out.Products
 import pl.szczygieldev.product.application.port.`in`.ProductUseCase
 import pl.szczygieldev.product.application.port.`in`.command.CreateProductCommand
@@ -13,7 +14,6 @@ import pl.szczygieldev.product.application.port.`in`.command.UpdateProductComman
 import pl.szczygieldev.product.domain.*
 import pl.szczygieldev.product.domain.error.ProductNotFoundError
 import pl.szczygieldev.product.domain.event.ProductEvent
-import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 import java.math.BigDecimal
 import java.util.*
 

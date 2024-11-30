@@ -10,7 +10,7 @@ repositories {
 
 dependencies {
     //implementation(kotlin("stdlib-jdk8"))
-    implementation(project(mapOf("path" to ":shared")))
+    //implementation(project(mapOf("path" to ":shared")))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
        implementation("org.springframework.boot:spring-boot-starter:3.2.5")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -34,6 +34,7 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core-jvm:5.9.0")
     implementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     testImplementation("io.mockk:mockk:1.13.11")
+    implementation("pl.szczygieldev:ecommerce-library:1.0.0")
 }
 
 kotlin {

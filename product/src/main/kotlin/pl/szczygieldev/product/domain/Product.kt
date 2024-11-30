@@ -1,9 +1,9 @@
 package pl.szczygieldev.product.domain
 
+import pl.szczygieldev.ecommercelibrary.ddd.core.EventSourcedEntity
 import pl.szczygieldev.product.domain.event.ProductCreated
 import pl.szczygieldev.product.domain.event.ProductEvent
 import pl.szczygieldev.product.domain.event.ProductPriceUpdated
-import pl.szczygieldev.shared.ddd.core.EventSourcedEntity
 import java.math.BigDecimal
 
 class Product private constructor(
