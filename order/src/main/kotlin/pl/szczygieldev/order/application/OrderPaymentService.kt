@@ -2,6 +2,8 @@ package pl.szczygieldev.order.application
 
 import arrow.core.Either
 import arrow.core.raise.either
+import pl.szczygieldev.ecommercelibrary.architecture.UseCase
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventPublisher
 import pl.szczygieldev.order.application.port.`in`.OrderPaymentUseCase
 import pl.szczygieldev.order.application.port.`in`.command.ProcessPaymentCommand
 import pl.szczygieldev.order.application.port.out.Orders
@@ -10,8 +12,6 @@ import pl.szczygieldev.order.application.port.out.PaymentService
 import pl.szczygieldev.order.domain.error.AppError
 import pl.szczygieldev.order.domain.error.OrderNotFoundError
 import pl.szczygieldev.order.domain.event.OrderEvent
-import pl.szczygieldev.shared.architecture.UseCase
-import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 
 @UseCase
 class OrderPaymentService(

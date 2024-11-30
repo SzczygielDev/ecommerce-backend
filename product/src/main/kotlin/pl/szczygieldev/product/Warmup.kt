@@ -12,7 +12,7 @@ import pl.szczygieldev.product.domain.ImageId
 import pl.szczygieldev.product.infrastructure.adapter.out.persistence.ImageRepository
 import kotlin.jvm.optionals.getOrNull
 
-@Component("product.Warmup")
+@Component("productModule.Warmup")
 class Warmup(val productUseCase: ProductUseCase, val imageRepository: ImageRepository, val products: Products) {
     private fun initializeImage(path: String): ImageId? {
         val resource = ClassPathResource(

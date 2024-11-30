@@ -4,12 +4,12 @@ import arrow.core.raise.either
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventHandler
 import pl.szczygieldev.order.application.port.`in`.OrderMailUseCase
 import pl.szczygieldev.order.application.port.`in`.command.SendOrderConfirmationMailCommand
 import pl.szczygieldev.order.domain.error.AppError
 import pl.szczygieldev.order.domain.event.*
 import pl.szczygieldev.order.infrastructure.adapter.`in`.command.MediatorFacade
-import pl.szczygieldev.shared.ddd.core.DomainEventHandler
 @Component
 class OrderEventHandler(
     val mediator: MediatorFacade

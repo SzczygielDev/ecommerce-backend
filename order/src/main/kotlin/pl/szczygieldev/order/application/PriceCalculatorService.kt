@@ -3,6 +3,8 @@ package pl.szczygieldev.order.application
 import arrow.core.Either
 import arrow.core.mapOrAccumulate
 import arrow.core.raise.either
+import pl.szczygieldev.ecommercelibrary.architecture.UseCase
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventPublisher
 import pl.szczygieldev.order.application.port.`in`.PriceCalculatorUseCase
 import pl.szczygieldev.order.application.port.`in`.command.CalculateCartTotalCommand
 import pl.szczygieldev.order.application.port.out.CartsProjections
@@ -13,9 +15,6 @@ import pl.szczygieldev.order.domain.error.MissingProductForCalculateError
 import pl.szczygieldev.order.domain.error.UnableToCalculateCartTotalError
 import pl.szczygieldev.order.domain.event.CartTotalRecalculated
 import pl.szczygieldev.order.domain.event.PriceCalculatorEvent
-import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
-import pl.szczygieldev.shared.architecture.UseCase
-
 @UseCase
 class PriceCalculatorService(
     val products: Products,

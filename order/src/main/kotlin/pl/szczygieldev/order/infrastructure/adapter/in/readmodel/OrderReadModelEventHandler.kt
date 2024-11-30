@@ -4,6 +4,7 @@ import arrow.core.raise.either
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventHandler
 import pl.szczygieldev.order.application.port.`in`.query.model.OrderProjection
 import pl.szczygieldev.order.application.port.`in`.query.model.PaymentProjection
 import pl.szczygieldev.order.application.port.out.OrdersProjections
@@ -13,7 +14,6 @@ import pl.szczygieldev.order.domain.error.AppError
 import pl.szczygieldev.order.domain.error.OrderNotFoundError
 import pl.szczygieldev.order.domain.error.ProductNotFoundError
 import pl.szczygieldev.order.domain.event.*
-import pl.szczygieldev.shared.ddd.core.DomainEventHandler
 import java.math.BigDecimal
 
 @Component

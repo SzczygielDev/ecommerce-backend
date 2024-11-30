@@ -2,11 +2,11 @@ package pl.szczygieldev.order.domain
 
 import arrow.core.Either
 import arrow.core.raise.either
+import pl.szczygieldev.ecommercelibrary.ddd.core.EventSourcedEntity
 import pl.szczygieldev.order.domain.error.CartAlreadySubmittedError
 import pl.szczygieldev.order.domain.error.CartError
 import pl.szczygieldev.order.domain.error.CartNotActiveError
 import pl.szczygieldev.order.domain.event.*
-import pl.szczygieldev.shared.ddd.core.EventSourcedEntity
 
 
 class Cart private constructor(val cartId: CartId) : EventSourcedEntity<CartEvent>() {

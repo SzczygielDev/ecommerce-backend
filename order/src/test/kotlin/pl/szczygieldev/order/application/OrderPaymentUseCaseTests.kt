@@ -6,6 +6,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventPublisher
 import pl.szczygieldev.order.application.port.`in`.query.model.OrderProjection
 import pl.szczygieldev.order.application.port.`in`.query.model.PaymentProjection
 import pl.szczygieldev.order.application.port.`in`.command.ProcessPaymentCommand
@@ -15,7 +16,6 @@ import pl.szczygieldev.order.application.port.out.PaymentService
 import pl.szczygieldev.order.domain.*
 import pl.szczygieldev.order.domain.error.OrderNotFoundError
 import pl.szczygieldev.order.domain.event.OrderEvent
-import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 import java.math.BigDecimal
 import java.net.URL
 import java.time.Instant

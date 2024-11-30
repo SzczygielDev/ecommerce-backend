@@ -5,6 +5,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventPublisher
 import pl.szczygieldev.order.application.port.`in`.CartUseCase
 import pl.szczygieldev.order.application.port.`in`.command.*
 import pl.szczygieldev.order.application.port.out.Carts
@@ -13,7 +14,6 @@ import pl.szczygieldev.order.domain.*
 import pl.szczygieldev.order.domain.error.CartNotFoundError
 import pl.szczygieldev.order.domain.error.ProductNotFoundError
 import pl.szczygieldev.order.domain.event.CartEvent
-import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 import java.math.BigDecimal
 import java.util.*
 

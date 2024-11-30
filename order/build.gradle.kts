@@ -6,7 +6,7 @@ plugins {
 }
 dependencies {
     //implementation(kotlin("stdlib-jdk8"))
-    implementation(project(mapOf("path" to ":shared")))
+    //implementation(project(mapOf("path" to ":shared")))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.boot:spring-boot-starter:3.2.5")
     implementation(project(mapOf("path" to ":product")))
@@ -36,6 +36,7 @@ dependencies {
     implementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     testImplementation("io.mockk:mockk:1.13.11")
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.4.0")
+    implementation("pl.szczygieldev:ecommerce-library:1.0.0")
 }
 repositories {
     mavenCentral()

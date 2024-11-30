@@ -4,7 +4,7 @@ import arrow.core.raise.either
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
-import pl.szczygieldev.shared.ddd.core.DomainEventHandler
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventHandler
 import pl.szczygieldev.order.application.port.`in`.query.model.CartProjection
 import pl.szczygieldev.order.application.port.`in`.CartUseCase
 import pl.szczygieldev.order.application.port.`in`.OrderUseCase

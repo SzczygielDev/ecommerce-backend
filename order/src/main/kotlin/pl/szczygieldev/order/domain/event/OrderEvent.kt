@@ -1,7 +1,7 @@
 package pl.szczygieldev.order.domain.event
 
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEvent
 import pl.szczygieldev.order.domain.*
-import pl.szczygieldev.shared.ddd.core.DomainEvent
 import java.math.BigDecimal
 
 sealed class OrderEvent : DomainEvent<OrderEvent>()

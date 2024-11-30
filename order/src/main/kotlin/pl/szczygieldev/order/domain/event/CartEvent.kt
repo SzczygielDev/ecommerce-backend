@@ -1,10 +1,10 @@
 package pl.szczygieldev.order.domain.event
 
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEvent
 import pl.szczygieldev.order.domain.CartId
 import pl.szczygieldev.order.domain.DeliveryProvider
 import pl.szczygieldev.order.domain.PaymentServiceProvider
 import pl.szczygieldev.order.domain.ProductId
-import pl.szczygieldev.shared.ddd.core.DomainEvent
 
 sealed class CartEvent() : DomainEvent<CartEvent>()
 class CartCreated(val cartId: CartId) : CartEvent(){

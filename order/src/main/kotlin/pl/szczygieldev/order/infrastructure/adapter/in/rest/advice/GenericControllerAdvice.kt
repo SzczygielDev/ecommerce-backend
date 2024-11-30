@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import pl.szczygieldev.order.infrastructure.adapter.out.eventstore.exception.EventStoreLockingException
+import pl.szczygieldev.ecommercelibrary.eventstore.exception.EventStoreLockingException
 import java.lang.RuntimeException
 
 @RestControllerAdvice

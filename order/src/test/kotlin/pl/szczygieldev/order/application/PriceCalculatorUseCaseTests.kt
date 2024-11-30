@@ -5,6 +5,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventPublisher
 import pl.szczygieldev.order.application.port.`in`.query.model.CartProjection
 import pl.szczygieldev.order.application.port.`in`.PriceCalculatorUseCase
 import pl.szczygieldev.order.application.port.`in`.command.CalculateCartTotalCommand
@@ -15,7 +16,6 @@ import pl.szczygieldev.order.domain.error.CartNotFoundError
 import pl.szczygieldev.order.domain.error.UnableToCalculateCartTotalError
 import pl.szczygieldev.order.domain.event.CartTotalRecalculated
 import pl.szczygieldev.order.domain.event.PriceCalculatorEvent
-import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 import java.math.BigDecimal
 import java.util.*
 

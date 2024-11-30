@@ -2,6 +2,8 @@ package pl.szczygieldev.order.application
 
 import arrow.core.Either
 import arrow.core.raise.either
+import pl.szczygieldev.ecommercelibrary.architecture.UseCase
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventPublisher
 import pl.szczygieldev.order.application.port.`in`.OrderShippingUseCase
 import pl.szczygieldev.order.application.port.`in`.command.BeginOrderPackingCommand
 import pl.szczygieldev.order.application.port.`in`.command.ChangeOrderDeliveryStatusCommand
@@ -13,8 +15,6 @@ import pl.szczygieldev.order.domain.error.AppError
 import pl.szczygieldev.order.domain.error.CannotRegisterParcelError
 import pl.szczygieldev.order.domain.error.OrderNotFoundError
 import pl.szczygieldev.order.domain.event.OrderEvent
-import pl.szczygieldev.shared.architecture.UseCase
-import pl.szczygieldev.shared.ddd.core.DomainEventPublisher
 
 @UseCase
 class OrderShippingService(val orders: Orders,

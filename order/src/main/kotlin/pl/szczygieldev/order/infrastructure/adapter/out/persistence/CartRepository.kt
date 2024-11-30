@@ -1,11 +1,11 @@
 package pl.szczygieldev.order.infrastructure.adapter.out.persistence
 
 import org.springframework.stereotype.Repository
+import pl.szczygieldev.ecommercelibrary.eventstore.EventStore
 import pl.szczygieldev.order.application.port.out.Carts
 import pl.szczygieldev.order.domain.Cart
 import pl.szczygieldev.order.domain.CartId
 import pl.szczygieldev.order.domain.event.CartEvent
-import pl.szczygieldev.shared.eventstore.EventStore
 import java.util.UUID
 
 @Repository

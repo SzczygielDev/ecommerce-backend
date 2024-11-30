@@ -1,6 +1,6 @@
 package pl.szczygieldev.order.domain.event
 
-import pl.szczygieldev.shared.ddd.core.DomainEvent
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEvent
 import pl.szczygieldev.order.domain.CartId
 import java.math.BigDecimal
 
