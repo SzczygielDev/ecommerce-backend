@@ -5,8 +5,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.23"
 }
 dependencies {
-    //implementation(kotlin("stdlib-jdk8"))
-    //implementation(project(mapOf("path" to ":shared")))
+    implementation(project(mapOf("path" to ":shared")))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.boot:spring-boot-starter:3.2.5")
     implementation(project(mapOf("path" to ":product")))

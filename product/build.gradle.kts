@@ -9,14 +9,13 @@ repositories {
 }
 
 dependencies {
-    //implementation(kotlin("stdlib-jdk8"))
-    //implementation(project(mapOf("path" to ":shared")))
+    implementation(project(mapOf("path" to ":shared")))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-       implementation("org.springframework.boot:spring-boot-starter:3.2.5")
+    implementation("org.springframework.boot:spring-boot-starter:3.2.5")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-   implementation("org.springframework.boot:spring-boot-starter-web:3.2.5")
+    implementation("org.springframework.boot:spring-boot-starter-web:3.2.5")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("io.arrow-kt:arrow-core:1.2.4")
 
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")

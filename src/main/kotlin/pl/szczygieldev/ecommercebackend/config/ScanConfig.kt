@@ -4,7 +4,7 @@ import com.trendyol.kediatr.CommandWithResultHandler
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
-import pl.szczygieldev.shared.architecture.UseCase
+import pl.szczygieldev.ecommercelibrary.architecture.UseCase
 
 @Configuration
 @ComponentScan(
