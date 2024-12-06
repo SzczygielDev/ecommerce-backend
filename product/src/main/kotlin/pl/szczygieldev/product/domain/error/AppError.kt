@@ -1,4 +1,6 @@
 package pl.szczygieldev.product.domain.error
 
-sealed class AppError(open val message: String)
+import pl.szczygieldev.ecommercelibrary.command.CommandError
+
+sealed class AppError(override val message: String) : CommandError(message)
 abstract class InfrastructureError(message: String) : AppError(message)

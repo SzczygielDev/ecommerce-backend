@@ -3,13 +3,13 @@ package pl.szczygieldev.product.infrastructure.adapter.`in`.rest
 import arrow.core.raise.either
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import pl.szczygieldev.ecommercelibrary.command.Mediator
 import pl.szczygieldev.product.application.port.`in`.command.CreateProductCommand
 import pl.szczygieldev.product.application.port.`in`.command.UpdateProductCommand
 import pl.szczygieldev.product.application.port.out.Products
 import pl.szczygieldev.product.domain.*
 import pl.szczygieldev.product.domain.error.AppError
 import pl.szczygieldev.product.domain.error.ProductNotFoundError
-import pl.szczygieldev.product.infrastructure.adapter.`in`.command.MediatorFacade
 import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.advice.mapToError
 import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.presenter.ProductPresenter
 import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.resource.CreateProductRequest
@@ -19,7 +19,7 @@ import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.resource.UpdateP
 @RequestMapping("/products")
 @RestController
 class ProductController(
-    val mediator: MediatorFacade,
+    val mediator: Mediator,
     val products: Products,
     val productPresenter: ProductPresenter
 ) {

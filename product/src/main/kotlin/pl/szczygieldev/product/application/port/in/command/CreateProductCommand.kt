@@ -1,6 +1,6 @@
 package pl.szczygieldev.product.application.port.`in`.command
 
-import pl.szczygieldev.product.application.port.`in`.command.common.Command
+import pl.szczygieldev.ecommercelibrary.command.Command
 import pl.szczygieldev.product.domain.ImageId
 import pl.szczygieldev.product.domain.ProductId
 
