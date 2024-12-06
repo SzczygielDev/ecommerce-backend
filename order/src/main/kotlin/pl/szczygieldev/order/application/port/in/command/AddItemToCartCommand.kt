@@ -1,6 +1,6 @@
 package pl.szczygieldev.order.application.port.`in`.command
 
-import pl.szczygieldev.order.application.port.`in`.command.common.Command
+import pl.szczygieldev.ecommercelibrary.command.Command
 
 
 data class AddItemToCartCommand(val cartId: String, val productId: String, val quantity: Int) : Command(){

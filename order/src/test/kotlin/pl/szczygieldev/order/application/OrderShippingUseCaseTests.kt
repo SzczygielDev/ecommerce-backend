@@ -6,8 +6,8 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
+import pl.szczygieldev.ecommercelibrary.command.CommandId
 import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventPublisher
-import pl.szczygieldev.order.application.port.`in`.command.common.CommandId
 import pl.szczygieldev.order.application.port.`in`.query.model.OrderProjection
 import pl.szczygieldev.order.application.port.`in`.query.model.PaymentProjection
 import pl.szczygieldev.order.application.port.`in`.command.BeginOrderPackingCommand

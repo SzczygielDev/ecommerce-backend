@@ -3,6 +3,7 @@ package pl.szczygieldev.order.infrastructure.adapter.`in`.rest
 import arrow.core.raise.either
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import pl.szczygieldev.ecommercelibrary.command.Mediator
 import pl.szczygieldev.order.application.port.`in`.query.model.CartProjection
 import pl.szczygieldev.order.application.port.`in`.command.AddItemToCartCommand
 import pl.szczygieldev.order.application.port.`in`.command.RemoveItemFromCartCommand
@@ -11,7 +12,6 @@ import pl.szczygieldev.order.application.port.out.CartsProjections
 import pl.szczygieldev.order.domain.UserId
 import pl.szczygieldev.order.domain.error.AppError
 import pl.szczygieldev.order.domain.error.CartNotFoundError
-import pl.szczygieldev.order.infrastructure.adapter.`in`.command.MediatorFacade
 import pl.szczygieldev.order.infrastructure.adapter.`in`.rest.advice.mapToError
 import pl.szczygieldev.order.infrastructure.adapter.`in`.rest.presenter.CartPresenter
 import pl.szczygieldev.order.infrastructure.adapter.`in`.rest.resource.AddItemToCartRequest
@@ -20,7 +20,7 @@ import java.util.UUID
 @RequestMapping("/carts")
 @RestController
 class CartController(
-    val mediator: MediatorFacade,
+    val mediator: Mediator,
     val cartRepository: CartsProjections,
     val cartPresenter: CartPresenter
 ) {

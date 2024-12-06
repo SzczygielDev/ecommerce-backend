@@ -3,13 +3,14 @@ package pl.szczygieldev.order.infrastructure.adapter.`in`.rest.advice
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
+import pl.szczygieldev.ecommercelibrary.command.CommandAlreadyProcessingError
+import pl.szczygieldev.ecommercelibrary.command.CommandError
+import pl.szczygieldev.ecommercelibrary.command.CommandNotFoundError
 import pl.szczygieldev.order.domain.error.*
-import pl.szczygieldev.order.infrastructure.adapter.error.CommandAlreadyProcessingError
-import pl.szczygieldev.order.infrastructure.adapter.error.CommandNotFoundError
 import pl.szczygieldev.order.infrastructure.adapter.error.ImageUploadError
 import pl.szczygieldev.order.domain.error.InfrastructureError
 
-internal fun mapToError(error: AppError): ResponseEntity<*> {
+internal fun mapToError(error: CommandError): ResponseEntity<*> {
     return when (error) {
         //region Cart
         is CartAlreadySubmittedError -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -55,10 +56,7 @@ internal fun mapToError(error: AppError): ResponseEntity<*> {
 
         //region Infrastructure errors
         is InfrastructureError -> when (error) {
-            is CommandNotFoundError -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.message))
-            is CommandAlreadyProcessingError -> ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, error.message))
+
             is ImageUploadError -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, error.message))
             else -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -67,5 +65,12 @@ internal fun mapToError(error: AppError): ResponseEntity<*> {
         //endregion
         is ProductNotFoundError -> ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.message))
+        is CommandNotFoundError -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.message))
+        is CommandAlreadyProcessingError -> ResponseEntity.status(HttpStatus.CONFLICT)
+            .body(ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, error.message))
+
+        else -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, error.message))
     }
 }

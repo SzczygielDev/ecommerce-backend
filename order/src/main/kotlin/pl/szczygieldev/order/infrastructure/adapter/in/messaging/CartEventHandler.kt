@@ -4,33 +4,30 @@ import arrow.core.raise.either
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
+import pl.szczygieldev.ecommercelibrary.command.CommandError
+import pl.szczygieldev.ecommercelibrary.command.Mediator
 import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventHandler
 import pl.szczygieldev.order.application.port.`in`.query.model.CartProjection
-import pl.szczygieldev.order.application.port.`in`.CartUseCase
-import pl.szczygieldev.order.application.port.`in`.OrderUseCase
-import pl.szczygieldev.order.application.port.`in`.PriceCalculatorUseCase
 import pl.szczygieldev.order.application.port.`in`.command.CalculateCartTotalCommand
-import pl.szczygieldev.order.application.port.`in`.command.CreateCartCommand
 import pl.szczygieldev.order.application.port.`in`.command.CreateOrderCommand
 import pl.szczygieldev.order.application.port.out.CartsProjections
 import pl.szczygieldev.order.domain.CartStatus
 import pl.szczygieldev.order.domain.error.AppError
 import pl.szczygieldev.order.domain.error.CartNotFoundError
 import pl.szczygieldev.order.domain.event.*
-import pl.szczygieldev.order.infrastructure.adapter.`in`.command.MediatorFacade
 import java.math.BigDecimal
 
 @Component
 class CartEventHandler(
     private val cartsProjections: CartsProjections,
-    private val mediator: MediatorFacade
+    private val mediator: Mediator
 ) : DomainEventHandler<CartEvent> {
     companion object {
         private val log = KotlinLogging.logger { }
     }
 
     @EventListener
-    override suspend fun handleEvent(domainEvent: CartEvent) = either<AppError, Unit> {
+    override suspend fun handleEvent(domainEvent: CartEvent) = either<CommandError, Unit> {
         when (domainEvent) {
             is CartCreated -> cartsProjections.save(
                 CartProjection(

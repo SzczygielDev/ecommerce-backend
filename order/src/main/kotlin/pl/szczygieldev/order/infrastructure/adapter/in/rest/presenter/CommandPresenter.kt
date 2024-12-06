@@ -1,8 +1,8 @@
 package pl.szczygieldev.order.infrastructure.adapter.`in`.rest.presenter
 
 import org.springframework.stereotype.Component
+import pl.szczygieldev.ecommercelibrary.command.CommandResult
 import pl.szczygieldev.order.infrastructure.adapter.`in`.rest.resource.CommandResultDto
-import pl.szczygieldev.order.infrastructure.adapter.`in`.command.common.CommandResult
 import pl.szczygieldev.order.infrastructure.adapter.`in`.rest.resource.CommandResultFullDto
 
 @Component

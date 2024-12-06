@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pl.szczygieldev.order.application.port.`in`.query.model.OrderProjection
-import pl.szczygieldev.order.infrastructure.adapter.out.command.CommandResultStorage
 import pl.szczygieldev.order.application.port.out.OrdersProjections
 import pl.szczygieldev.order.domain.CartId
 import pl.szczygieldev.order.domain.OrderId
@@ -22,7 +21,6 @@ import java.util.*
 @RequestMapping("/admin/orders")
 class AdminOrderController(
     val ordersProjections: OrdersProjections,
-    val commandResultStorage: CommandResultStorage,
     val orderPresenter: OrderPresenter
 ) {
     @GetMapping
