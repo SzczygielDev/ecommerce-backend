@@ -1,4 +1,4 @@
-package pl.szczygieldev.order.infrastructure.adapter.out.eventstore
+package pl.szczygieldev.ecommercebackend.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.annotation.Bean

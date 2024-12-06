@@ -1,4 +1,4 @@
-package pl.szczygieldev.product.infrastructure.adapter.`in`.command
+package pl.szczygieldev.ecommercebackend.config
 
 import com.trendyol.kediatr.PipelineBehavior
 import org.springframework.context.annotation.Bean
@@ -10,13 +10,13 @@ import pl.szczygieldev.ecommercelibrary.command.MediatorFacade
 
 @Configuration
 class MediatorConfig {
-    @Bean("productModule.MediatorFacade")
-    fun mediator(mediator: com.trendyol.kediatr.Mediator, commandResultStorage: CommandResultStorage): Mediator{
+    @Bean("globalMediator")
+    fun mediator(mediator: com.trendyol.kediatr.Mediator, commandResultStorage: CommandResultStorage): Mediator {
         return MediatorFacade(mediator,commandResultStorage)
     }
 
-    @Bean("productModule.ExposedTxPipelineBehaviour")
-    fun txPipelineBehaviour(): PipelineBehavior{
+    @Bean
+    fun txPipelineBehaviour(): PipelineBehavior {
         return ExposedTxPipelineBehaviour()
     }
 }

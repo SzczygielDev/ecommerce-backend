@@ -1,4 +1,4 @@
-package pl.szczygieldev.order.infrastructure.adapter.out.command
+package pl.szczygieldev.ecommercebackend.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
