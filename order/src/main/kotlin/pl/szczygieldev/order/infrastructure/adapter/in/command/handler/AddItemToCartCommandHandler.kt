@@ -11,8 +11,8 @@ import pl.szczygieldev.order.domain.error.AppError
 class AddItemToCartCommandHandler(
     val cartUseCase: CartUseCase
 ) :
-    CommandWithResultHandler<AddItemToCartCommand, Either<CommandError, Unit>> {
-    override suspend fun handle(command: AddItemToCartCommand): Either<CommandError, Unit> = either {
+    CommandWithResultHandler<AddItemToCartCommand, Either<AppError, Unit>> {
+    override suspend fun handle(command: AddItemToCartCommand): Either<AppError, Unit> = either {
         cartUseCase.addProductToCart(command).bind()
     }
 }

@@ -13,8 +13,8 @@ import pl.szczygieldev.order.domain.error.AppError
 class CreateOrderCommandHandler(
     val orderUseCase: OrderUseCase,
     val cartUseCase: CartUseCase,
-) : CommandWithResultHandler<CreateOrderCommand, Either<CommandError, Unit>> {
-    override suspend fun handle(command: CreateOrderCommand): Either<CommandError, Unit> = either {
+) : CommandWithResultHandler<CreateOrderCommand, Either<AppError, Unit>> {
+    override suspend fun handle(command: CreateOrderCommand): Either<AppError, Unit> = either {
         orderUseCase.createOrder(command).bind()
         cartUseCase.createCart(CreateCartCommand()).bind()
     }

@@ -3,9 +3,8 @@ package pl.szczygieldev.order.application.handler
 import arrow.core.raise.either
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
+import io.mockk.*
+import pl.szczygieldev.ecommercelibrary.command.Command
 import pl.szczygieldev.ecommercelibrary.command.CommandResultStorage
 import pl.szczygieldev.order.infrastructure.adapter.`in`.command.handler.CreateOrderCommandHandler
 import pl.szczygieldev.order.application.port.`in`.CartUseCase
@@ -26,10 +25,9 @@ class CreateOrderCommandHandlerTests : FunSpec() {
     init {
         isolationMode = IsolationMode.InstancePerLeaf
 
-        coEvery { commandResultStorage.commandBegin(any()) } returns either { }
-        coEvery { commandResultStorage.commandSuccess(any()) } returns either { }
-        coEvery { commandResultStorage.commandFailed(any(), any<AppError>()) } returns either { }
-        coEvery { commandResultStorage.commandFailed(any(), any<List<AppError>>()) } returns either { }
+        coEvery { commandResultStorage.commandBegin(any<Command<*>>()) } just runs
+        coEvery { commandResultStorage.commandSuccess(any()) } just runs
+        coEvery { commandResultStorage.commandFailed(any(), any<AppError>()) } just runs
 
         coEvery { orderUseCaseMock.createOrder(any()) } returns either { }
         coEvery { cartUseCaseMock.createCart(any()) } returns either { }

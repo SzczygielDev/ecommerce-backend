@@ -20,6 +20,7 @@ import pl.szczygieldev.order.application.port.`in`.query.model.OrderProjection
 import pl.szczygieldev.order.domain.CartId
 import pl.szczygieldev.order.domain.error.AppError
 import pl.szczygieldev.order.domain.error.OrderNotFoundError
+import pl.szczygieldev.order.infrastructure.adapter.error.CommandNotFoundError
 import pl.szczygieldev.order.infrastructure.adapter.`in`.rest.advice.mapToError
 import pl.szczygieldev.order.infrastructure.adapter.`in`.rest.presenter.CommandPresenter
 import pl.szczygieldev.order.infrastructure.adapter.`in`.rest.presenter.OrderPresenter
@@ -51,7 +52,7 @@ class OrderController(
 
 
     private fun getOrder(orderId: UUID): ResponseEntity<*> {
-        return either<CommandError, OrderProjection> {
+        return either<AppError, OrderProjection> {
             val id = OrderId(orderId.toString())
             ordersProjections.findById(id) ?: raise(OrderNotFoundError.forId(id))
         }.fold<ResponseEntity<*>>(
@@ -74,7 +75,7 @@ class OrderController(
         @PathVariable commandId: UUID,
         request: HttpServletRequest
     ): ResponseEntity<*> {
-        return either<CommandError, CommandResult> {
+        return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
             val command = AcceptOrderCommand(commandId, OrderId(orderId.toString()))
             mediator.sendAsync(command)
@@ -100,7 +101,7 @@ class OrderController(
         @PathVariable commandId: UUID,
         request: HttpServletRequest
     ): ResponseEntity<*> {
-        return either<CommandError, CommandResult> {
+        return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
             mediator.sendAsync(RejectOrderCommand(commandId, OrderId(orderId.toString())))
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
@@ -124,7 +125,7 @@ class OrderController(
         @PathVariable orderId: UUID, @PathVariable commandId: UUID,
         request: HttpServletRequest
     ): ResponseEntity<*> {
-        return either<CommandError, CommandResult> {
+        return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
             mediator.sendAsync(CancelOrderCommand(commandId, OrderId(orderId.toString())))
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
@@ -148,7 +149,7 @@ class OrderController(
         @PathVariable orderId: UUID, @PathVariable commandId: UUID,
         request: HttpServletRequest
     ): ResponseEntity<*> {
-        return either<CommandError, CommandResult> {
+        return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
             mediator.sendAsync(ReturnOrderCommand(commandId, OrderId(orderId.toString())))
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
@@ -173,7 +174,7 @@ class OrderController(
         @PathVariable orderId: UUID, @PathVariable commandId: UUID,
         request: HttpServletRequest
     ): ResponseEntity<*> {
-        return either<CommandError, CommandResult> {
+        return either<AppError, CommandResult> {
             val command = BeginOrderPackingCommand( CommandId(commandId.toString()),OrderId(orderId.toString()))
             val commandId = command.id
             mediator.send(command).bind()
@@ -199,7 +200,7 @@ class OrderController(
         @RequestBody parcelDimensions: ParcelDimensions,
         request: HttpServletRequest
     ): ResponseEntity<*> {
-        return either<CommandError, CommandResult> {
+        return either<AppError, CommandResult> {
             val command = CompleteOrderPackingCommand(
                 CommandId(commandId.toString()),
                 OrderId(orderId.toString()),

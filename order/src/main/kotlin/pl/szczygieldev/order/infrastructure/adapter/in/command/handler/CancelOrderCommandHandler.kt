@@ -10,8 +10,8 @@ import pl.szczygieldev.order.application.port.`in`.OrderUseCase
 
 class CancelOrderCommandHandler(
     val orderUseCase: OrderUseCase,
-) : CommandWithResultHandler<CancelOrderCommand, Either<CommandError, Unit>> {
-    override suspend fun handle(command: CancelOrderCommand): Either<CommandError, Unit> = either {
+) : CommandWithResultHandler<CancelOrderCommand, Either<AppError, Unit>> {
+    override suspend fun handle(command: CancelOrderCommand): Either<AppError, Unit> = either {
         orderUseCase.cancelOrder(command).bind()
     }
 }

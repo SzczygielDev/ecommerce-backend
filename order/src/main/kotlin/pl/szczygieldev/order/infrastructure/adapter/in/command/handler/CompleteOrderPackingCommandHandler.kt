@@ -10,8 +10,8 @@ import pl.szczygieldev.order.domain.error.AppError
 
 class CompleteOrderPackingCommandHandler(
     val orderShippingUseCase: OrderShippingUseCase
-) : CommandWithResultHandler<CompleteOrderPackingCommand, Either<CommandError, Unit>> {
-    override suspend fun handle(command: CompleteOrderPackingCommand): Either<CommandError, Unit> = either {
+) : CommandWithResultHandler<CompleteOrderPackingCommand, Either<AppError, Unit>> {
+    override suspend fun handle(command: CompleteOrderPackingCommand): Either<AppError, Unit> = either {
         orderShippingUseCase.completePacking(command).bind()
     }
 }

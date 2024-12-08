@@ -9,8 +9,8 @@ import pl.szczygieldev.order.application.port.`in`.command.SubmitCartCommand
 import pl.szczygieldev.order.domain.error.AppError
 
 class SubmitCartCommandHandler(val cartUseCase: CartUseCase) :
-    CommandWithResultHandler<SubmitCartCommand, Either<CommandError, Unit>> {
-    override suspend fun handle(command: SubmitCartCommand): Either<CommandError, Unit> = either {
+    CommandWithResultHandler<SubmitCartCommand, Either<AppError, Unit>> {
+    override suspend fun handle(command: SubmitCartCommand): Either<AppError, Unit> = either {
         cartUseCase.submitCart(command).bind()
     }
 }

@@ -10,8 +10,8 @@ import pl.szczygieldev.order.domain.error.AppError
 
 class ChangeOrderDeliveryStatusCommandHandler(
     val orderShippingUseCase: OrderShippingUseCase
-) : CommandWithResultHandler<ChangeOrderDeliveryStatusCommand, Either<CommandError, Unit>> {
-    override suspend fun handle(command: ChangeOrderDeliveryStatusCommand): Either<CommandError, Unit> = either {
+) : CommandWithResultHandler<ChangeOrderDeliveryStatusCommand, Either<AppError, Unit>> {
+    override suspend fun handle(command: ChangeOrderDeliveryStatusCommand): Either<AppError, Unit> = either {
         orderShippingUseCase.changeDeliveryStatus(command).bind()
     }
 }

@@ -9,8 +9,8 @@ import pl.szczygieldev.order.application.port.`in`.command.CalculateCartTotalCom
 import pl.szczygieldev.order.domain.error.AppError
 
 class CalculateCartTotalCommandHandler(private val priceCalculatorUseCase: PriceCalculatorUseCase) :
-    CommandWithResultHandler<CalculateCartTotalCommand, Either<CommandError, Unit>> {
-    override suspend fun handle(command: CalculateCartTotalCommand): Either<CommandError, Unit> = either {
+    CommandWithResultHandler<CalculateCartTotalCommand, Either<AppError, Unit>> {
+    override suspend fun handle(command: CalculateCartTotalCommand): Either<AppError, Unit> = either {
         priceCalculatorUseCase.calculateCartTotal(command).bind()
     }
 }

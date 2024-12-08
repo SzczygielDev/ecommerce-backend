@@ -8,8 +8,8 @@ import pl.szczygieldev.order.application.port.`in`.OrderPaymentUseCase
 import pl.szczygieldev.order.application.port.`in`.command.ProcessPaymentCommand
 import pl.szczygieldev.order.domain.error.AppError
 
-class ProcessPaymentCommandHandler(val orderPaymentUseCase: OrderPaymentUseCase) : CommandWithResultHandler<ProcessPaymentCommand, Either<CommandError, Unit>> {
-    override suspend fun handle(command: ProcessPaymentCommand): Either<CommandError, Unit> = either {
+class ProcessPaymentCommandHandler(val orderPaymentUseCase: OrderPaymentUseCase) : CommandWithResultHandler<ProcessPaymentCommand, Either<AppError, Unit>> {
+    override suspend fun handle(command: ProcessPaymentCommand): Either<AppError, Unit> = either {
         orderPaymentUseCase.pay(command).bind()
     }
 }

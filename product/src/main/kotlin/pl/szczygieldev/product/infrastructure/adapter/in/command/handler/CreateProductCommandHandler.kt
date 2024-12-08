@@ -9,7 +9,7 @@ import pl.szczygieldev.product.application.port.`in`.command.CreateProductComman
 import pl.szczygieldev.product.domain.error.AppError
 
 class CreateProductCommandHandler(val productUseCase: ProductUseCase) :
-    CommandWithResultHandler<CreateProductCommand, Either<CommandError, Unit>> {
+    CommandWithResultHandler<CreateProductCommand, Either<AppError, Unit>> {
     override suspend fun handle(command: CreateProductCommand): Either<AppError, Unit> = either {
         productUseCase.create(command)
     }
