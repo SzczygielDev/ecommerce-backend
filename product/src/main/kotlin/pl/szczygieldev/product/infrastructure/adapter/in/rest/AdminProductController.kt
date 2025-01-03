@@ -2,10 +2,7 @@ package pl.szczygieldev.product.infrastructure.adapter.`in`.rest
 
 import arrow.core.raise.either
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import pl.szczygieldev.product.application.port.out.Products
 import pl.szczygieldev.product.domain.Product
 import pl.szczygieldev.product.domain.ProductId
@@ -23,8 +20,16 @@ internal class AdminProductController(
     val productPresenter: ProductPresenter
 ) {
     @GetMapping
-    fun getAll(): ResponseEntity<List<ProductFullDto>> =
-        ResponseEntity.ok().body(products.findAll().map { productPresenter.toFullDto(it) })
+    fun getAll(
+        @RequestParam(required = false) offset: Int?,
+        @RequestParam(required = false) limit: Int?
+    ): ResponseEntity<List<ProductFullDto>> {
+        if (offset != null && limit != null) {
+            return ResponseEntity.ok().body(products.findPage(offset, limit).map { productPresenter.toFullDto(it) })
+        }
+
+        return ResponseEntity.ok().body(products.findAll().map { productPresenter.toFullDto(it) })
+    }
 
     @GetMapping("/{id}")
     fun getById(@PathVariable id: String): ResponseEntity<*> {

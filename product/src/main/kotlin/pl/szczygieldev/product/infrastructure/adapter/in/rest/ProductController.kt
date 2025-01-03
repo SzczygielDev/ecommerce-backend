@@ -24,8 +24,16 @@ internal class ProductController(
     val productPresenter: ProductPresenter
 ) {
     @GetMapping
-    fun getAll(): ResponseEntity<List<ProductDto>> =
-        ResponseEntity.ok().body(products.findAll().map { productPresenter.toDto(it) })
+    fun getAll(
+        @RequestParam(required = false) offset: Int?,
+        @RequestParam(required = false) limit: Int?
+    ): ResponseEntity<List<ProductDto>> {
+        if (offset != null && limit != null) {
+            return ResponseEntity.ok().body(products.findPage(offset, limit).map { productPresenter.toDto(it) })
+        }
+
+        return ResponseEntity.ok().body(products.findAll().map { productPresenter.toDto(it) })
+    }
 
     @GetMapping("/{id}")
     fun getById(@PathVariable id: String): ResponseEntity<*> {

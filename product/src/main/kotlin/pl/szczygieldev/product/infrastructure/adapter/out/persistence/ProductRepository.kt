@@ -30,7 +30,7 @@ internal class ProductRepository(val eventStore: EventStore) : Products {
     }
 
     override fun findAll(): List<Product> {
-        return stateTable.values.toList().map{
+        return stateTable.values.toList().map {
             val product = Product.fromSnapshot(
                 it.productId,
                 it.title,
@@ -55,5 +55,10 @@ internal class ProductRepository(val eventStore: EventStore) : Products {
 
     override fun delete(productId: ProductId): Product? {
         return stateTable.remove(productId.id())
+    }
+
+    override fun findPage(offset: Int, limit: Int): List<Product> {
+        val found = findAll()
+        return found.subList(offset, (offset + limit).coerceIn(0, found.size))
     }
 }

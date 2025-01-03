@@ -26,12 +26,20 @@ internal class AdminOrderController(
     @GetMapping
     fun getOrders(
         @RequestParam(required = false) orderId: UUID?,
-        @RequestParam(required = false) cartId: UUID?
+        @RequestParam(required = false) cartId: UUID?,
+        @RequestParam(required = false) offset: Int?,
+        @RequestParam(required = false) limit: Int?,
     ): ResponseEntity<*> {
         if (orderId != null) {
             return getOrder(orderId)
         } else if (cartId != null) {
             return getOrderByCartId(cartId)
+        }
+
+        if (offset != null && limit != null) {
+            return ResponseEntity.ok(
+                ordersProjections.findPage(offset, limit)
+                    .map { orderProjection -> orderPresenter.toFullDto(orderProjection) })
         }
 
         return ResponseEntity.ok(

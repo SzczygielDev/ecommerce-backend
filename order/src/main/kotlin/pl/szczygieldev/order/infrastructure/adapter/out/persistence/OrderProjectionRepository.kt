@@ -24,6 +24,10 @@ internal class OrderProjectionRepository : OrdersProjections {
     override fun findByPaymentId(paymentId: PaymentId): OrderProjection? =
         db.values.find { orderProjection -> orderProjection.paymentProjection.paymentId.sameValueAs(paymentId) }
 
-    override fun findByCartId(cartId: CartId): OrderProjection? =  db.values.find { orderProjection -> orderProjection.cartId.sameValueAs(cartId)}
+    override fun findByCartId(cartId: CartId): OrderProjection? =
+        db.values.find { orderProjection -> orderProjection.cartId.sameValueAs(cartId) }
+
+    override fun findPage(offset: Int, limit: Int): List<OrderProjection> = db.values.toList()
+        .subList(offset, (offset + limit).coerceIn(0, db.values.size))
 
 }

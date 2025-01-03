@@ -13,4 +13,6 @@ internal interface Products {
     fun save(product: Product, version: Int): Product
 
     fun delete(productId: ProductId): Product?
+
+    fun findPage(offset: Int, limit: Int) : List<Product>
 }

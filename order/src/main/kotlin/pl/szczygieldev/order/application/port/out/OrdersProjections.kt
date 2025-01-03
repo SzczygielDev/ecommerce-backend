@@ -6,7 +6,6 @@ import pl.szczygieldev.order.domain.OrderId
 import pl.szczygieldev.order.domain.ParcelId
 import pl.szczygieldev.order.domain.PaymentId
 
-
 internal interface OrdersProjections {
     fun findById(id : OrderId): OrderProjection?
     fun save(order: OrderProjection)
@@ -14,4 +13,5 @@ internal interface OrdersProjections {
     fun findByParcelIdentifier(identifier: ParcelId): OrderProjection?
     fun findByPaymentId(paymentId: PaymentId): OrderProjection?
     fun findByCartId(cartId: CartId): OrderProjection?
+    fun findPage(offset: Int, limit: Int): List<OrderProjection>
 }
