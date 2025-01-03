@@ -6,7 +6,7 @@ import pl.szczygieldev.order.domain.PaymentServiceProvider
 import java.math.BigDecimal
 import java.net.URL
 
-interface PaymentService {
+internal interface PaymentService {
     fun registerPayment(amount: BigDecimal, paymentServiceProvider: PaymentServiceProvider, returnURL: URL): PaymentRegistration?
 
     fun verifyPayment(paymentId: PaymentId)

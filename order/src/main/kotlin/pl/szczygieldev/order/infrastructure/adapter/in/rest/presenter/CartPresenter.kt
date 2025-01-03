@@ -8,7 +8,7 @@ import pl.szczygieldev.order.infrastructure.adapter.`in`.rest.resource.CartEntry
 import java.math.BigDecimal
 
 @Component
-class CartPresenter {
+internal class CartPresenter {
     fun toDto(cart: CartProjection): CartDto {
         return CartDto(
             cart.cartId.id, cart.status, cart.items.map { CartEntryDto(it.productId.id(), it.quantity) }.toList(),

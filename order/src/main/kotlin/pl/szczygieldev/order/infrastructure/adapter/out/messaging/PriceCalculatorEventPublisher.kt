@@ -7,5 +7,5 @@ import pl.szczygieldev.ecommercelibrary.outbox.Outbox
 import pl.szczygieldev.order.domain.event.PriceCalculatorEvent
 
 @Component
-class PriceCalculatorEventPublisher(eventPublisher: ApplicationEventPublisher, outbox: Outbox) :
+internal class PriceCalculatorEventPublisher(eventPublisher: ApplicationEventPublisher, outbox: Outbox) :
     StoreAndForwardEventPublisher<PriceCalculatorEvent>(eventPublisher, outbox)

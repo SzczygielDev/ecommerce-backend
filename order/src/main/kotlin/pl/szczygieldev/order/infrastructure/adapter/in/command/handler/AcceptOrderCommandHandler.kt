@@ -8,7 +8,7 @@ import pl.szczygieldev.order.application.port.`in`.command.AcceptOrderCommand
 import pl.szczygieldev.order.domain.error.AppError
 import pl.szczygieldev.order.application.port.`in`.OrderUseCase
 
-class AcceptOrderCommandHandler(
+internal class AcceptOrderCommandHandler(
     val orderUseCase: OrderUseCase
 ) : CommandWithResultHandler<AcceptOrderCommand, Either<AppError, Unit>> {
 

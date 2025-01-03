@@ -7,7 +7,7 @@ import pl.szczygieldev.order.application.port.`in`.command.RemoveItemFromCartCom
 import pl.szczygieldev.order.application.port.`in`.command.SubmitCartCommand
 import pl.szczygieldev.order.domain.error.AppError
 
-interface CartUseCase {
+internal interface CartUseCase {
     suspend fun createCart(command: CreateCartCommand): Either<AppError, Unit>
     fun submitCart(command: SubmitCartCommand): Either<AppError, Unit>
     fun addProductToCart(command: AddItemToCartCommand): Either<AppError, Unit>

@@ -6,7 +6,7 @@ import java.math.BigDecimal
 import java.net.URL
 import java.time.Instant
 
-data class PaymentFullDto(
+internal data class PaymentFullDto(
     val id: String,
     val amount: BigDecimal,
     val amountPaid: BigDecimal,

@@ -3,7 +3,7 @@ package pl.szczygieldev.order.domain
 import java.math.BigDecimal
 import java.net.URL
 
-class Payment private constructor(
+internal class Payment private constructor(
     val id: PaymentId, val amount: BigDecimal, val url: URL,
     val paymentServiceProvider: PaymentServiceProvider
 ) {

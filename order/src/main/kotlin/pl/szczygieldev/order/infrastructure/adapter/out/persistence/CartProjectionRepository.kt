@@ -8,7 +8,7 @@ import pl.szczygieldev.order.domain.CartStatus
 import pl.szczygieldev.order.domain.UserId
 
 @Repository
-class CartProjectionRepository : CartsProjections {
+internal class CartProjectionRepository : CartsProjections {
     private val db = mutableMapOf<String, CartProjection>()
     override fun findById(id: CartId): CartProjection? = db[id.id]
     override fun save(cart: CartProjection) {

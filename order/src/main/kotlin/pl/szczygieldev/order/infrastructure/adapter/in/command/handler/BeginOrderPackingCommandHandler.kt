@@ -8,7 +8,7 @@ import pl.szczygieldev.order.application.port.`in`.OrderShippingUseCase
 import pl.szczygieldev.order.application.port.`in`.command.BeginOrderPackingCommand
 import pl.szczygieldev.order.domain.error.AppError
 
-class BeginOrderPackingCommandHandler(
+internal class BeginOrderPackingCommandHandler(
     val orderShippingUseCase: OrderShippingUseCase,
 ) :
     CommandWithResultHandler<BeginOrderPackingCommand, Either<AppError, Unit>> {

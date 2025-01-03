@@ -9,7 +9,7 @@ import pl.szczygieldev.product.domain.event.ProductEvent
 import java.util.UUID
 
 @Repository("productModule.ProductRepository")
-class ProductRepository(val eventStore: EventStore) : Products {
+internal class ProductRepository(val eventStore: EventStore) : Products {
     private val stateTable = mutableMapOf<String, Product>()
     override fun nextIdentity(): ProductId = ProductId(UUID.randomUUID().toString())
 

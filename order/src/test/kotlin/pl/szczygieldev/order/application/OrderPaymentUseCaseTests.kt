@@ -21,7 +21,7 @@ import java.net.URL
 import java.time.Instant
 import java.util.UUID
 
-class OrderPaymentUseCaseTests : FunSpec() {
+internal class OrderPaymentUseCaseTests : FunSpec() {
     val ordersMock = mockk<Orders>()
     val ordersProjections = mockk<OrdersProjections>()
     val orderEventPublisherMock = mockk<DomainEventPublisher<OrderEvent>>()

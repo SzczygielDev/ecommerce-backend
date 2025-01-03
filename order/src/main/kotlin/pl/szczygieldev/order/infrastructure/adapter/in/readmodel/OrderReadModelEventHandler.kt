@@ -17,7 +17,7 @@ import pl.szczygieldev.order.domain.event.*
 import java.math.BigDecimal
 
 @Component
-class OrderReadModelEventHandler(
+internal class OrderReadModelEventHandler(
     val ordersProjections: OrdersProjections,
     val products: Products
 ) :

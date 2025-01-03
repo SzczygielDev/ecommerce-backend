@@ -16,7 +16,7 @@ import pl.szczygieldev.order.infrastructure.adapter.out.integration.shipping.mod
 import java.net.URL
 
 @Component
-class MockShippingService : ShippingService {
+internal class MockShippingService : ShippingService {
     private val webClient = WebClient.builder()
         .baseUrl("http://localhost:8080/external/shipping/")
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)

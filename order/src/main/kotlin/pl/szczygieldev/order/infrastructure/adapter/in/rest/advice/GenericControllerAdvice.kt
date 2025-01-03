@@ -10,7 +10,7 @@ import pl.szczygieldev.ecommercelibrary.eventstore.exception.EventStoreLockingEx
 import java.lang.RuntimeException
 
 @RestControllerAdvice
-class GenericControllerAdvice {
+internal class GenericControllerAdvice {
     companion object {
         private val log = KotlinLogging.logger { }
     }

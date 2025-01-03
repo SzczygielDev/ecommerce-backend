@@ -6,7 +6,7 @@ import pl.szczygieldev.order.domain.DeliveryProvider
 import pl.szczygieldev.order.domain.PaymentServiceProvider
 import pl.szczygieldev.order.domain.error.AppError
 
-data class CreateOrderCommand(
+internal data class CreateOrderCommand(
     val cartId: CartId,
     val paymentServiceProvider: PaymentServiceProvider,
     val deliveryProvider: DeliveryProvider

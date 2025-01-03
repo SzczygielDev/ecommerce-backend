@@ -18,7 +18,7 @@ import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.resource.UpdateP
 
 @RequestMapping("/products")
 @RestController
-class ProductController(
+internal class ProductController(
     val mediator: Mediator,
     val products: Products,
     val productPresenter: ProductPresenter

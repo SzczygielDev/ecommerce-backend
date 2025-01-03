@@ -7,5 +7,5 @@ import pl.szczygieldev.ecommercelibrary.outbox.Outbox
 import pl.szczygieldev.product.domain.event.ProductEvent
 
 @Component
-class ProductEventPublisher(eventPublisher: ApplicationEventPublisher, outbox: Outbox) :
+internal class ProductEventPublisher(eventPublisher: ApplicationEventPublisher, outbox: Outbox) :
     StoreAndForwardEventPublisher<ProductEvent>(eventPublisher, outbox)

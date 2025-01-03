@@ -4,7 +4,7 @@ import pl.szczygieldev.ecommercelibrary.command.CommandResultStatus
 import java.time.Duration
 import java.time.Instant
 
-data class CommandResultDto(
+internal data class CommandResultDto(
     val id: String,
     val status: CommandResultStatus,
     var timestamp: Instant,

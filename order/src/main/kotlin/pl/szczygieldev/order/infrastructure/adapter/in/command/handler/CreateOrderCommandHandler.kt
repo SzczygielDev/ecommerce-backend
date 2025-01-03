@@ -10,7 +10,7 @@ import pl.szczygieldev.order.application.port.`in`.command.CreateCartCommand
 import pl.szczygieldev.order.application.port.`in`.command.CreateOrderCommand
 import pl.szczygieldev.order.domain.error.AppError
 
-class CreateOrderCommandHandler(
+internal class CreateOrderCommandHandler(
     val orderUseCase: OrderUseCase,
     val cartUseCase: CartUseCase,
 ) : CommandWithResultHandler<CreateOrderCommand, Either<AppError, Unit>> {

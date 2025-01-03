@@ -20,7 +20,7 @@ import java.math.BigDecimal
 import java.util.*
 
 
-class PriceCalculatorUseCaseTests() : FunSpec() {
+internal class PriceCalculatorUseCaseTests() : FunSpec() {
     val productsMock = mockk<Products>()
     val cartsProjectionsMock = mockk<CartsProjections>()
     val eventPublisherMock = mockk<DomainEventPublisher<PriceCalculatorEvent>>()

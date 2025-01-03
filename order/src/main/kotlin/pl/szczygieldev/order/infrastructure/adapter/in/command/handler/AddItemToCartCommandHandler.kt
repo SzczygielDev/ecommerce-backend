@@ -8,7 +8,7 @@ import pl.szczygieldev.order.application.port.`in`.CartUseCase
 import pl.szczygieldev.order.application.port.`in`.command.AddItemToCartCommand
 import pl.szczygieldev.order.domain.error.AppError
 
-class AddItemToCartCommandHandler(
+internal class AddItemToCartCommandHandler(
     val cartUseCase: CartUseCase
 ) :
     CommandWithResultHandler<AddItemToCartCommand, Either<AppError, Unit>> {

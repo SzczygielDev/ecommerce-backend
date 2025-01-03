@@ -1,3 +1,3 @@
 package pl.szczygieldev.order.domain
 
-enum class PaymentStatus { PAID, UNPAID, INVALID_AMOUNT }
+internal enum class PaymentStatus { PAID, UNPAID, INVALID_AMOUNT }

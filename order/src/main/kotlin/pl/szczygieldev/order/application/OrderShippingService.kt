@@ -17,7 +17,7 @@ import pl.szczygieldev.order.domain.error.OrderNotFoundError
 import pl.szczygieldev.order.domain.event.OrderEvent
 
 @UseCase
-class OrderShippingService(val orders: Orders,
+internal class OrderShippingService(val orders: Orders,
                            val orderEventPublisher: DomainEventPublisher<OrderEvent>,
                            val shippingService: ShippingService,
                            val ordersProjections: OrdersProjections,

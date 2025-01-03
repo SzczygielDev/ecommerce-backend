@@ -9,7 +9,7 @@ import pl.szczygieldev.order.infrastructure.adapter.`in`.rest.presenter.CommandP
 
 @RequestMapping("/development")
 @RestController
-class DevelopmentController(
+internal class DevelopmentController(
     val commandResultStorage: CommandResultStorage,
     val commandPresenter: CommandPresenter,
 ) {

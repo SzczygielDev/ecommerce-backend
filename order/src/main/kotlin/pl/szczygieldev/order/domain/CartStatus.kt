@@ -1,3 +1,3 @@
 package pl.szczygieldev.order.domain
 
-enum class CartStatus { ACTIVE, SUBMITTED}
+internal enum class CartStatus { ACTIVE, SUBMITTED}

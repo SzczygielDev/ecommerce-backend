@@ -4,7 +4,7 @@ import pl.szczygieldev.order.domain.*
 import java.math.BigDecimal
 import java.time.Instant
 
-data class OrderDto(
+internal data class OrderDto(
     val orderId: String,
     val cartId: String,
     val status: OrderStatus,

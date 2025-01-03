@@ -1,3 +1,3 @@
 package pl.szczygieldev.order.domain
 
-enum class DeliveryProvider { MOCK_DELIVERY_PROVIDER }
+internal enum class DeliveryProvider { MOCK_DELIVERY_PROVIDER }

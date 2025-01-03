@@ -11,7 +11,7 @@ import pl.szczygieldev.product.domain.event.ProductPriceUpdated
 import java.math.BigDecimal
 import java.util.*
 
-class ProductTests : FunSpec() {
+internal class ProductTests : FunSpec() {
     init {
         test("Creating product with price equal zero should throw IllegalArgumentException") {
             //Arrange

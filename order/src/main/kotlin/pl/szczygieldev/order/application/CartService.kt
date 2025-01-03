@@ -20,7 +20,7 @@ import pl.szczygieldev.order.domain.error.ProductNotFoundError
 import pl.szczygieldev.order.domain.event.CartEvent
 
 @UseCase
-class CartService(
+internal class CartService(
     val carts: Carts,
     val products: Products,
     val cartEventPublisher: DomainEventPublisher<CartEvent>,

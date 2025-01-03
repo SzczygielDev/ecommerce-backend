@@ -17,7 +17,7 @@ import pl.szczygieldev.order.infrastructure.mapper.DeliveryProviderMapper
 
 @RequestMapping("/delivery")
 @RestController
-class DeliveryController(val deliveryProviderMapper: DeliveryProviderMapper,val mediator: Mediator) {
+internal class DeliveryController(val deliveryProviderMapper: DeliveryProviderMapper,val mediator: Mediator) {
     @GetMapping("/providers")
     fun getDeliveryMethods(): ResponseEntity<*> = ResponseEntity.ok(
         DeliveryProvider.values().map { deliveryProvider -> deliveryProviderMapper.mapToDetails(deliveryProvider) })

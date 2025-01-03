@@ -19,7 +19,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/admin/orders")
-class AdminOrderController(
+internal class AdminOrderController(
     val ordersProjections: OrdersProjections,
     val orderPresenter: OrderPresenter
 ) {

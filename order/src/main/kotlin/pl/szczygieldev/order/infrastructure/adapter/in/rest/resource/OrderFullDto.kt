@@ -4,7 +4,7 @@ import pl.szczygieldev.order.domain.OrderStatus
 import java.math.BigDecimal
 import java.time.Instant
 
-data class OrderFullDto(
+internal data class OrderFullDto(
     val orderId: String,
     val cartId: String,
     val status: OrderStatus,

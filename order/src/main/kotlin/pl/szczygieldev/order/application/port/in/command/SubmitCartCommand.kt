@@ -5,4 +5,4 @@ import pl.szczygieldev.order.domain.DeliveryProvider
 import pl.szczygieldev.order.domain.PaymentServiceProvider
 import pl.szczygieldev.order.domain.error.AppError
 
-data class SubmitCartCommand(val cartId: String, val deliveryProvider: DeliveryProvider, val paymentServiceProvider: PaymentServiceProvider)  : Command<AppError>()
+internal data class SubmitCartCommand(val cartId: String, val deliveryProvider: DeliveryProvider, val paymentServiceProvider: PaymentServiceProvider)  : Command<AppError>()

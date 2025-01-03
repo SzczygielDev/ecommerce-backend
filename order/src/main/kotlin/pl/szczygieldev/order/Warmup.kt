@@ -7,7 +7,7 @@ import pl.szczygieldev.order.application.port.`in`.CartUseCase
 import pl.szczygieldev.order.application.port.`in`.command.CreateCartCommand
 
 @Component
-class Warmup(val cartUseCase: CartUseCase) {
+internal class Warmup(val cartUseCase: CartUseCase) {
     @EventListener(ApplicationReadyEvent::class)
     suspend fun initData() {
         cartUseCase.createCart(CreateCartCommand())

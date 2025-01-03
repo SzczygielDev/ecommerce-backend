@@ -6,7 +6,7 @@ import pl.szczygieldev.order.infrastructure.adapter.`in`.rest.resource.CommandRe
 import pl.szczygieldev.order.infrastructure.adapter.`in`.rest.resource.CommandResultFullDto
 
 @Component
-class CommandPresenter {
+internal class CommandPresenter {
     fun toDto(commandResult: CommandResult): CommandResultDto {
         return CommandResultDto(
             commandResult.id.id,

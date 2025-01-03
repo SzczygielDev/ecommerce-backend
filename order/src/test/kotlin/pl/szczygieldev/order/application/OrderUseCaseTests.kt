@@ -22,7 +22,7 @@ import java.math.BigDecimal
 import java.net.URL
 import java.util.UUID
 
-class OrderUseCaseTests : FunSpec() {
+internal class OrderUseCaseTests : FunSpec() {
     val orderEventPublisherMock = mockk<DomainEventPublisher<OrderEvent>>()
     val ordersMock = mockk<Orders>()
     val cartUseCase = mockk<CartUseCase>()

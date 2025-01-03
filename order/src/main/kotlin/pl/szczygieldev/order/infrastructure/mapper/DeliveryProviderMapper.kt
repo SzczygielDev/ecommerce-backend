@@ -7,7 +7,7 @@ import pl.szczygieldev.order.domain.DeliveryProviderDetails
 import java.net.URL
 
 @Component
-class DeliveryProviderMapper {
+internal class DeliveryProviderMapper {
     fun mapToDetails(deliveryProvider: DeliveryProvider): DeliveryProviderDetails {
         return when (deliveryProvider) {
             DeliveryProvider.MOCK_DELIVERY_PROVIDER -> DeliveryProviderDetails(

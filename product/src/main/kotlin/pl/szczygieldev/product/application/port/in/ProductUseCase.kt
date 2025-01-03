@@ -5,7 +5,7 @@ import pl.szczygieldev.product.application.port.`in`.command.CreateProductComman
 import pl.szczygieldev.product.application.port.`in`.command.UpdateProductCommand
 import pl.szczygieldev.product.domain.error.AppError
 
-interface ProductUseCase {
+internal interface ProductUseCase {
     fun create(command: CreateProductCommand): Either<AppError, Unit>
 
     fun update(command: UpdateProductCommand): Either<AppError, Unit>

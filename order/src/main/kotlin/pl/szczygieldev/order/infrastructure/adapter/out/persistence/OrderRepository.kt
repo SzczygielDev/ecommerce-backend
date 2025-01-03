@@ -9,7 +9,7 @@ import pl.szczygieldev.order.domain.event.OrderEvent
 import java.util.*
 
 @Repository
-class OrderRepository(val eventStore: EventStore) : Orders {
+internal class OrderRepository(val eventStore: EventStore) : Orders {
     override fun nextIdentity(): OrderId = OrderId(UUID.randomUUID().toString())
 
     override fun findById(id: OrderId): Order? {

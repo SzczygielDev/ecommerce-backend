@@ -8,7 +8,7 @@ import pl.szczygieldev.order.application.port.`in`.CartUseCase
 import pl.szczygieldev.order.application.port.`in`.command.CreateCartCommand
 import pl.szczygieldev.order.domain.error.AppError
 
-class CartCreateCommandHandler(
+internal class CartCreateCommandHandler(
     val cartUseCase: CartUseCase,
 ) : CommandWithResultHandler<CreateCartCommand, Either<AppError, Unit>> {
     override suspend fun handle(command: CreateCartCommand): Either<AppError, Unit> = either {

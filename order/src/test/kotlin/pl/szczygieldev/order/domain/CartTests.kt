@@ -9,7 +9,7 @@ import pl.szczygieldev.order.domain.error.CartAlreadySubmittedError
 import pl.szczygieldev.order.domain.error.CartNotActiveError
 import java.util.UUID
 
-class CartTests : FunSpec({
+internal class CartTests : FunSpec({
 
     test("Adding item to submitted cart should fail") {
         //Arrange

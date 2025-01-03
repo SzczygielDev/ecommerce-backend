@@ -14,7 +14,7 @@ import java.net.URL
 import java.time.Instant
 import java.util.*
 
-class OrderTests : BehaviorSpec({
+internal class OrderTests : BehaviorSpec({
     isolationMode = IsolationMode.InstancePerLeaf
 
     context("Order state changes") {

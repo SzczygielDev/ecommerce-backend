@@ -11,7 +11,7 @@ import java.lang.RuntimeException
 
 @RestControllerAdvice
 @Component("productModule.GenericControllerAdvice")
-class GenericControllerAdvice {
+internal class GenericControllerAdvice {
     companion object {
         private val log = KotlinLogging.logger { }
     }

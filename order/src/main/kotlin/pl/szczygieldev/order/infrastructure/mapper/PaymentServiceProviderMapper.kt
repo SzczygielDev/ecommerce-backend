@@ -7,7 +7,7 @@ import pl.szczygieldev.order.domain.PaymentServiceProviderDetails
 import java.net.URL
 
 @Component
-class PaymentServiceProviderMapper {
+internal class PaymentServiceProviderMapper {
     fun mapToDetails(paymentServiceProvider: PaymentServiceProvider): PaymentServiceProviderDetails {
         return when (paymentServiceProvider) {
             PaymentServiceProvider.MOCK_PSP -> PaymentServiceProviderDetails(

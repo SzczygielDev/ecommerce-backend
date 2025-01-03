@@ -16,7 +16,7 @@ import pl.szczygieldev.order.domain.error.UnableToCalculateCartTotalError
 import pl.szczygieldev.order.domain.event.CartTotalRecalculated
 import pl.szczygieldev.order.domain.event.PriceCalculatorEvent
 @UseCase
-class PriceCalculatorService(
+internal class PriceCalculatorService(
     val products: Products,
     val cartProjections: CartsProjections,
     val priceCalculatorEventPublisher: DomainEventPublisher<PriceCalculatorEvent>,

@@ -5,6 +5,6 @@ import pl.szczygieldev.order.domain.CartStatus
 import pl.szczygieldev.order.domain.ProductId
 import java.math.BigDecimal
 
-data class CartProjection(val cartId: CartId, val status: CartStatus, val amount: BigDecimal, val items: List<Entry>){
+internal data class CartProjection(val cartId: CartId, val status: CartStatus, val amount: BigDecimal, val items: List<Entry>){
     data class Entry(val productId: ProductId, val quantity: Int)
 }

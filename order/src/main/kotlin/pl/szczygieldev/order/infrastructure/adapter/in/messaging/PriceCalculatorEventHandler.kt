@@ -12,7 +12,7 @@ import pl.szczygieldev.order.domain.event.CartTotalRecalculated
 import pl.szczygieldev.order.domain.event.PriceCalculatorEvent
 
 @Component
-class PriceCalculatorEventHandler(private val cartsProjections: CartsProjections) :
+internal class PriceCalculatorEventHandler(private val cartsProjections: CartsProjections) :
     DomainEventHandler<PriceCalculatorEvent> {
     companion object {
         private val log = KotlinLogging.logger { }

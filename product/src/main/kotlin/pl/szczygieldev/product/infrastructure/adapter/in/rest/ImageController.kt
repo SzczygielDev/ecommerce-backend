@@ -14,7 +14,7 @@ import kotlin.jvm.optionals.getOrNull
 
 @RestController
 @RequestMapping("/images")
-class ImageController(val imageRepository: ImageRepository) {
+internal class ImageController(val imageRepository: ImageRepository) {
 
     @PostMapping
     fun uploadImage(@RequestParam("file") file: MultipartFile): ResponseEntity<*> {

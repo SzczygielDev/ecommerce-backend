@@ -4,6 +4,6 @@ import arrow.core.Either
 import pl.szczygieldev.order.domain.OrderId
 import pl.szczygieldev.order.domain.error.AppError
 
-interface MailService {
+internal interface MailService {
     fun sendOrderConfirmationMail(orderId: OrderId): Either<AppError, Unit>
 }

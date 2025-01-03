@@ -16,7 +16,7 @@ import pl.szczygieldev.order.domain.PaymentServiceProvider
 import pl.szczygieldev.order.domain.error.AppError
 
 
-class CreateOrderCommandHandlerTests : FunSpec() {
+internal class CreateOrderCommandHandlerTests : FunSpec() {
     val orderUseCaseMock = mockk<OrderUseCase>();
     val cartUseCaseMock = mockk<CartUseCase>();
     val commandResultStorage: CommandResultStorage = mockk<CommandResultStorage>()

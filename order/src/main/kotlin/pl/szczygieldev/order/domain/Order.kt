@@ -7,7 +7,7 @@ import pl.szczygieldev.order.domain.error.*
 import pl.szczygieldev.order.domain.event.*
 import java.time.Instant
 
-class Order private constructor(
+internal class Order private constructor(
     val orderId: OrderId
 ) : EventSourcedEntity<OrderEvent>() {
     private var _status: OrderStatus = OrderStatus.CREATED

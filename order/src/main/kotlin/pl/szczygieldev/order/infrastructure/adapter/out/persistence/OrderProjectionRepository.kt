@@ -9,7 +9,7 @@ import pl.szczygieldev.order.domain.ParcelId
 import pl.szczygieldev.order.domain.PaymentId
 
 @Repository
-class OrderProjectionRepository : OrdersProjections {
+internal class OrderProjectionRepository : OrdersProjections {
     private val db = mutableMapOf<String, OrderProjection>()
     override fun findById(id: OrderId): OrderProjection? = db[id.id]
 

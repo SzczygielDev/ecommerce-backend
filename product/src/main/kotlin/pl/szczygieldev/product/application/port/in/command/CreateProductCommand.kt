@@ -5,7 +5,7 @@ import pl.szczygieldev.product.domain.ImageId
 import pl.szczygieldev.product.domain.ProductId
 import pl.szczygieldev.product.domain.error.AppError
 
-data class CreateProductCommand(
+internal data class CreateProductCommand(
     val productId: ProductId,
     val title: String,
     val description: String,

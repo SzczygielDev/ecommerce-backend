@@ -19,7 +19,7 @@ import pl.szczygieldev.order.domain.event.OrderEvent
 import java.net.URL
 
 @UseCase
-class OrderService(
+internal class OrderService(
     val orderEventPublisher: DomainEventPublisher<OrderEvent>,
     val orders: Orders,
     val cartProjections: CartsProjections,

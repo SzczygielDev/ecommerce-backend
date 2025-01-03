@@ -20,7 +20,7 @@ import java.time.Instant
 
 @RestController
 @RequestMapping("/payments")
-class PaymentController(val paymentServiceProviderMapper: PaymentServiceProviderMapper,val mediator: Mediator) {
+internal class PaymentController(val paymentServiceProviderMapper: PaymentServiceProviderMapper,val mediator: Mediator) {
     private val logger = KotlinLogging.logger {}
     @GetMapping("/providers")
     fun getPaymentProviders(): ResponseEntity<*>{

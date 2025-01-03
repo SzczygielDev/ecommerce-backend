@@ -18,7 +18,7 @@ import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.resource.Product
 
 @RequestMapping("/admin/products")
 @RestController
-class AdminProductController(
+internal class AdminProductController(
     val products: Products,
     val productPresenter: ProductPresenter
 ) {

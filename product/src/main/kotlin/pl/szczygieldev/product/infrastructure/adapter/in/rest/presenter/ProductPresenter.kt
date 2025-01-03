@@ -6,7 +6,7 @@ import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.resource.Product
 import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.resource.ProductFullDto
 
 @Component
-class ProductPresenter {
+internal class ProductPresenter {
     fun toDto(product: Product): ProductDto {
         return ProductDto(
             product.productId.id(),

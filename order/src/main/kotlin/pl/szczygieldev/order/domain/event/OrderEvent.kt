@@ -4,9 +4,9 @@ import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEvent
 import pl.szczygieldev.order.domain.*
 import java.math.BigDecimal
 
-sealed class OrderEvent : DomainEvent<OrderEvent>()
+internal sealed class OrderEvent : DomainEvent<OrderEvent>()
 
-class OrderCreated(
+internal class OrderCreated(
     val orderId: OrderId,
     val cartId: CartId,
     val amount: BigDecimal,
@@ -19,55 +19,55 @@ class OrderCreated(
     }
 }
 
-class OrderAccepted(val orderId: OrderId) : OrderEvent() {
+internal class OrderAccepted(val orderId: OrderId) : OrderEvent() {
     override fun toString(): String {
         return "OrderAccepted(id=$id occuredOn=$occurredOn orderId=$orderId)"
     }
 }
 
-class OrderRejected(val orderId: OrderId) : OrderEvent() {
+internal class OrderRejected(val orderId: OrderId) : OrderEvent() {
     override fun toString(): String {
         return "OrderRejected(id=$id occuredOn=$occurredOn orderId=$orderId)"
     }
 }
 
-class OrderCanceled(val orderId: OrderId) : OrderEvent() {
+internal class OrderCanceled(val orderId: OrderId) : OrderEvent() {
     override fun toString(): String {
         return "OrderCanceled(id=$id occuredOn=$occurredOn orderId=$orderId)"
     }
 }
 
-class OrderPackagingStarted(val orderId: OrderId) : OrderEvent() {
+internal class OrderPackagingStarted(val orderId: OrderId) : OrderEvent() {
     override fun toString(): String {
         return "OrderPackagingStarted(id=$id occuredOn=$occurredOn orderId=$orderId)"
     }
 }
 
-class OrderPackaged(val orderId: OrderId, val parcelId: ParcelId, val  parcelDimensions: ParcelDimensions) : OrderEvent() {
+internal class OrderPackaged(val orderId: OrderId, val parcelId: ParcelId, val  parcelDimensions: ParcelDimensions) : OrderEvent() {
     override fun toString(): String {
         return "OrderPackaged(id=$id occuredOn=$occurredOn orderId=$orderId parcelIdentifier=$parcelId parcelDimensions=$parcelDimensions)"
     }
 }
 
-class OrderDeliveryStatusChanged(val orderId: OrderId, val status: DeliveryStatus) : OrderEvent() {
+internal class OrderDeliveryStatusChanged(val orderId: OrderId, val status: DeliveryStatus) : OrderEvent() {
     override fun toString(): String {
         return "OrderDeliveryStatusChanged(id=$id occuredOn=$occurredOn orderId=$orderId deliveryStatus=$status)"
     }
 }
 
-class OrderPaymentReceived(val orderId: OrderId, val paymentTransaction: PaymentTransaction) : OrderEvent() {
+internal class OrderPaymentReceived(val orderId: OrderId, val paymentTransaction: PaymentTransaction) : OrderEvent() {
     override fun toString(): String {
         return "OrderPaymentReceived(id=$id occuredOn=$occurredOn orderId=$orderId)"
     }
 }
 
-class OrderPaid(val orderId: OrderId) : OrderEvent() {
+internal class OrderPaid(val orderId: OrderId) : OrderEvent() {
     override fun toString(): String {
         return "OrderPaid(id=$id occuredOn=$occurredOn orderId=$orderId)"
     }
 }
 
-class OrderInvalidAmountPaid(val orderId: OrderId, val paidAmount: BigDecimal,val desiredAmount: BigDecimal) : OrderEvent() {
+internal class OrderInvalidAmountPaid(val orderId: OrderId, val paidAmount: BigDecimal,val desiredAmount: BigDecimal) : OrderEvent() {
     override fun toString(): String {
         return "OrderInvalidAmountPaid(id=$id occuredOn=$occurredOn paidAmount=$paidAmount desiredAmount=$desiredAmount)"
     }

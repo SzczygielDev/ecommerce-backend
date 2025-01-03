@@ -17,7 +17,7 @@ import pl.szczygieldev.product.domain.event.ProductEvent
 import java.math.BigDecimal
 import java.util.*
 
-class ProductUseCaseTests : FunSpec() {
+internal class ProductUseCaseTests : FunSpec() {
     val productsMock = mockk<Products>()
     val eventPublisherMock = mockk<DomainEventPublisher<ProductEvent>>()
     val productUseCase: ProductUseCase = ProductService(productsMock, eventPublisherMock)

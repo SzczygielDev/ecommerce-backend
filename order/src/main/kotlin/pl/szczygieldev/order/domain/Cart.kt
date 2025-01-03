@@ -9,7 +9,7 @@ import pl.szczygieldev.order.domain.error.CartNotActiveError
 import pl.szczygieldev.order.domain.event.*
 
 
-class Cart private constructor(val cartId: CartId) : EventSourcedEntity<CartEvent>() {
+internal class Cart private constructor(val cartId: CartId) : EventSourcedEntity<CartEvent>() {
     private var status: CartStatus = CartStatus.ACTIVE
 
     data class Entry(val productId: ProductId, val quantity: Int)

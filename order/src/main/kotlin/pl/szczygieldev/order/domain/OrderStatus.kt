@@ -1,6 +1,6 @@
 package pl.szczygieldev.order.domain
 
-enum class OrderStatus {
+internal enum class OrderStatus {
     CREATED,
     ACCEPTED,
     REJECTED,

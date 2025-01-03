@@ -2,4 +2,4 @@ package pl.szczygieldev.order.infrastructure.adapter.out.integration.payments.mo
 
 import java.math.BigDecimal
 
-data class RegisterPaymentRequest(val amount: BigDecimal, val returnUrl: String)
+internal data class RegisterPaymentRequest(val amount: BigDecimal, val returnUrl: String)

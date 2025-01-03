@@ -1,3 +1,3 @@
 package pl.szczygieldev.product.domain
 
-data class ProductDescription(val content: String)
+internal data class ProductDescription(val content: String)

@@ -3,7 +3,7 @@ package pl.szczygieldev.product.application.port.out
 import pl.szczygieldev.product.domain.Product
 import pl.szczygieldev.product.domain.ProductId
 
-interface Products {
+internal interface Products {
     fun nextIdentity(): ProductId
 
     fun findById(id:ProductId): Product?

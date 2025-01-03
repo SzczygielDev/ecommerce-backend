@@ -10,7 +10,7 @@ import java.net.URL
 import java.time.Instant
 import java.util.UUID
 
-class PaymentTests : BehaviorSpec({
+internal class PaymentTests : BehaviorSpec({
     isolationMode = IsolationMode.InstancePerLeaf
     given("a new payment") {
         val paymentId = PaymentId(UUID.randomUUID().toString())

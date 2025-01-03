@@ -18,7 +18,7 @@ import pl.szczygieldev.product.domain.event.ProductEvent
 import java.math.BigDecimal
 
 @UseCase
-class ProductService(val products: Products, val productEventPublisher: DomainEventPublisher<ProductEvent>) :
+internal class ProductService(val products: Products, val productEventPublisher: DomainEventPublisher<ProductEvent>) :
     ProductUseCase {
     override fun create(command: CreateProductCommand): Either<AppError, Unit> = either {
         val product = Product.create(

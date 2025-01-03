@@ -11,7 +11,7 @@ import java.time.Instant
 import java.util.UUID
 
 @Repository
-class   ImageRepository {
+internal class ImageRepository {
     companion object {
         private val log = KotlinLogging.logger { }
     }

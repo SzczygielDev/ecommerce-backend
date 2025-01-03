@@ -19,7 +19,7 @@ import pl.szczygieldev.order.infrastructure.adapter.`in`.rest.resource.SubmitCar
 import java.util.UUID
 @RequestMapping("/carts")
 @RestController
-class CartController(
+internal class CartController(
     val mediator: Mediator,
     val cartRepository: CartsProjections,
     val cartPresenter: CartPresenter

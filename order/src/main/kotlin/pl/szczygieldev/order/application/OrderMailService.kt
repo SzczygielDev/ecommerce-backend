@@ -9,7 +9,7 @@ import pl.szczygieldev.order.application.port.out.MailService
 import pl.szczygieldev.order.domain.error.AppError
 
 @UseCase
-class OrderMailService(private val mailService: MailService) : OrderMailUseCase {
+internal class OrderMailService(private val mailService: MailService) : OrderMailUseCase {
     override fun sendConfirmationMail(command: SendOrderConfirmationMailCommand): Either<AppError,Unit> = either {
         mailService.sendOrderConfirmationMail(command.orderId).bind()
     }

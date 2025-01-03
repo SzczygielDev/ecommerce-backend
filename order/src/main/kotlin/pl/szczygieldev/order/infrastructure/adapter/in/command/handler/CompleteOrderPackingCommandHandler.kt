@@ -8,7 +8,7 @@ import pl.szczygieldev.order.application.port.`in`.OrderShippingUseCase
 import pl.szczygieldev.order.application.port.`in`.command.CompleteOrderPackingCommand
 import pl.szczygieldev.order.domain.error.AppError
 
-class CompleteOrderPackingCommandHandler(
+internal class CompleteOrderPackingCommandHandler(
     val orderShippingUseCase: OrderShippingUseCase
 ) : CommandWithResultHandler<CompleteOrderPackingCommand, Either<AppError, Unit>> {
     override suspend fun handle(command: CompleteOrderPackingCommand): Either<AppError, Unit> = either {

@@ -3,9 +3,9 @@ package pl.szczygieldev.order.domain.error
 import pl.szczygieldev.order.domain.*
 import java.math.BigDecimal
 
-sealed class OrderError(message: String) : AppError(message)
+internal sealed class OrderError(message: String) : AppError(message)
 
-data class CannotCancelSentOrderError(override val message: String) : OrderError(message) {
+internal data class CannotCancelSentOrderError(override val message: String) : OrderError(message) {
     companion object {
         fun forId(id: OrderId): CannotCancelSentOrderError {
             return CannotCancelSentOrderError("Cannot cancel order with id='${id.id()}' because its already sent")
@@ -13,7 +13,7 @@ data class CannotCancelSentOrderError(override val message: String) : OrderError
     }
 }
 
-data class CannotReturnNotReceivedOrderError(override val message: String) : OrderError(message)  {
+internal data class CannotReturnNotReceivedOrderError(override val message: String) : OrderError(message)  {
     companion object {
         fun forId(id: OrderId): CannotReturnNotReceivedOrderError {
             return CannotReturnNotReceivedOrderError("Cannot return order with id='${id.id()}' because its not received")
@@ -21,7 +21,7 @@ data class CannotReturnNotReceivedOrderError(override val message: String) : Ord
     }
 }
 
-data class AlreadyAcceptedOrderError(override val message: String) : OrderError(message)  {
+internal data class AlreadyAcceptedOrderError(override val message: String) : OrderError(message)  {
     companion object {
         fun forId(id: OrderId): AlreadyAcceptedOrderError {
             return AlreadyAcceptedOrderError("Cannot accept or reject order with id='${id.id()}' because it has been already accepted")
@@ -29,7 +29,7 @@ data class AlreadyAcceptedOrderError(override val message: String) : OrderError(
     }
 }
 
-data class NotPaidOrderError(override val message: String) : OrderError(message)  {
+internal data class NotPaidOrderError(override val message: String) : OrderError(message)  {
     companion object {
         fun forId(id: OrderId): NotPaidOrderError {
             return NotPaidOrderError("Cannot process order with id='${id.id()}' because its not paid")
@@ -37,7 +37,7 @@ data class NotPaidOrderError(override val message: String) : OrderError(message)
     }
 }
 
-data class CannotPackageNotAcceptedOrderError(override val message: String) : OrderError(message)  {
+internal data class CannotPackageNotAcceptedOrderError(override val message: String) : OrderError(message)  {
     companion object {
         fun forId(id: OrderId): CannotPackageNotAcceptedOrderError {
             return CannotPackageNotAcceptedOrderError("Cannot package order with id='${id.id()}' because its not accepted")
@@ -45,7 +45,7 @@ data class CannotPackageNotAcceptedOrderError(override val message: String) : Or
     }
 }
 
-data class InvalidPaymentAmountError(override val message: String) : OrderError(message)  {
+internal data class InvalidPaymentAmountError(override val message: String) : OrderError(message)  {
     companion object {
         fun forId(id: OrderId, currentAmount: BigDecimal, targetAmount: BigDecimal): InvalidPaymentAmountError {
             return InvalidPaymentAmountError("Invalid payment amount for order with id='${id.id()}' current amount='${currentAmount}' desired amount='${targetAmount}'")
@@ -53,7 +53,7 @@ data class InvalidPaymentAmountError(override val message: String) : OrderError(
     }
 }
 
-data class OrderNotFoundError(override val message: String) : OrderError(message)  {
+internal data class OrderNotFoundError(override val message: String) : OrderError(message)  {
     companion object {
         fun forId(id: OrderId): OrderNotFoundError {
             return OrderNotFoundError("Cannot find order with id='${id.id()}'.")
@@ -72,7 +72,7 @@ data class OrderNotFoundError(override val message: String) : OrderError(message
         }
     }
 }
-data class CannotRegisterParcelError(override val message: String) : OrderError(message)  {
+internal data class CannotRegisterParcelError(override val message: String) : OrderError(message)  {
     companion object {
         fun forId(id: OrderId): CannotRegisterParcelError {
             return CannotRegisterParcelError("Failed to register parcel for order with id='${id.id()}'")
@@ -80,7 +80,7 @@ data class CannotRegisterParcelError(override val message: String) : OrderError(
     }
 }
 
-data class PackingNotInProgressError(override val message: String) : OrderError(message)  {
+internal data class PackingNotInProgressError(override val message: String) : OrderError(message)  {
     companion object {
         fun forId(id: OrderId): PackingNotInProgressError {
             return PackingNotInProgressError("Cannot finish packing order with id='${id.id()}' because packing is not started")
@@ -88,7 +88,7 @@ data class PackingNotInProgressError(override val message: String) : OrderError(
     }
 }
 
-data class CannotRegisterPaymentError(override val message: String) : OrderError(message)  {
+internal data class CannotRegisterPaymentError(override val message: String) : OrderError(message)  {
     companion object {
         fun forPsp(psp: PaymentServiceProvider): CannotRegisterPaymentError {
             return CannotRegisterPaymentError("Failed to register payment for psp='$psp''")

@@ -5,7 +5,7 @@ import pl.szczygieldev.order.application.port.`in`.query.model.OrderProjection
 import pl.szczygieldev.order.infrastructure.adapter.`in`.rest.resource.*
 
 @Component
-class OrderPresenter {
+internal class OrderPresenter {
 
     fun toDto(orderProjection: OrderProjection): OrderDto {
         val paymentProjection = orderProjection.paymentProjection

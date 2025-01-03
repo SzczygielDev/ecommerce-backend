@@ -1,6 +1,6 @@
 package pl.szczygieldev.order.domain
 
-data class Delivery(
+internal data class Delivery(
     val deliveryProvider: DeliveryProvider,
     val status: DeliveryStatus,
     val parcel: Parcel?

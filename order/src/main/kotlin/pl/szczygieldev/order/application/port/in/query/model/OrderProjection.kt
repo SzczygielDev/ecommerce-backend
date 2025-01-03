@@ -4,7 +4,7 @@ import pl.szczygieldev.order.domain.*
 import java.math.BigDecimal
 import java.time.Instant
 
-data class OrderProjection(
+internal data class OrderProjection(
     val orderId: OrderId,
     val cartId: CartId,
     val status: OrderStatus,

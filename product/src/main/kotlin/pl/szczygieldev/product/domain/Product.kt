@@ -6,7 +6,7 @@ import pl.szczygieldev.product.domain.event.ProductEvent
 import pl.szczygieldev.product.domain.event.ProductPriceUpdated
 import java.math.BigDecimal
 
-class Product private constructor(
+internal class Product private constructor(
     val productId: ProductId,
     var title: ProductTitle,
     var description: ProductDescription,

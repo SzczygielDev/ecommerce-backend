@@ -18,7 +18,7 @@ import pl.szczygieldev.order.domain.event.*
 import java.math.BigDecimal
 
 @Component
-class CartEventHandler(
+internal class CartEventHandler(
     private val cartsProjections: CartsProjections,
     private val mediator: Mediator
 ) : DomainEventHandler<CartEvent> {

@@ -11,7 +11,7 @@ import pl.szczygieldev.order.application.port.`in`.command.SendOrderConfirmation
 import pl.szczygieldev.order.domain.error.AppError
 import pl.szczygieldev.order.domain.event.*
 @Component
-class OrderEventHandler(
+internal class OrderEventHandler(
     val mediator: Mediator
 ) :
     DomainEventHandler<OrderEvent> {

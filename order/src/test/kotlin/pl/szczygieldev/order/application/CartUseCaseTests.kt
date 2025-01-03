@@ -17,7 +17,7 @@ import pl.szczygieldev.order.domain.event.CartEvent
 import java.math.BigDecimal
 import java.util.*
 
-class CartUseCaseTests : FunSpec() {
+internal class CartUseCaseTests : FunSpec() {
     val productsMock = mockk<Products>()
     val cartsMock = mockk<Carts>()
     val eventPublisherMock = mockk<DomainEventPublisher<CartEvent>>()

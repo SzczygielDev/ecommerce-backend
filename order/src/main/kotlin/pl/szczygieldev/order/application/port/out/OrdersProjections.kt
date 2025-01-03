@@ -7,7 +7,7 @@ import pl.szczygieldev.order.domain.ParcelId
 import pl.szczygieldev.order.domain.PaymentId
 
 
-interface OrdersProjections {
+internal interface OrdersProjections {
     fun findById(id : OrderId): OrderProjection?
     fun save(order: OrderProjection)
     fun findAll(): List<OrderProjection>

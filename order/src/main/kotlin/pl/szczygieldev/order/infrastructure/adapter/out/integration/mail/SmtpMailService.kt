@@ -21,7 +21,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Component
-class SmtpMailService(val mailSender: JavaMailSender, val ordersProjections: OrdersProjections) : MailService {
+internal class SmtpMailService(val mailSender: JavaMailSender, val ordersProjections: OrdersProjections) : MailService {
     private val mf: MustacheFactory = DefaultMustacheFactory("static/mail")
     private val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 

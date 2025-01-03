@@ -9,7 +9,7 @@ import pl.szczygieldev.order.domain.event.CartEvent
 import java.util.UUID
 
 @Repository
-class CartRepository(val eventStore: EventStore) : Carts {
+internal class CartRepository(val eventStore: EventStore) : Carts {
 
     override fun nextIdentity(): CartId = CartId(UUID.randomUUID().toString())
     override fun findById(id: CartId): Cart? {

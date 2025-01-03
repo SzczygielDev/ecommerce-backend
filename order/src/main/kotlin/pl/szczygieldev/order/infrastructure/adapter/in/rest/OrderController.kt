@@ -28,7 +28,7 @@ import java.util.UUID
 
 @RestController
 @RequestMapping("/orders")
-class OrderController(
+internal class OrderController(
     val ordersProjections: OrdersProjections,
     val commandResultStorage: CommandResultStorage,
     val commandPresenter: CommandPresenter,

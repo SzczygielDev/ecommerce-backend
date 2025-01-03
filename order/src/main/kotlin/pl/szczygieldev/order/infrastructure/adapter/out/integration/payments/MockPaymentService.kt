@@ -17,7 +17,7 @@ import java.math.BigDecimal
 import java.net.URL
 
 @Component
-class MockPaymentService : PaymentService {
+internal class MockPaymentService : PaymentService {
     companion object {
         private val log = KotlinLogging.logger { }
         private val webClient = WebClient.builder()

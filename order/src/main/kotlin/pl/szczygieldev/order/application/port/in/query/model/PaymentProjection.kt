@@ -7,4 +7,4 @@ import pl.szczygieldev.order.domain.PaymentTransaction
 import java.math.BigDecimal
 import java.net.URL
 
-data class PaymentProjection(val paymentId: PaymentId, val amount: BigDecimal, val amountPaid: BigDecimal, val paymentServiceProvider: PaymentServiceProvider, val status: PaymentStatus, val paymentURL: URL, val transactions : List<PaymentTransaction>)
+internal data class PaymentProjection(val paymentId: PaymentId, val amount: BigDecimal, val amountPaid: BigDecimal, val paymentServiceProvider: PaymentServiceProvider, val status: PaymentStatus, val paymentURL: URL, val transactions : List<PaymentTransaction>)

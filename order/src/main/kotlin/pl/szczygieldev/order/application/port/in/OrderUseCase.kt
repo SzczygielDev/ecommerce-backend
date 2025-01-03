@@ -4,7 +4,7 @@ import arrow.core.Either
 import pl.szczygieldev.order.application.port.`in`.command.*
 import pl.szczygieldev.order.domain.error.AppError
 
-interface OrderUseCase {
+internal interface OrderUseCase {
     suspend fun createOrder(command: CreateOrderCommand): Either<AppError, Unit>
     suspend fun acceptOrder(command: AcceptOrderCommand): Either<AppError, Unit>
     suspend fun rejectOrder(command: RejectOrderCommand): Either<AppError, Unit>
