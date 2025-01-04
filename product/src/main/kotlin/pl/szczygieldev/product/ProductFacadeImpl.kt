@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component
 import pl.szczygieldev.product.application.port.`in`.ProductUseCase
 import pl.szczygieldev.product.domain.ProductId
 import pl.szczygieldev.product.infrastructure.adapter.out.persistence.ProductRepository
+import java.util.UUID
 
 @Component
 internal class ProductFacadeImpl(val productRepository: ProductRepository, val productUseCase: ProductUseCase) : ProductFacade {
@@ -23,7 +24,7 @@ internal class ProductFacadeImpl(val productRepository: ProductRepository, val p
         )
     }
 
-    override fun findById(id: String): ProductProjection? {
+    override fun findById(id: UUID): ProductProjection? {
         val product = productRepository.findById(ProductId(id)) ?: return null
 
         return ProductProjection(

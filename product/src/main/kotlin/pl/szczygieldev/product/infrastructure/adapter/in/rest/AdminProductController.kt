@@ -11,6 +11,7 @@ import pl.szczygieldev.product.domain.error.ProductNotFoundError
 import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.advice.mapToError
 import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.presenter.ProductPresenter
 import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.resource.ProductFullDto
+import java.util.*
 
 
 @RequestMapping("/admin/products")
@@ -21,7 +22,7 @@ internal class AdminProductController(
 ) {
     @GetMapping
     fun getAll(
-        @RequestParam(required = false) offset: Int?,
+        @RequestParam(required = false) offset: Long?,
         @RequestParam(required = false) limit: Int?
     ): ResponseEntity<List<ProductFullDto>> {
         if (offset != null && limit != null) {
@@ -32,10 +33,10 @@ internal class AdminProductController(
     }
 
     @GetMapping("/{id}")
-    fun getById(@PathVariable id: String): ResponseEntity<*> {
+    fun getById(@PathVariable id: UUID): ResponseEntity<*> {
         return either<AppError, Product> {
             val productId = ProductId(id)
-            products.findById(productId) ?: raise(ProductNotFoundError(productId.id))
+            products.findById(productId) ?: raise(ProductNotFoundError(productId.id.toString()))
         }.fold({ mapToError(it) }, { product -> return ResponseEntity.ok().body(productPresenter.toFullDto(product)) })
     }
 }

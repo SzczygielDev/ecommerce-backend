@@ -33,7 +33,7 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core-jvm:5.9.0")
     implementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     testImplementation("io.mockk:mockk:1.13.11")
-    implementation("pl.szczygieldev:ecommerce-library:2.0.0")
+    implementation("pl.szczygieldev:ecommerce-library:2.1.0")
 }
 
 kotlin {

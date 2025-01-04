@@ -15,6 +15,7 @@ import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.presenter.Produc
 import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.resource.CreateProductRequest
 import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.resource.ProductDto
 import pl.szczygieldev.product.infrastructure.adapter.`in`.rest.resource.UpdateProductRequest
+import java.util.*
 
 @RequestMapping("/products")
 @RestController
@@ -25,7 +26,7 @@ internal class ProductController(
 ) {
     @GetMapping
     fun getAll(
-        @RequestParam(required = false) offset: Int?,
+        @RequestParam(required = false) offset: Long?,
         @RequestParam(required = false) limit: Int?
     ): ResponseEntity<List<ProductDto>> {
         if (offset != null && limit != null) {
@@ -36,10 +37,10 @@ internal class ProductController(
     }
 
     @GetMapping("/{id}")
-    fun getById(@PathVariable id: String): ResponseEntity<*> {
+    fun getById(@PathVariable id: UUID): ResponseEntity<*> {
         return either<AppError, Product> {
             val productId = ProductId(id)
-            products.findById(productId) ?: raise(ProductNotFoundError(productId.id))
+            products.findById(productId) ?: raise(ProductNotFoundError(productId.id.toString()))
         }.fold({ mapToError(it) }, { product -> return ResponseEntity.ok().body(productPresenter.toDto(product)) })
     }
 
@@ -56,20 +57,25 @@ internal class ProductController(
                     ImageId(request.imageId)
                 )
             )
-            products.findById(productId) ?: raise(ProductNotFoundError(productId.id))
+            products.findById(productId) ?: raise(ProductNotFoundError(productId.id.toString()))
         }.fold({ mapToError(it) }, { product -> return ResponseEntity.ok().body(productPresenter.toDto(product)) })
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: String): ResponseEntity<*> {
-        return either<AppError, Product> {
+    fun delete(@PathVariable id: UUID): ResponseEntity<*> {
+        return either<AppError, Boolean> {
             val productId = ProductId(id)
-            products.delete(productId) ?: raise(ProductNotFoundError(productId.id))
-        }.fold({ mapToError(it) }, { product -> return ResponseEntity.ok().body(productPresenter.toDto(product)) })
+            val result = products.delete(productId)
+
+            if(!result){
+                raise(ProductNotFoundError(productId.id.toString()))
+            }
+            result
+        }.fold({ mapToError(it) }, { product -> return ResponseEntity.noContent().build<Any>() })
     }
 
     @PutMapping("/{id}")
-    suspend fun update(@PathVariable id: String, @RequestBody request: UpdateProductRequest): ResponseEntity<*> {
+    suspend fun update(@PathVariable id: UUID, @RequestBody request: UpdateProductRequest): ResponseEntity<*> {
         return either<AppError, Product> {
             val productId = ProductId(id)
             mediator.send(
@@ -81,7 +87,7 @@ internal class ProductController(
                     ImageId(request.imageId)
                 )
             )
-            products.findById(productId) ?: raise(ProductNotFoundError(productId.id))
+            products.findById(productId) ?: raise(ProductNotFoundError(productId.id.toString()))
         }.fold({ mapToError(it) }, { product -> return ResponseEntity.ok().body(productPresenter.toDto(product)) })
     }
 }

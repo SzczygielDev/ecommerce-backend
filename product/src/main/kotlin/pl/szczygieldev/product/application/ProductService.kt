@@ -34,7 +34,7 @@ internal class ProductService(val products: Products, val productEventPublisher:
 
     override fun update(command: UpdateProductCommand): Either<AppError, Unit> = either {
         val productId = command.productId
-        val product = products.findById(productId) ?: raise(ProductNotFoundError(productId.id))
+        val product = products.findById(productId) ?: raise(ProductNotFoundError(productId.id.toString()))
 
         val version = product.version
 

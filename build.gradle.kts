@@ -22,6 +22,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 allprojects {
@@ -72,7 +73,7 @@ dependencies {
     implementation("com.trendyol:kediatr-core:3.0.0")
     implementation("com.trendyol:kediatr-spring-starter:3.0.0")
     implementation("org.springframework.boot:spring-boot-gradle-plugin:3.3.5")
-    implementation("pl.szczygieldev:ecommerce-library:2.0.0")
+    implementation("pl.szczygieldev:ecommerce-library:2.1.0")
 }
 
 tasks.withType<KotlinCompile> {

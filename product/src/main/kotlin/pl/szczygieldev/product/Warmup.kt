@@ -1,5 +1,6 @@
 package pl.szczygieldev.product
 
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.io.ClassPathResource
@@ -13,7 +14,11 @@ import pl.szczygieldev.product.infrastructure.adapter.out.persistence.ImageRepos
 import kotlin.jvm.optionals.getOrNull
 
 @Component("productModule.Warmup")
-internal class Warmup(val productUseCase: ProductUseCase, val imageRepository: ImageRepository, val products: Products) {
+internal class Warmup(
+    val productUseCase: ProductUseCase,
+    val imageRepository: ImageRepository,
+    val products: Products
+) {
     private fun initializeImage(path: String): ImageId? {
         val resource = ClassPathResource(
             path
@@ -26,29 +31,95 @@ internal class Warmup(val productUseCase: ProductUseCase, val imageRepository: I
 
     @EventListener(ApplicationReadyEvent::class)
     suspend fun initData() {
-        initializeImage("static/images/products/1.jpg")?.let {
-            productUseCase.create(CreateProductCommand(products.nextIdentity(),"Produkt A", "Opis produktu", 300.0,it ))
-        }
-        initializeImage("static/images/products/2.jpg")?.let {
-            productUseCase.create(CreateProductCommand(products.nextIdentity(),"Produkt B", "Opis produktu", 1000.0,it ))
-        }
-        initializeImage("static/images/products/3.jpg")?.let {
-            productUseCase.create(CreateProductCommand(products.nextIdentity(),"Produkt C", "Opis produktu", 50.0,it ))
-        }
-        initializeImage("static/images/products/4.jpg")?.let {
-            productUseCase.create(CreateProductCommand(products.nextIdentity(),"Produkt D", "Opis produktu", 100.0,it ))
-        }
-        initializeImage("static/images/products/5.jpg")?.let {
-            productUseCase.create(CreateProductCommand(products.nextIdentity(),"Produkt E", "Opis produktu", 500.0,it ))
-        }
-        initializeImage("static/images/products/6.jpg")?.let {
-            productUseCase.create(CreateProductCommand(products.nextIdentity(),"Produkt F", "Opis produktu", 30.0,it ))
-        }
-        initializeImage("static/images/products/7.jpg")?.let {
-            productUseCase.create(CreateProductCommand(products.nextIdentity(),"Produkt G", "Opis produktu", 700.0,it ))
-        }
-        initializeImage("static/images/products/8.jpg")?.let {
-            productUseCase.create(CreateProductCommand(products.nextIdentity(),"Produkt H", "Opis produktu", 30.0,it ))
+        transaction {
+            initializeImage("static/images/products/1.jpg")?.let {
+                productUseCase.create(
+                    CreateProductCommand(
+                        products.nextIdentity(),
+                        "Produkt A",
+                        "Opis produktu",
+                        300.0,
+                        it
+                    )
+                )
+            }
+            initializeImage("static/images/products/2.jpg")?.let {
+                productUseCase.create(
+                    CreateProductCommand(
+                        products.nextIdentity(),
+                        "Produkt B",
+                        "Opis produktu",
+                        1000.0,
+                        it
+                    )
+                )
+            }
+            initializeImage("static/images/products/3.jpg")?.let {
+                productUseCase.create(
+                    CreateProductCommand(
+                        products.nextIdentity(),
+                        "Produkt C",
+                        "Opis produktu",
+                        50.0,
+                        it
+                    )
+                )
+            }
+            initializeImage("static/images/products/4.jpg")?.let {
+                productUseCase.create(
+                    CreateProductCommand(
+                        products.nextIdentity(),
+                        "Produkt D",
+                        "Opis produktu",
+                        100.0,
+                        it
+                    )
+                )
+            }
+            initializeImage("static/images/products/5.jpg")?.let {
+                productUseCase.create(
+                    CreateProductCommand(
+                        products.nextIdentity(),
+                        "Produkt E",
+                        "Opis produktu",
+                        500.0,
+                        it
+                    )
+                )
+            }
+            initializeImage("static/images/products/6.jpg")?.let {
+                productUseCase.create(
+                    CreateProductCommand(
+                        products.nextIdentity(),
+                        "Produkt F",
+                        "Opis produktu",
+                        30.0,
+                        it
+                    )
+                )
+            }
+            initializeImage("static/images/products/7.jpg")?.let {
+                productUseCase.create(
+                    CreateProductCommand(
+                        products.nextIdentity(),
+                        "Produkt G",
+                        "Opis produktu",
+                        700.0,
+                        it
+                    )
+                )
+            }
+            initializeImage("static/images/products/8.jpg")?.let {
+                productUseCase.create(
+                    CreateProductCommand(
+                        products.nextIdentity(),
+                        "Produkt H",
+                        "Opis produktu",
+                        30.0,
+                        it
+                    )
+                )
+            }
         }
     }
 }

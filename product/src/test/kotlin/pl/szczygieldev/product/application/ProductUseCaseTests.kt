@@ -27,7 +27,7 @@ internal class ProductUseCaseTests : FunSpec() {
             test("Product should be saved on create") {
                 //Arrange
                 val imageId = ImageId(UUID.randomUUID().toString())
-                val productId = ProductId(UUID.randomUUID().toString())
+                val productId = ProductId(UUID.randomUUID())
                 val command = CreateProductCommand(productId,"Product A", "description", 100.0, imageId)
 
 
@@ -48,7 +48,7 @@ internal class ProductUseCaseTests : FunSpec() {
         }
 
         context("Product update tests") {
-            val productId = ProductId(UUID.randomUUID().toString())
+            val productId = ProductId(UUID.randomUUID())
             val imageId = ImageId(UUID.randomUUID().toString())
             val product = Product.create(
                 productId, ProductTitle("Product title"),
