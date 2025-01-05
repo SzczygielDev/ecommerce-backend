@@ -26,7 +26,7 @@ internal class ProductUseCaseTests : FunSpec() {
         context("Product create tests") {
             test("Product should be saved on create") {
                 //Arrange
-                val imageId = ImageId(UUID.randomUUID().toString())
+                val imageId = ImageId(UUID.randomUUID())
                 val productId = ProductId(UUID.randomUUID())
                 val command = CreateProductCommand(productId,"Product A", "description", 100.0, imageId)
 
@@ -49,7 +49,7 @@ internal class ProductUseCaseTests : FunSpec() {
 
         context("Product update tests") {
             val productId = ProductId(UUID.randomUUID())
-            val imageId = ImageId(UUID.randomUUID().toString())
+            val imageId = ImageId(UUID.randomUUID())
             val product = Product.create(
                 productId, ProductTitle("Product title"),
                 ProductDescription("Product description"),
@@ -58,7 +58,7 @@ internal class ProductUseCaseTests : FunSpec() {
             val newTitle = ProductTitle("Product new title")
             val newDescription = ProductDescription("Product new description")
             val newPrice = ProductPrice(BigDecimal.valueOf(20))
-            val newImageId = ImageId(UUID.randomUUID().toString())
+            val newImageId = ImageId(UUID.randomUUID())
 
             val command = UpdateProductCommand(productId, newTitle, newDescription, newPrice, newImageId)
             test("Product update should raise ProductNotFoundError when product was not found") {

@@ -28,7 +28,7 @@ internal class ProductRepository(val eventStore: EventStore) : Products {
             ProductTitle(result[ProductTable.title]),
             ProductDescription(result[ProductTable.description]),
             ProductPrice(result[ProductTable.basePrice]),
-            ImageId(result[ProductTable.imageId].toString())
+            ImageId(result[ProductTable.imageId])
         )
         val events = eventStore.getEvents<ProductEvent>(product.productId) ?: return@transaction null
         product.applyEvents(events)
@@ -42,7 +42,7 @@ internal class ProductRepository(val eventStore: EventStore) : Products {
                 ProductTitle(result[ProductTable.title]),
                 ProductDescription(result[ProductTable.description]),
                 ProductPrice(result[ProductTable.basePrice]),
-                ImageId(result[ProductTable.imageId].toString())
+                ImageId(result[ProductTable.imageId])
             )
             val events =
                 eventStore.getEvents<ProductEvent>(product.productId) ?: return@map null
@@ -57,7 +57,7 @@ internal class ProductRepository(val eventStore: EventStore) : Products {
             it[title] = product.title.value
             it[description] = product.description.content
             it[basePrice] = product.price.amount
-            it[imageId] = UUID.fromString(product.imageId.id)
+            it[imageId] = product.imageId.id
         }
         eventStore.appendEvents(product.productId, product.occurredEvents(), version)
         product.clearOccurredEvents()
@@ -75,7 +75,7 @@ internal class ProductRepository(val eventStore: EventStore) : Products {
                 ProductTitle(result[ProductTable.title]),
                 ProductDescription(result[ProductTable.description]),
                 ProductPrice(result[ProductTable.basePrice]),
-                ImageId(result[ProductTable.imageId].toString())
+                ImageId(result[ProductTable.imageId])
             )
             val events =
                 eventStore.getEvents<ProductEvent>(product.productId) ?: return@map null

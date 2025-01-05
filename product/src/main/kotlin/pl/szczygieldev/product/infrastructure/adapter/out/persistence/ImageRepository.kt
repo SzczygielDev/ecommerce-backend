@@ -3,11 +3,12 @@ package pl.szczygieldev.product.infrastructure.adapter.out.persistence
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.minio.*
 import jakarta.annotation.PostConstruct
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Repository
 import pl.szczygieldev.product.domain.ImageId
-import pl.szczygieldev.product.infrastructure.adapter.out.persistence.model.ImageMetadata
+import pl.szczygieldev.product.infrastructure.adapter.out.persistence.table.ImageTable
 import java.io.InputStream
-import java.time.Instant
 import java.util.UUID
 
 @Repository
@@ -15,9 +16,6 @@ internal class ImageRepository {
     companion object {
         private val log = KotlinLogging.logger { }
     }
-
-    private val db = mutableMapOf<String, ImageMetadata>()
-
     private val storageUrl = "http://localhost:8333"
     private val imageBucketName = "images"
     private val minioClient = MinioClient.builder()
@@ -47,9 +45,14 @@ internal class ImageRepository {
         }
     }
 
-    fun uploadImage(inputStream: InputStream, size: Long, mediaType: String): ImageId? {
-        val imageId = ImageId(UUID.randomUUID().toString())
-        db[imageId.id()] = ImageMetadata(imageId, mediaType, size, Instant.now())
+    fun uploadImage(inputStream: InputStream, size: Long, mediaType: String): ImageId? = transaction {
+        val imageId = ImageId(UUID.randomUUID())
+
+        ImageTable.insert {
+            it[id] = imageId.id
+            it[ImageTable.mediaType] = mediaType
+            it[ImageTable.size] = size
+        }
 
         try {
             minioClient.putObject(
@@ -62,8 +65,8 @@ internal class ImageRepository {
             )
         } catch (e: Exception) {
             log.error { e }
-            return null
+            return@transaction null
         }
-        return imageId
+        return@transaction  imageId
     }
 }

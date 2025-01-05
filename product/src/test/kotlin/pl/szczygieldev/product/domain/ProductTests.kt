@@ -16,7 +16,7 @@ internal class ProductTests : FunSpec() {
         test("Creating product with price equal zero should throw IllegalArgumentException") {
             //Arrange
             val productId = ProductId(UUID.randomUUID())
-            val imageId = ImageId(UUID.randomUUID().toString())
+            val imageId = ImageId(UUID.randomUUID())
 
             //Act & Assert
             assertThrows<IllegalArgumentException> {
@@ -30,7 +30,7 @@ internal class ProductTests : FunSpec() {
         test("Creating product with negative price should throw IllegalArgumentException") {
             //Arrange
             val productId = ProductId(UUID.randomUUID())
-            val imageId = ImageId(UUID.randomUUID().toString())
+            val imageId = ImageId(UUID.randomUUID())
 
             //Act & Assert
             assertThrows<IllegalArgumentException> {
@@ -44,7 +44,7 @@ internal class ProductTests : FunSpec() {
         test("Creating product should raise ProductCreated event") {
             //Arrange
             val productId = ProductId(UUID.randomUUID())
-            val imageId = ImageId(UUID.randomUUID().toString())
+            val imageId = ImageId(UUID.randomUUID())
 
             //Act
             val product = Product.create(
@@ -59,7 +59,7 @@ internal class ProductTests : FunSpec() {
         test("Applied events on product should not be present in occurredEvents of product") {
             //Arrange
             val productId = ProductId(UUID.randomUUID())
-            val imageId = ImageId(UUID.randomUUID().toString())
+            val imageId = ImageId(UUID.randomUUID())
             val product = Product.create(
                 productId,
                 ProductTitle("title"), ProductDescription("description"), ProductPrice(BigDecimal.TEN),imageId
@@ -77,7 +77,7 @@ internal class ProductTests : FunSpec() {
             //Arrange
             val productId = ProductId(UUID.randomUUID())
             val price = ProductPrice(BigDecimal.TEN)
-            val imageId = ImageId(UUID.randomUUID().toString())
+            val imageId = ImageId(UUID.randomUUID())
             val product = Product.create(
                 productId,
                 ProductTitle("title"), ProductDescription("description"), price,imageId
@@ -94,7 +94,7 @@ internal class ProductTests : FunSpec() {
         test("Updating product price when new price is different should update price") {
             //Arrange
             val productId = ProductId(UUID.randomUUID())
-            val imageId = ImageId(UUID.randomUUID().toString())
+            val imageId = ImageId(UUID.randomUUID())
             val product = Product.create(
                 productId,
                 ProductTitle("title"), ProductDescription("description"), ProductPrice(BigDecimal.TEN),imageId

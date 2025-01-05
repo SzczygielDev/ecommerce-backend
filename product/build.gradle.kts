@@ -26,7 +26,7 @@ dependencies {
 
     implementation("org.jetbrains.exposed:exposed-core:0.55.0")
     runtimeOnly("org.jetbrains.exposed:exposed-jdbc:0.55.0")
-    runtimeOnly("org.jetbrains.exposed:exposed-kotlin-datetime:0.55.0")
+    implementation("org.jetbrains.exposed:exposed-kotlin-datetime:0.55.0")
     implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.55.0")
     implementation("io.minio:minio:8.5.12")
     testImplementation("io.kotest:kotest-runner-junit5-jvm:5.9.0")
