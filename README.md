@@ -1,6 +1,6 @@
 # E-commerce Backend 
-[!WARNING]
-Note: This system is still under construction and some important parts are missing.
+>[!WARNING]
+>Note: This system is still under construction and some important parts are missing.
 
 E-commerce system implemented using Kotlin with Spring Boot. It serves as my sandbox for exploring topics and concepts like:
 - Domain-Driven Design
