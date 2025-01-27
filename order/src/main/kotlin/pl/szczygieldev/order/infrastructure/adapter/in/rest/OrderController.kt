@@ -67,7 +67,7 @@ internal class OrderController(
 
     private fun getOrderByCartId(cartId: UUID): ResponseEntity<*> {
         return either<AppError, OrderProjection> {
-            val id = CartId(cartId.toString())
+            val id = CartId(cartId)
             ordersProjections.findByCartId(id) ?: raise(OrderNotFoundError.forCartId(id))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },

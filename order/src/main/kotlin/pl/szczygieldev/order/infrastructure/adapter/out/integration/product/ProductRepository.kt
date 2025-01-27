@@ -14,12 +14,12 @@ internal class ProductRepository(val productFacade: ProductFacade) : Products {
     override fun findById(id: ProductId): Product? {
         val product = productFacade.findById(UUID.fromString(id.id())) ?: return null
 
-        return Product(ProductId(product.productId), product.title, product.price, ImageId(product.imageId))
+        return Product(ProductId(UUID.fromString(product.productId)), product.title, product.price, ImageId(product.imageId))
     }
 
     override fun findAll(): List<Product> = productFacade.findAll().map { product ->
         Product(
-            ProductId(product.productId),
+            ProductId(UUID.fromString(product.productId)),
             product.title,
             product.price,
             ImageId(product.imageId)

@@ -11,7 +11,7 @@ import java.math.BigDecimal
 internal class CartPresenter {
     fun toDto(cart: CartProjection): CartDto {
         return CartDto(
-            cart.cartId.id, cart.status, cart.items.map { CartEntryDto(it.productId.id(), it.quantity) }.toList(),
+            cart.cartId.id.toString(), cart.status, cart.items.map { CartEntryDto(it.productId.id(), it.quantity) }.toList(),
             cart.amount
         )
     }

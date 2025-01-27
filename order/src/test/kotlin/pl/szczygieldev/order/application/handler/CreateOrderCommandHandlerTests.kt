@@ -14,6 +14,7 @@ import pl.szczygieldev.order.domain.CartId
 import pl.szczygieldev.order.domain.DeliveryProvider
 import pl.szczygieldev.order.domain.PaymentServiceProvider
 import pl.szczygieldev.order.domain.error.AppError
+import java.util.*
 
 
 internal class CreateOrderCommandHandlerTests : FunSpec() {
@@ -35,7 +36,7 @@ internal class CreateOrderCommandHandlerTests : FunSpec() {
         test("createOrder and createCart should be called") {
             //Arrange
             val command =
-                CreateOrderCommand(CartId(""), PaymentServiceProvider.MOCK_PSP, DeliveryProvider.MOCK_DELIVERY_PROVIDER)
+                CreateOrderCommand(CartId(UUID.randomUUID()), PaymentServiceProvider.MOCK_PSP, DeliveryProvider.MOCK_DELIVERY_PROVIDER)
 
             //Act
             commandHandler.handle(command)

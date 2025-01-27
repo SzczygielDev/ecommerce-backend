@@ -19,7 +19,7 @@ internal class OrderTests : BehaviorSpec({
 
     context("Order state changes") {
         given("a new order") {
-            val cartId = CartId(UUID.randomUUID().toString())
+            val cartId = CartId(UUID.randomUUID())
             val orderId = OrderId(UUID.randomUUID().toString())
             val paymentId = PaymentId(UUID.randomUUID().toString())
             val orderAmount = BigDecimal.TEN
@@ -68,7 +68,7 @@ internal class OrderTests : BehaviorSpec({
         }
 
         given("an accepted order") {
-            val cartId = CartId(UUID.randomUUID().toString())
+            val cartId = CartId(UUID.randomUUID())
             val orderId = OrderId(UUID.randomUUID().toString())
             val paymentId = PaymentId(UUID.randomUUID().toString())
             val orderAmount = BigDecimal.TEN
@@ -137,7 +137,7 @@ internal class OrderTests : BehaviorSpec({
         }
 
         given("an rejected order") {
-            val cartId = CartId(UUID.randomUUID().toString())
+            val cartId = CartId(UUID.randomUUID())
             val orderId = OrderId(UUID.randomUUID().toString())
             val paymentId = PaymentId(UUID.randomUUID().toString())
             val orderAmount = BigDecimal.TEN
@@ -166,7 +166,7 @@ internal class OrderTests : BehaviorSpec({
         }
 
         given("an order in packing process") {
-            val cartId = CartId(UUID.randomUUID().toString())
+            val cartId = CartId(UUID.randomUUID())
             val orderId = OrderId(UUID.randomUUID().toString())
             val paymentId = PaymentId(UUID.randomUUID().toString())
             val orderAmount = BigDecimal.TEN
@@ -209,7 +209,7 @@ internal class OrderTests : BehaviorSpec({
         }
 
         given("an order after completing packing process") {
-            val cartId = CartId(UUID.randomUUID().toString())
+            val cartId = CartId(UUID.randomUUID())
             val orderId = OrderId(UUID.randomUUID().toString())
             val paymentId = PaymentId(UUID.randomUUID().toString())
             val orderAmount = BigDecimal.TEN
@@ -253,7 +253,7 @@ internal class OrderTests : BehaviorSpec({
         }
 
         given("a sent order") {
-            val cartId = CartId(UUID.randomUUID().toString())
+            val cartId = CartId(UUID.randomUUID())
             val orderId = OrderId(UUID.randomUUID().toString())
             val paymentId = PaymentId(UUID.randomUUID().toString())
             val orderAmount = BigDecimal.TEN
@@ -299,7 +299,7 @@ internal class OrderTests : BehaviorSpec({
 
     context("Order payment handling") {
         given("an accepted order") {
-            val cartId = CartId(UUID.randomUUID().toString())
+            val cartId = CartId(UUID.randomUUID())
             val orderId = OrderId(UUID.randomUUID().toString())
             val paymentId = PaymentId(UUID.randomUUID().toString())
             val orderAmount = BigDecimal.TEN
@@ -365,7 +365,7 @@ internal class OrderTests : BehaviorSpec({
 
     context("Order delivery handling") {
         given("a new order") {
-            val cartId = CartId(UUID.randomUUID().toString())
+            val cartId = CartId(UUID.randomUUID())
             val orderId = OrderId(UUID.randomUUID().toString())
             val paymentId = PaymentId(UUID.randomUUID().toString())
             val orderAmount = BigDecimal.TEN

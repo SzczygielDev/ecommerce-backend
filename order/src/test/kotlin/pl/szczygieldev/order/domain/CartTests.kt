@@ -13,9 +13,9 @@ internal class CartTests : FunSpec({
 
     test("Adding item to submitted cart should fail") {
         //Arrange
-        val cartId = CartId(UUID.randomUUID().toString())
+        val cartId = CartId(UUID.randomUUID())
         val cart = Cart.create(cartId)
-        val productId = ProductId(UUID.randomUUID().toString())
+        val productId = ProductId(UUID.randomUUID())
         val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
         val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
 
@@ -31,9 +31,9 @@ internal class CartTests : FunSpec({
 
     test("Removing item from submitted cart should fail") {
         //Arrange
-        val cartId = CartId(UUID.randomUUID().toString())
+        val cartId = CartId(UUID.randomUUID())
         val cart = Cart.create(cartId)
-        val productId = ProductId(UUID.randomUUID().toString())
+        val productId = ProductId(UUID.randomUUID())
         val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
         val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
 
@@ -49,7 +49,7 @@ internal class CartTests : FunSpec({
 
     test("Calling submit multiple times should fail") {
         //Arrange
-        val cartId = CartId(UUID.randomUUID().toString())
+        val cartId = CartId(UUID.randomUUID())
         val cart = Cart.create(cartId)
         val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
         val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
@@ -66,9 +66,9 @@ internal class CartTests : FunSpec({
 
     test("Adding negative quantity of products should throw IllegalArgumentException") {
         //Arrange
-        val cartId = CartId(UUID.randomUUID().toString())
+        val cartId = CartId(UUID.randomUUID())
         val cart = Cart.create(cartId)
-        val productId = ProductId(UUID.randomUUID().toString())
+        val productId = ProductId(UUID.randomUUID())
 
         //Act & Assert
         assertThrows<IllegalArgumentException> { cart.addItem(productId, -20) }
@@ -76,9 +76,9 @@ internal class CartTests : FunSpec({
 
     test("Adding zero quantity of products should throw IllegalArgumentException") {
         //Arrange
-        val cartId = CartId(UUID.randomUUID().toString())
+        val cartId = CartId(UUID.randomUUID())
         val cart = Cart.create(cartId)
-        val productId = ProductId(UUID.randomUUID().toString())
+        val productId = ProductId(UUID.randomUUID())
 
         //Act & Assert
         assertThrows<IllegalArgumentException> { cart.addItem(productId, 0) }

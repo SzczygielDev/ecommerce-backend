@@ -11,7 +11,7 @@ import java.util.UUID
 @Repository
 internal class CartRepository(val eventStore: EventStore) : Carts {
 
-    override fun nextIdentity(): CartId = CartId(UUID.randomUUID().toString())
+    override fun nextIdentity(): CartId = CartId(UUID.randomUUID())
     override fun findById(id: CartId): Cart? {
         val eventsForCart = eventStore.getEvents<CartEvent>(id) ?: return null
 

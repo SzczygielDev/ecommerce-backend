@@ -1,3 +1,5 @@
 package pl.szczygieldev.order.infrastructure.adapter.`in`.rest.resource
 
-internal data class AddItemToCartRequest(val productId: String, val quantity: Int)
+import java.util.UUID
+
+internal data class AddItemToCartRequest(val productId: UUID, val quantity: Int)

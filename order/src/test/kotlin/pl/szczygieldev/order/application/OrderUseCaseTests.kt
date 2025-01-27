@@ -46,7 +46,7 @@ internal class OrderUseCaseTests : FunSpec() {
         val amount = BigDecimal.TEN
         val psp = PaymentServiceProvider.MOCK_PSP
         val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
-        val cartId = CartId(UUID.randomUUID().toString())
+        val cartId = CartId(UUID.randomUUID())
 
         val paymentId = PaymentId(
             UUID.randomUUID().toString()
@@ -70,7 +70,7 @@ internal class OrderUseCaseTests : FunSpec() {
         val parcelId = ParcelId(UUID.randomUUID().toString())
 
         val cartItemQuantity = 1
-        val cartEntry = CartProjection.Entry(ProductId(UUID.randomUUID().toString()), cartItemQuantity)
+        val cartEntry = CartProjection.Entry(ProductId(UUID.randomUUID()), cartItemQuantity)
         val cartProjection = CartProjection(cartId, CartStatus.SUBMITTED, amount, listOf(cartEntry))
 
         every { ordersMock.nextIdentity() } returns orderId

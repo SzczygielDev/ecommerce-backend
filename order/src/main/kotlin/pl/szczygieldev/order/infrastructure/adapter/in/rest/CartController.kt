@@ -41,7 +41,7 @@ internal class CartController(
         return either {
             val cart = cartRepository.findActiveForUser(mockUserId) ?: raise(CartNotFoundError.forUserId(mockUserId))
             val cartId = cart.cartId
-            mediator.send(AddItemToCartCommand(cartId.id(), request.productId, request.quantity)).bind()
+            mediator.send(AddItemToCartCommand(cartId.idAsUUID(), request.productId, request.quantity)).bind()
             cartRepository.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
@@ -49,11 +49,11 @@ internal class CartController(
     }
 
     @DeleteMapping("/items/{productId}")
-    suspend fun removeItem(@PathVariable productId: String): ResponseEntity<*> {
+    suspend fun removeItem(@PathVariable productId: UUID): ResponseEntity<*> {
         return either {
             val cart = cartRepository.findActiveForUser(mockUserId) ?: raise(CartNotFoundError.forUserId(mockUserId))
             val cartId = cart.cartId
-            mediator.send(RemoveItemFromCartCommand(cartId.id(), productId)).bind()
+            mediator.send(RemoveItemFromCartCommand(cartId.idAsUUID(), productId)).bind()
             cartRepository.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
@@ -65,7 +65,7 @@ internal class CartController(
         return either {
             val cart = cartRepository.findActiveForUser(mockUserId) ?: raise(CartNotFoundError.forUserId(mockUserId))
             val cartId = cart.cartId
-            mediator.send(SubmitCartCommand(cartId.id(), request.deliveryProvider, request.paymentServiceProvider))
+            mediator.send(SubmitCartCommand(cartId.idAsUUID(), request.deliveryProvider, request.paymentServiceProvider))
                 .bind()
             cartRepository.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
         }.fold<ResponseEntity<*>>(

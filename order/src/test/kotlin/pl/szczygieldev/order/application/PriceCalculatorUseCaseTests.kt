@@ -34,7 +34,7 @@ internal class PriceCalculatorUseCaseTests() : FunSpec() {
     init {
         test("Calculating cart total for non existing cart should raise CartNotFoundError") {
             //Arrange
-            val cartId = CartId(UUID.randomUUID().toString())
+            val cartId = CartId(UUID.randomUUID())
             val emptyCart = CartProjection(cartId, CartStatus.ACTIVE, BigDecimal.ZERO, emptyList())
 
             every { cartsProjectionsMock.findById(cartId) } returns emptyCart
@@ -43,9 +43,7 @@ internal class PriceCalculatorUseCaseTests() : FunSpec() {
             //Act
             val result = priceCalculatorUseCase.calculateCartTotal(
                 CalculateCartTotalCommand(
-                    CartId(
-                        UUID.randomUUID().toString()
-                    )
+                    CartId(UUID.randomUUID())
                 )
             )
 
@@ -56,8 +54,8 @@ internal class PriceCalculatorUseCaseTests() : FunSpec() {
 
         test("Calculating cart total when products cannot be found should raise UnableToCalculateCartTotalError") {
             //Arrange
-            val cartId = CartId(UUID.randomUUID().toString())
-            val productId = ProductId(UUID.randomUUID().toString())
+            val cartId = CartId(UUID.randomUUID())
+            val productId = ProductId(UUID.randomUUID())
             val cart =
                 CartProjection(cartId, CartStatus.ACTIVE, BigDecimal.ZERO, listOf(CartProjection.Entry(productId, 1)))
 
@@ -79,18 +77,18 @@ internal class PriceCalculatorUseCaseTests() : FunSpec() {
         test("Calculating cart total should return correct amount inside CartTotalRecalculated event") {
             //Arrange
             val productA = Product(
-                ProductId(UUID.randomUUID().toString()),
+                ProductId(UUID.randomUUID()),
                 "product A",
                 BigDecimal.valueOf(250),
                 ImageId(UUID.randomUUID().toString())
             )
             val productB = Product(
-                ProductId(UUID.randomUUID().toString()),
+                ProductId(UUID.randomUUID()),
                 "product B",
                 BigDecimal.valueOf(500),
                 ImageId(UUID.randomUUID().toString())
             )
-            val cartId = CartId(UUID.randomUUID().toString())
+            val cartId = CartId(UUID.randomUUID())
             val cart = CartProjection(
                 cartId,
                 CartStatus.ACTIVE,

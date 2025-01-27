@@ -6,8 +6,6 @@ import pl.szczygieldev.order.domain.UserId
 
 internal interface CartsProjections {
     fun findById(id : CartId): CartProjection?
-    fun findByUser(id : UserId): CartProjection?
     fun findActiveForUser(id : UserId): CartProjection?
     fun save(cart: CartProjection)
-    fun findAll(): List<CartProjection>
 }
