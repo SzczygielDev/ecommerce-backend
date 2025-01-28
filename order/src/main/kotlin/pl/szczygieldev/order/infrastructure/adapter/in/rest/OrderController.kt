@@ -58,7 +58,7 @@ internal class OrderController(
 
     private fun getOrder(orderId: UUID): ResponseEntity<*> {
         return either<AppError, OrderProjection> {
-            val id = OrderId(orderId.toString())
+            val id = OrderId(orderId)
             ordersProjections.findById(id) ?: raise(OrderNotFoundError.forId(id))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
@@ -82,7 +82,7 @@ internal class OrderController(
     ): ResponseEntity<*> {
         return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
-            val command = AcceptOrderCommand(commandId, OrderId(orderId.toString()))
+            val command = AcceptOrderCommand(commandId, OrderId(orderId))
             mediator.sendAsync(command)
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
@@ -95,7 +95,7 @@ internal class OrderController(
 
     @GetMapping("/{orderId}/accept-commands/{commandId}")
     fun getAcceptCommand(@PathVariable orderId: UUID, @PathVariable commandId: UUID): ResponseEntity<*> {
-        val orderId = OrderId(orderId.toString())
+        val orderId = OrderId(orderId)
         val commandId = CommandId(commandId.toString())
         return getCommandResultResponse(orderId, commandId)
     }
@@ -108,7 +108,7 @@ internal class OrderController(
     ): ResponseEntity<*> {
         return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
-            mediator.sendAsync(RejectOrderCommand(commandId, OrderId(orderId.toString())))
+            mediator.sendAsync(RejectOrderCommand(commandId, OrderId(orderId)))
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
@@ -120,7 +120,7 @@ internal class OrderController(
 
     @GetMapping("/{orderId}/reject-commands/{commandId}")
     fun getRejectCommand(@PathVariable orderId: UUID, @PathVariable commandId: UUID): ResponseEntity<*> {
-        val orderId = OrderId(orderId.toString())
+        val orderId = OrderId(orderId)
         val commandId = CommandId(commandId.toString())
         return getCommandResultResponse(orderId, commandId)
     }
@@ -132,7 +132,7 @@ internal class OrderController(
     ): ResponseEntity<*> {
         return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
-            mediator.sendAsync(CancelOrderCommand(commandId, OrderId(orderId.toString())))
+            mediator.sendAsync(CancelOrderCommand(commandId, OrderId(orderId)))
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
@@ -144,7 +144,7 @@ internal class OrderController(
 
     @GetMapping("/{orderId}/cancel-commands/{commandId}")
     fun getCancelCommand(@PathVariable orderId: UUID, @PathVariable commandId: UUID): ResponseEntity<*> {
-        val orderId = OrderId(orderId.toString())
+        val orderId = OrderId(orderId)
         val commandId = CommandId(commandId.toString())
         return getCommandResultResponse(orderId, commandId)
     }
@@ -156,7 +156,7 @@ internal class OrderController(
     ): ResponseEntity<*> {
         return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
-            mediator.sendAsync(ReturnOrderCommand(commandId, OrderId(orderId.toString())))
+            mediator.sendAsync(ReturnOrderCommand(commandId, OrderId(orderId)))
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
@@ -168,7 +168,7 @@ internal class OrderController(
 
     @GetMapping("/{orderId}/return-commands/{commandId}")
     fun getReturnCommand(@PathVariable orderId: UUID, @PathVariable commandId: UUID): ResponseEntity<*> {
-        val orderId = OrderId(orderId.toString())
+        val orderId = OrderId(orderId)
         val commandId = CommandId(commandId.toString())
         return getCommandResultResponse(orderId, commandId)
     }
@@ -180,7 +180,7 @@ internal class OrderController(
         request: HttpServletRequest
     ): ResponseEntity<*> {
         return either<AppError, CommandResult> {
-            val command = BeginOrderPackingCommand( CommandId(commandId.toString()),OrderId(orderId.toString()))
+            val command = BeginOrderPackingCommand( CommandId(commandId.toString()),OrderId(orderId))
             val commandId = command.id
             mediator.send(command).bind()
             commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
@@ -194,7 +194,7 @@ internal class OrderController(
 
     @GetMapping("/{orderId}/beginPacking-commands/{commandId}")
     fun getBeginPackingOrderCommand(@PathVariable orderId: UUID, @PathVariable commandId: UUID): ResponseEntity<*> {
-        val orderId = OrderId(orderId.toString())
+        val orderId = OrderId(orderId)
         val commandId = CommandId(commandId.toString())
         return getCommandResultResponse(orderId, commandId)
     }
@@ -208,7 +208,7 @@ internal class OrderController(
         return either<AppError, CommandResult> {
             val command = CompleteOrderPackingCommand(
                 CommandId(commandId.toString()),
-                OrderId(orderId.toString()),
+                OrderId(orderId),
                 parcelDimensions
             )
             val commandId = command.id
@@ -229,7 +229,7 @@ internal class OrderController(
         @PathVariable orderId: UUID,
         @PathVariable commandId: UUID
     ): ResponseEntity<*> {
-        val orderId = OrderId(orderId.toString())
+        val orderId = OrderId(orderId)
         val commandId = CommandId(commandId.toString())
         return getCommandResultResponse(orderId, commandId)
     }

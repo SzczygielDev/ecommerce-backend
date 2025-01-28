@@ -20,8 +20,8 @@ internal class OrderTests : BehaviorSpec({
     context("Order state changes") {
         given("a new order") {
             val cartId = CartId(UUID.randomUUID())
-            val orderId = OrderId(UUID.randomUUID().toString())
-            val paymentId = PaymentId(UUID.randomUUID().toString())
+            val orderId = OrderId(UUID.randomUUID())
+            val paymentId = PaymentId(UUID.randomUUID())
             val orderAmount = BigDecimal.TEN
             val order = Order.create(
                 orderId,
@@ -34,7 +34,7 @@ internal class OrderTests : BehaviorSpec({
                 emptyList()
             )
             val dimensions = ParcelDimensions(10.0, 25.0, 30.0, 5.0)
-            val parcelId = ParcelId(UUID.randomUUID().toString())
+            val parcelId = ParcelId(UUID.randomUUID())
 
             then("status is ${OrderStatus.CREATED}") {
                 order.status.shouldBe(OrderStatus.CREATED)
@@ -69,8 +69,8 @@ internal class OrderTests : BehaviorSpec({
 
         given("an accepted order") {
             val cartId = CartId(UUID.randomUUID())
-            val orderId = OrderId(UUID.randomUUID().toString())
-            val paymentId = PaymentId(UUID.randomUUID().toString())
+            val orderId = OrderId(UUID.randomUUID())
+            val paymentId = PaymentId(UUID.randomUUID())
             val orderAmount = BigDecimal.TEN
             val order = Order.create(
                 orderId,
@@ -82,7 +82,7 @@ internal class OrderTests : BehaviorSpec({
                 DeliveryProvider.MOCK_DELIVERY_PROVIDER,
                 emptyList()
             )
-            val paymentTransactionId = PaymentTransactionId(UUID.randomUUID().toString())
+            val paymentTransactionId = PaymentTransactionId(UUID.randomUUID())
             val paymentTransaction = PaymentTransaction(
                 paymentTransactionId,
                 orderAmount,
@@ -138,8 +138,8 @@ internal class OrderTests : BehaviorSpec({
 
         given("an rejected order") {
             val cartId = CartId(UUID.randomUUID())
-            val orderId = OrderId(UUID.randomUUID().toString())
-            val paymentId = PaymentId(UUID.randomUUID().toString())
+            val orderId = OrderId(UUID.randomUUID())
+            val paymentId = PaymentId(UUID.randomUUID())
             val orderAmount = BigDecimal.TEN
             val order = Order.create(
                 orderId,
@@ -167,8 +167,8 @@ internal class OrderTests : BehaviorSpec({
 
         given("an order in packing process") {
             val cartId = CartId(UUID.randomUUID())
-            val orderId = OrderId(UUID.randomUUID().toString())
-            val paymentId = PaymentId(UUID.randomUUID().toString())
+            val orderId = OrderId(UUID.randomUUID())
+            val paymentId = PaymentId(UUID.randomUUID())
             val orderAmount = BigDecimal.TEN
             val order = Order.create(
                 orderId,
@@ -180,14 +180,14 @@ internal class OrderTests : BehaviorSpec({
                 DeliveryProvider.MOCK_DELIVERY_PROVIDER,
                 emptyList()
             )
-            val paymentTransactionId = PaymentTransactionId(UUID.randomUUID().toString())
+            val paymentTransactionId = PaymentTransactionId(UUID.randomUUID())
             val paymentTransaction = PaymentTransaction(
                 paymentTransactionId,
                 orderAmount,
                 Instant.now()
             )
             val dimensions = ParcelDimensions(10.0, 25.0, 30.0, 5.0)
-            val parcelId = ParcelId(UUID.randomUUID().toString())
+            val parcelId = ParcelId(UUID.randomUUID())
 
             order.accept()
             order.pay(
@@ -210,8 +210,8 @@ internal class OrderTests : BehaviorSpec({
 
         given("an order after completing packing process") {
             val cartId = CartId(UUID.randomUUID())
-            val orderId = OrderId(UUID.randomUUID().toString())
-            val paymentId = PaymentId(UUID.randomUUID().toString())
+            val orderId = OrderId(UUID.randomUUID())
+            val paymentId = PaymentId(UUID.randomUUID())
             val orderAmount = BigDecimal.TEN
             val order = Order.create(
                 orderId,
@@ -223,14 +223,14 @@ internal class OrderTests : BehaviorSpec({
                 DeliveryProvider.MOCK_DELIVERY_PROVIDER,
                 emptyList()
             )
-            val paymentTransactionId = PaymentTransactionId(UUID.randomUUID().toString())
+            val paymentTransactionId = PaymentTransactionId(UUID.randomUUID())
             val paymentTransaction = PaymentTransaction(
                 paymentTransactionId,
                 orderAmount,
                 Instant.now()
             )
             val dimensions = ParcelDimensions(10.0, 25.0, 30.0, 5.0)
-            val parcelId = ParcelId(UUID.randomUUID().toString())
+            val parcelId = ParcelId(UUID.randomUUID())
 
 
             order.accept()
@@ -254,8 +254,8 @@ internal class OrderTests : BehaviorSpec({
 
         given("a sent order") {
             val cartId = CartId(UUID.randomUUID())
-            val orderId = OrderId(UUID.randomUUID().toString())
-            val paymentId = PaymentId(UUID.randomUUID().toString())
+            val orderId = OrderId(UUID.randomUUID())
+            val paymentId = PaymentId(UUID.randomUUID())
             val orderAmount = BigDecimal.TEN
             val order = Order.create(
                 orderId,
@@ -267,14 +267,14 @@ internal class OrderTests : BehaviorSpec({
                 DeliveryProvider.MOCK_DELIVERY_PROVIDER,
                 emptyList()
             )
-            val paymentTransactionId = PaymentTransactionId(UUID.randomUUID().toString())
+            val paymentTransactionId = PaymentTransactionId(UUID.randomUUID())
             val paymentTransaction = PaymentTransaction(
                 paymentTransactionId,
                 orderAmount,
                 Instant.now()
             )
             val dimensions = ParcelDimensions(10.0, 25.0, 30.0, 5.0)
-            val parcelId = ParcelId(UUID.randomUUID().toString())
+            val parcelId = ParcelId(UUID.randomUUID())
             order.accept()
             order.pay(
                 paymentTransaction
@@ -300,8 +300,8 @@ internal class OrderTests : BehaviorSpec({
     context("Order payment handling") {
         given("an accepted order") {
             val cartId = CartId(UUID.randomUUID())
-            val orderId = OrderId(UUID.randomUUID().toString())
-            val paymentId = PaymentId(UUID.randomUUID().toString())
+            val orderId = OrderId(UUID.randomUUID())
+            val paymentId = PaymentId(UUID.randomUUID())
             val orderAmount = BigDecimal.TEN
             val order = Order.create(
                 orderId,
@@ -323,7 +323,7 @@ internal class OrderTests : BehaviorSpec({
             }
 
             `when`("its paid with correct amount") {
-                val paymentTransactionId = PaymentTransactionId(UUID.randomUUID().toString())
+                val paymentTransactionId = PaymentTransactionId(UUID.randomUUID())
                 val paymentTransaction = PaymentTransaction(
                     paymentTransactionId,
                     orderAmount,
@@ -344,7 +344,7 @@ internal class OrderTests : BehaviorSpec({
             }
 
             `when`("its paid with invalid amount") {
-                val paymentTransactionId = PaymentTransactionId(UUID.randomUUID().toString())
+                val paymentTransactionId = PaymentTransactionId(UUID.randomUUID())
                 val paymentTransaction = PaymentTransaction(
                     paymentTransactionId,
                     orderAmount.divide(BigDecimal.valueOf(2)),
@@ -366,8 +366,8 @@ internal class OrderTests : BehaviorSpec({
     context("Order delivery handling") {
         given("a new order") {
             val cartId = CartId(UUID.randomUUID())
-            val orderId = OrderId(UUID.randomUUID().toString())
-            val paymentId = PaymentId(UUID.randomUUID().toString())
+            val orderId = OrderId(UUID.randomUUID())
+            val paymentId = PaymentId(UUID.randomUUID())
             val orderAmount = BigDecimal.TEN
             val order = Order.create(
                 orderId,
@@ -379,14 +379,14 @@ internal class OrderTests : BehaviorSpec({
                 DeliveryProvider.MOCK_DELIVERY_PROVIDER,
                 emptyList()
             )
-            val paymentTransactionId = PaymentTransactionId(UUID.randomUUID().toString())
+            val paymentTransactionId = PaymentTransactionId(UUID.randomUUID())
             val paymentTransaction = PaymentTransaction(
                 paymentTransactionId,
                 orderAmount,
                 Instant.now()
             )
             val dimensions = ParcelDimensions(10.0, 25.0, 30.0, 5.0)
-            val parcelId = ParcelId(UUID.randomUUID().toString())
+            val parcelId = ParcelId(UUID.randomUUID())
             then("Delivery status is ${DeliveryStatus.WAITING}") {
                 order.delivery.status.shouldBe(DeliveryStatus.WAITING)
             }

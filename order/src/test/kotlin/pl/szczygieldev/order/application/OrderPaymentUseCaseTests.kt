@@ -31,17 +31,17 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
     init {
         isolationMode = IsolationMode.InstancePerLeaf
 
-        val paymentId = PaymentId(UUID.randomUUID().toString())
-        val paymentTransactionId = PaymentTransactionId(UUID.randomUUID().toString())
+        val paymentId = PaymentId(UUID.randomUUID())
+        val paymentTransactionId = PaymentTransactionId(UUID.randomUUID())
 
-        val orderId = OrderId(UUID.randomUUID().toString())
+        val orderId = OrderId(UUID.randomUUID())
         val amount = BigDecimal.TEN
         val psp = PaymentServiceProvider.MOCK_PSP
         val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
         val cartId = CartId(UUID.randomUUID())
 
         val paymentUrl = URL("http://localhost:3000/")
-        val imageId = ImageId(UUID.randomUUID().toString())
+        val imageId = ImageId(UUID.randomUUID())
 
         val order = Order.create(
             orderId,

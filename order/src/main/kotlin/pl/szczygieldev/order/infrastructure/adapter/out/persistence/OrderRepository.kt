@@ -10,7 +10,7 @@ import java.util.*
 
 @Repository
 internal class OrderRepository(val eventStore: EventStore) : Orders {
-    override fun nextIdentity(): OrderId = OrderId(UUID.randomUUID().toString())
+    override fun nextIdentity(): OrderId = OrderId(UUID.randomUUID())
 
     override fun findById(id: OrderId): Order? {
         val eventsForOrder = eventStore.getEvents<OrderEvent>(id) ?: return null

@@ -14,6 +14,7 @@ import pl.szczygieldev.order.infrastructure.adapter.out.integration.shipping.mod
 import pl.szczygieldev.order.infrastructure.adapter.out.integration.shipping.model.RegisterParcelRequest
 import pl.szczygieldev.order.infrastructure.adapter.out.integration.shipping.model.RegisterParcelResponse
 import java.net.URL
+import java.util.*
 
 @Component
 internal class MockShippingService : ShippingService {
@@ -47,7 +48,7 @@ internal class MockShippingService : ShippingService {
                     .onErrorComplete()
                     .block() ?: return null
 
-                ParcelId(response.parcelId)
+                ParcelId(UUID.fromString(response.parcelId))
             }
         }
     }

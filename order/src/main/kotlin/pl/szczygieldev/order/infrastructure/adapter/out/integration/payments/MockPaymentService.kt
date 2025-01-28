@@ -15,6 +15,7 @@ import pl.szczygieldev.order.infrastructure.adapter.out.integration.payments.mod
 import pl.szczygieldev.order.infrastructure.adapter.out.integration.payments.model.VerifyPaymentRequest
 import java.math.BigDecimal
 import java.net.URL
+import java.util.*
 
 @Component
 internal class MockPaymentService : PaymentService {
@@ -49,7 +50,7 @@ internal class MockPaymentService : PaymentService {
                     .onErrorComplete()
                     .block() ?: return null
 
-                val paymentId = PaymentId(response.paymentId)
+                val paymentId = PaymentId(UUID.fromString(response.paymentId))
                 PaymentRegistration(
                     paymentId,
                     URL(response.paymentUrl),

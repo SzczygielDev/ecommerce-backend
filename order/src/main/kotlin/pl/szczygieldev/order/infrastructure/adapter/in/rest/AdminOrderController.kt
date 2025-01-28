@@ -49,7 +49,7 @@ internal class AdminOrderController(
 
     private fun getOrder(orderId: UUID): ResponseEntity<*> {
         return either<AppError, OrderProjection> {
-            val id = OrderId(orderId.toString())
+            val id = OrderId(orderId)
             ordersProjections.findById(id) ?: raise(OrderNotFoundError.forId(id))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },

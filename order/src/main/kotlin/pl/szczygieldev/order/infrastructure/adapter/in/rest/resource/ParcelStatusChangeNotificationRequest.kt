@@ -1,3 +1,5 @@
 package pl.szczygieldev.order.infrastructure.adapter.`in`.rest.resource
 
-internal data class ParcelStatusChangeNotificationRequest(val parcelId: String, val parcelStatus: ParcelStatus)
+import java.util.UUID
+
+internal data class ParcelStatusChangeNotificationRequest(val parcelId: UUID, val parcelStatus: ParcelStatus)

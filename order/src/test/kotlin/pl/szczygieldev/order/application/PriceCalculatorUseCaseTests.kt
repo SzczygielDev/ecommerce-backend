@@ -80,13 +80,13 @@ internal class PriceCalculatorUseCaseTests() : FunSpec() {
                 ProductId(UUID.randomUUID()),
                 "product A",
                 BigDecimal.valueOf(250),
-                ImageId(UUID.randomUUID().toString())
+                ImageId(UUID.randomUUID())
             )
             val productB = Product(
                 ProductId(UUID.randomUUID()),
                 "product B",
                 BigDecimal.valueOf(500),
-                ImageId(UUID.randomUUID().toString())
+                ImageId(UUID.randomUUID())
             )
             val cartId = CartId(UUID.randomUUID())
             val cart = CartProjection(

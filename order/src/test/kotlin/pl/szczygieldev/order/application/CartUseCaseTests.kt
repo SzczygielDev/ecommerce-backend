@@ -106,7 +106,7 @@ internal class CartUseCaseTests : FunSpec() {
                 productId,
                 "product A",
                 BigDecimal.valueOf(250),
-                ImageId(UUID.randomUUID().toString()),
+                ImageId(UUID.randomUUID()),
             )
             every { cartsMock.findById(cartId) } returns cart
             every { productsMock.findById(productId) } returns product
@@ -143,7 +143,7 @@ internal class CartUseCaseTests : FunSpec() {
                 productId,
                 "product A",
                 BigDecimal.valueOf(250),
-                ImageId(UUID.randomUUID().toString()),
+                ImageId(UUID.randomUUID()),
             )
 
             every { cartsMock.findById(cartId) } returns cart

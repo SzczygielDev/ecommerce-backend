@@ -11,7 +11,7 @@ internal class OrderPresenter {
         val paymentProjection = orderProjection.paymentProjection
         val paymentDto =
             PaymentDto(
-                paymentProjection.paymentId.id,
+                paymentProjection.paymentId.id.toString(),
                 paymentProjection.amount,
                 paymentProjection.amountPaid,
                 paymentProjection.paymentServiceProvider,
@@ -44,7 +44,7 @@ internal class OrderPresenter {
         val paymentProjection = orderProjection.paymentProjection
         val paymentDto =
             PaymentFullDto(
-                paymentProjection.paymentId.id,
+                paymentProjection.paymentId.id.toString(),
                 paymentProjection.amount,
                 paymentProjection.amountPaid,
                 paymentProjection.paymentServiceProvider,
@@ -52,7 +52,7 @@ internal class OrderPresenter {
                 paymentProjection.paymentURL,
                 paymentProjection.transactions.map { paymentTransaction ->
                     PaymentFullDto.PaymentTransactionDto(
-                        paymentTransaction.id.id,
+                        paymentTransaction.id.id.toString(),
                         paymentTransaction.amount,
                         paymentTransaction.timestamp
                     )

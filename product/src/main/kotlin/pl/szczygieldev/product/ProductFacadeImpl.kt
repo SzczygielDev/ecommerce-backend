@@ -20,7 +20,7 @@ internal class ProductFacadeImpl(val productRepository: ProductRepository, val p
                     priceChange.timestamp
                 )
             },
-            product.imageId.id()
+            product.imageId.id
         )
     }
 
@@ -38,7 +38,7 @@ internal class ProductFacadeImpl(val productRepository: ProductRepository, val p
                     priceChange.timestamp
                 )
             },
-            product.imageId.id()
+            product.imageId.id
         )
     }
 }

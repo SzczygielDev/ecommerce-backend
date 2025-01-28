@@ -13,7 +13,7 @@ import java.util.UUID
 internal class PaymentTests : BehaviorSpec({
     isolationMode = IsolationMode.InstancePerLeaf
     given("a new payment") {
-        val paymentId = PaymentId(UUID.randomUUID().toString())
+        val paymentId = PaymentId(UUID.randomUUID())
         val amount = BigDecimal.TEN
         val url = URL("http://localhost:8080/")
         val psp = PaymentServiceProvider.MOCK_PSP
@@ -34,13 +34,13 @@ internal class PaymentTests : BehaviorSpec({
             val secondPaymentTransactionAmount = BigDecimal.valueOf(2.0)
             payment.registerTransaction(
                 PaymentTransaction(
-                    PaymentTransactionId(UUID.randomUUID().toString()), firstPaymentTransactionAmount,
+                    PaymentTransactionId(UUID.randomUUID()), firstPaymentTransactionAmount,
                     Instant.now()
                 )
             )
             payment.registerTransaction(
                 PaymentTransaction(
-                    PaymentTransactionId(UUID.randomUUID().toString()), secondPaymentTransactionAmount,
+                    PaymentTransactionId(UUID.randomUUID()), secondPaymentTransactionAmount,
                     Instant.now()
                 )
             )
@@ -60,13 +60,13 @@ internal class PaymentTests : BehaviorSpec({
             val secondPaymentTransactionAmount = BigDecimal.valueOf(2.0)
             payment.registerTransaction(
                 PaymentTransaction(
-                    PaymentTransactionId(UUID.randomUUID().toString()), firstPaymentTransactionAmount,
+                    PaymentTransactionId(UUID.randomUUID()), firstPaymentTransactionAmount,
                     Instant.now()
                 )
             )
             payment.registerTransaction(
                 PaymentTransaction(
-                    PaymentTransactionId(UUID.randomUUID().toString()), secondPaymentTransactionAmount,
+                    PaymentTransactionId(UUID.randomUUID()), secondPaymentTransactionAmount,
                     Instant.now()
                 )
             )
@@ -79,7 +79,7 @@ internal class PaymentTests : BehaviorSpec({
             val amountPaid = BigDecimal.TEN
             payment.registerTransaction(
                 PaymentTransaction(
-                    PaymentTransactionId(UUID.randomUUID().toString()), amountPaid,
+                    PaymentTransactionId(UUID.randomUUID()), amountPaid,
                     Instant.now()
                 )
             )
@@ -96,7 +96,7 @@ internal class PaymentTests : BehaviorSpec({
         }
     }
     given("a payment with zero amount"){
-        val paymentId = PaymentId(UUID.randomUUID().toString())
+        val paymentId = PaymentId(UUID.randomUUID())
         val amount = BigDecimal.ZERO
         val url = URL("http://localhost:8080/")
         val psp = PaymentServiceProvider.MOCK_PSP
@@ -111,7 +111,7 @@ internal class PaymentTests : BehaviorSpec({
         }
     }
     given("a payment with negative amount"){
-        val paymentId = PaymentId(UUID.randomUUID().toString())
+        val paymentId = PaymentId(UUID.randomUUID())
         val amount = BigDecimal.valueOf(-10)
         val url = URL("http://localhost:8080/")
         val psp = PaymentServiceProvider.MOCK_PSP

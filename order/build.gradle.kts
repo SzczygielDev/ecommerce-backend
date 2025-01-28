@@ -24,7 +24,7 @@ dependencies {
 
     implementation("org.jetbrains.exposed:exposed-core:0.55.0")
     runtimeOnly("org.jetbrains.exposed:exposed-jdbc:0.55.0")
-    runtimeOnly("org.jetbrains.exposed:exposed-kotlin-datetime:0.55.0")
+    implementation("org.jetbrains.exposed:exposed-kotlin-datetime:0.55.0")
     implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.55.0")
 
     implementation("org.springframework.boot:spring-boot-starter-mail:3.3.4")

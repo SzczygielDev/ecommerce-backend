@@ -42,15 +42,13 @@ internal class OrderUseCaseTests : FunSpec() {
         every { orderEventPublisherMock.publish(any()) } just runs
         every { orderEventPublisherMock.publishBatch(any()) } just runs
         coEvery { cartUseCase.createCart(any()) } returns either { }
-        val orderId = OrderId(UUID.randomUUID().toString())
+        val orderId = OrderId(UUID.randomUUID())
         val amount = BigDecimal.TEN
         val psp = PaymentServiceProvider.MOCK_PSP
         val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
         val cartId = CartId(UUID.randomUUID())
 
-        val paymentId = PaymentId(
-            UUID.randomUUID().toString()
-        )
+        val paymentId = PaymentId(UUID.randomUUID())
         val paymentUrl = URL("http://localhost:3000/")
         val paymentRegistration = PaymentRegistration(
             paymentId, paymentUrl
@@ -67,8 +65,7 @@ internal class OrderUseCaseTests : FunSpec() {
             emptyList()
         )
         val dimensions = ParcelDimensions(10.0, 25.0, 30.0, 5.0)
-        val parcelId = ParcelId(UUID.randomUUID().toString())
-
+        val parcelId = ParcelId(UUID.randomUUID())
         val cartItemQuantity = 1
         val cartEntry = CartProjection.Entry(ProductId(UUID.randomUUID()), cartItemQuantity)
         val cartProjection = CartProjection(cartId, CartStatus.SUBMITTED, amount, listOf(cartEntry))
