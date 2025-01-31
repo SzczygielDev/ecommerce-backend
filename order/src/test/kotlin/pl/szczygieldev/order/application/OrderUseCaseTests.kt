@@ -10,7 +10,6 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
 import pl.szczygieldev.ecommercelibrary.command.CommandId
 import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventPublisher
-import pl.szczygieldev.order.application.port.`in`.query.model.CartProjection
 import pl.szczygieldev.order.application.port.`in`.CartUseCase
 import pl.szczygieldev.order.application.port.`in`.command.*
 import pl.szczygieldev.order.application.port.out.*
@@ -26,13 +25,17 @@ internal class OrderUseCaseTests : FunSpec() {
     val orderEventPublisherMock = mockk<DomainEventPublisher<OrderEvent>>()
     val ordersMock = mockk<Orders>()
     val cartUseCase = mockk<CartUseCase>()
-    val cartsProjectionsMock = mockk<CartsProjections>()
+    val cartsMock = mockk<Carts>()
+    val productsMock = mockk<Products>()
     val paymentServiceMock = mockk<PaymentService>()
+    val priceCalculator = PriceCalculator()
     val orderService = OrderService(
         orderEventPublisherMock,
         ordersMock,
-        cartsProjectionsMock,
-        paymentServiceMock
+        cartsMock,
+        paymentServiceMock,
+        productsMock,
+        priceCalculator
     )
 
 
@@ -67,21 +70,24 @@ internal class OrderUseCaseTests : FunSpec() {
         val dimensions = ParcelDimensions(10.0, 25.0, 30.0, 5.0)
         val parcelId = ParcelId(UUID.randomUUID())
         val cartItemQuantity = 1
-        val cartEntry = CartProjection.Entry(ProductId(UUID.randomUUID()), cartItemQuantity)
-        val cartProjection = CartProjection(cartId, CartStatus.SUBMITTED, amount, listOf(cartEntry))
+        val productId = ProductId(UUID.randomUUID())
+        val product = Product(productId,"Product title",BigDecimal.TEN, ImageId(UUID.randomUUID()))
+        val cart = Cart.create(cartId)
+        cart.addItem(productId,cartItemQuantity)
 
         every { ordersMock.nextIdentity() } returns orderId
         val orderSlot = slot<Order>()
         every { ordersMock.save(capture(orderSlot), any()) } just runs
 
         every { paymentServiceMock.registerPayment(any(), any(), any()) } returns paymentRegistration
-        every { cartsProjectionsMock.findById(cartId) } returns cartProjection
+        every { cartsMock.findById(cartId) } returns cart
+        every { productsMock.findById(productId) } returns product
 
         context("Order create") {
             val command = CreateOrderCommand(cartId, psp, deliveryProvider)
             test("CartNotFoundError should be raised when cart was not found") {
                 //Arrange
-                every { cartsProjectionsMock.findById(cartId) } returns null
+                every { cartsMock.findById(cartId) } returns null
 
                 //Act
                 val result = orderService.createOrder(command)
@@ -121,10 +127,10 @@ internal class OrderUseCaseTests : FunSpec() {
                 order.orderId.sameValueAs(orderId).shouldBe(true)
                 order.cartId.sameValueAs(cartId).shouldBe(true)
                 order.delivery.deliveryProvider.shouldBe(deliveryProvider)
-                order.items.size.shouldBe(cartProjection.items.size)
-                order.items.filter { orderItem -> orderItem.productId.sameValueAs(cartEntry.productId) }
+                order.items.size.shouldBe(cart.items.size)
+                order.items.filter { orderItem -> orderItem.productId.sameValueAs(productId) }
                     .shouldNotBeEmpty()
-                order.items.first { orderItem -> orderItem.productId.sameValueAs(cartEntry.productId) }.quantity.shouldBe(
+                order.items.first { orderItem -> orderItem.productId.sameValueAs(productId) }.quantity.shouldBe(
                     cartItemQuantity
                 )
 

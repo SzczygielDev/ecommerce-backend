@@ -7,11 +7,8 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
 import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventPublisher
-import pl.szczygieldev.order.application.port.`in`.query.model.OrderProjection
-import pl.szczygieldev.order.application.port.`in`.query.model.PaymentProjection
 import pl.szczygieldev.order.application.port.`in`.command.ProcessPaymentCommand
 import pl.szczygieldev.order.application.port.out.Orders
-import pl.szczygieldev.order.application.port.out.OrdersProjections
 import pl.szczygieldev.order.application.port.out.PaymentService
 import pl.szczygieldev.order.domain.*
 import pl.szczygieldev.order.domain.error.OrderNotFoundError
@@ -23,10 +20,9 @@ import java.util.UUID
 
 internal class OrderPaymentUseCaseTests : FunSpec() {
     val ordersMock = mockk<Orders>()
-    val ordersProjections = mockk<OrdersProjections>()
     val orderEventPublisherMock = mockk<DomainEventPublisher<OrderEvent>>()
     val paymentServiceMock = mockk<PaymentService>()
-    val orderPaymentService = OrderPaymentService(ordersProjections, ordersMock, orderEventPublisherMock,paymentServiceMock)
+    val orderPaymentService = OrderPaymentService(ordersMock, orderEventPublisherMock,paymentServiceMock)
 
     init {
         isolationMode = IsolationMode.InstancePerLeaf
@@ -53,30 +49,6 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
             emptyList()
         )
 
-        val orderProjection = OrderProjection(
-            orderId,
-            cartId,
-            order.status,
-            PaymentProjection(
-                paymentId,
-                amount,
-                BigDecimal.ZERO,
-                PaymentServiceProvider.MOCK_PSP,
-                PaymentStatus.UNPAID,
-                paymentUrl,
-                emptyList()
-            ),
-            Delivery(deliveryProvider, DeliveryStatus.WAITING, null),
-            Instant.now(),
-            listOf(
-                OrderProjection.OrderItemProjection(
-                    ProductId(UUID.randomUUID()),
-                    "",
-                    amount,
-                    1, imageId
-                )
-            )
-        )
 
         val paymentTransaction = PaymentTransaction(paymentTransactionId, amount, Instant.now())
 
@@ -84,25 +56,12 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
         every { ordersMock.save(capture(orderSlot), any()) } just runs
         every { orderEventPublisherMock.publishBatch(any()) } just runs
         every { paymentServiceMock.verifyPayment(paymentId) } just runs
-
-        test("OrderNotFoundError should be raised when OrderProjection for provided payment id was not found") {
-            //Arrange
-            every { ordersProjections.findByPaymentId(paymentId) } returns null
-            val command = ProcessPaymentCommand(paymentId, paymentTransaction)
-
-            //Act
-            val result = orderPaymentService.pay(command)
-
-            //Assert
-            result.isLeft().shouldBe(true)
-            val error = result.leftOrNull().shouldNotBeNull()
-            error.shouldBeInstanceOf<OrderNotFoundError>()
-        }
+        every { ordersMock.findByPaymentId(paymentId) } returns order
 
         test("OrderNotFoundError should be raised when Order for provided id was not found") {
             //Arrange
-            every { ordersProjections.findByPaymentId(paymentId) } returns orderProjection
-            every { ordersMock.findById(orderId) } returns null
+            every { ordersMock.findByPaymentId(paymentId) } returns null
+
             val command = ProcessPaymentCommand(paymentId, paymentTransaction)
 
             //Act
@@ -116,9 +75,8 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
 
         test("Order should register payment transaction") {
             //Arrange
-            every { ordersProjections.findByPaymentId(paymentId) } returns orderProjection
             val order = spyk(order)
-            every { ordersMock.findById(orderId) } returns order
+            every { ordersMock.findByPaymentId(paymentId) } returns order
             val command = ProcessPaymentCommand(paymentId, paymentTransaction)
 
             //Act
@@ -130,8 +88,6 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
 
         test("Payment verification should be called"){
             //Arrange
-            every { ordersProjections.findByPaymentId(paymentId) } returns orderProjection
-            every { ordersMock.findById(orderId) } returns order
             val command = ProcessPaymentCommand(paymentId, paymentTransaction)
 
             //Act
@@ -143,8 +99,6 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
 
         test("Order should be saved when no error occurred") {
             //Arrange
-            every { ordersProjections.findByPaymentId(paymentId) } returns orderProjection
-            every { ordersMock.findById(orderId) } returns order
             val command = ProcessPaymentCommand(paymentId, paymentTransaction)
 
             //Act
@@ -156,8 +110,6 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
 
         test("Order occurred events should be published when no error occurred") {
             //Arrange
-            every { ordersProjections.findByPaymentId(paymentId) } returns orderProjection
-            every { ordersMock.findById(orderId) } returns order
             val command = ProcessPaymentCommand(paymentId, paymentTransaction)
 
             //Act

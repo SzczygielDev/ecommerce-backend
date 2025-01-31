@@ -5,6 +5,7 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
 import pl.szczygieldev.ecommercelibrary.architecture.UseCase
+import pl.szczygieldev.ecommercelibrary.ddd.core.DomainService
 
 @Configuration
 @ComponentScan(
@@ -16,7 +17,7 @@ import pl.szczygieldev.ecommercelibrary.architecture.UseCase
     includeFilters = [
         ComponentScan.Filter(
             type = FilterType.ANNOTATION,
-            value = [UseCase::class]
+            value = [UseCase::class, DomainService::class]
 
         ),
         ComponentScan.Filter(

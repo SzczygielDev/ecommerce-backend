@@ -35,7 +35,7 @@ dependencies {
     implementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     testImplementation("io.mockk:mockk:1.13.11")
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.4.0")
-    implementation("pl.szczygieldev:ecommerce-library:2.1.0")
+    implementation("pl.szczygieldev:ecommerce-library:2.2.0")
 }
 repositories {
     mavenLocal()

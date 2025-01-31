@@ -10,9 +10,13 @@ import pl.szczygieldev.order.domain.event.*
 
 
 internal class Cart private constructor(val cartId: CartId) : EventSourcedEntity<CartEvent>() {
+    data class Entry(val productId: ProductId, val quantity: Int)
+
     private var status: CartStatus = CartStatus.ACTIVE
 
-    data class Entry(val productId: ProductId, val quantity: Int)
+    private var _items: MutableList<Entry> = mutableListOf()
+    val items: List<Entry>
+        get() = _items.map { it.copy() }.toList()
 
     companion object {
         fun create(cartId: CartId): Cart {
@@ -28,8 +32,6 @@ internal class Cart private constructor(val cartId: CartId) : EventSourcedEntity
             return cart
         }
     }
-
-    private var items: MutableList<Entry> = mutableListOf()
 
     fun addItem(productId: ProductId, quantity: Int): Either<CartError, Unit> = either {
         if (status != CartStatus.ACTIVE) {
@@ -68,20 +70,20 @@ internal class Cart private constructor(val cartId: CartId) : EventSourcedEntity
     }
 
     private fun apply(event: ItemAddedToCart) {
-        val entriesForProductId = items.filter {
+        val entriesForProductId = _items.filter {
             it.productId == event.productId
         }
         if (entriesForProductId.isNotEmpty()) {
             val currentEntry = entriesForProductId.first()
-            items[items.indexOf(currentEntry)] =
+            _items[_items.indexOf(currentEntry)] =
                 currentEntry.copy(quantity = currentEntry.quantity + event.quantity)
         } else {
-            items.add(Entry(event.productId, event.quantity))
+            _items.add(Entry(event.productId, event.quantity))
         }
     }
 
     private fun apply(event: ItemRemovedFromCart) {
-        items.removeIf { item ->
+        _items.removeIf { item ->
             item.productId.sameValueAs(event.productId)
         }
     }
