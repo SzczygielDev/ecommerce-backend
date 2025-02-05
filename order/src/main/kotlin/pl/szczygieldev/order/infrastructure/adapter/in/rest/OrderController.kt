@@ -30,7 +30,7 @@ import java.util.UUID
 @RequestMapping("/orders")
 internal class OrderController(
     val ordersProjections: OrdersProjections,
-    val commandResultStorage: CommandResultStorage,
+    val commandQueue: CommandQueue,
     val commandPresenter: CommandPresenter,
     val orderPresenter: OrderPresenter,
     val mediator: Mediator
@@ -83,8 +83,8 @@ internal class OrderController(
         return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
             val command = AcceptOrderCommand(commandId, OrderId(orderId))
-            mediator.sendAsync(command)
-            commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
+            commandQueue.push(command)
+            commandQueue.getCommandStatus(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
             {
@@ -108,8 +108,8 @@ internal class OrderController(
     ): ResponseEntity<*> {
         return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
-            mediator.sendAsync(RejectOrderCommand(commandId, OrderId(orderId)))
-            commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
+            commandQueue.push(RejectOrderCommand(commandId, OrderId(orderId)))
+            commandQueue.getCommandStatus(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
             {
@@ -132,8 +132,8 @@ internal class OrderController(
     ): ResponseEntity<*> {
         return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
-            mediator.sendAsync(CancelOrderCommand(commandId, OrderId(orderId)))
-            commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
+            commandQueue.push(CancelOrderCommand(commandId, OrderId(orderId)))
+            commandQueue.getCommandStatus(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
             {
@@ -156,8 +156,8 @@ internal class OrderController(
     ): ResponseEntity<*> {
         return either<AppError, CommandResult> {
             val commandId = CommandId(commandId.toString())
-            mediator.sendAsync(ReturnOrderCommand(commandId, OrderId(orderId)))
-            commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
+            commandQueue.push(ReturnOrderCommand(commandId, OrderId(orderId)))
+            commandQueue.getCommandStatus(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
             {
@@ -182,8 +182,8 @@ internal class OrderController(
         return either<AppError, CommandResult> {
             val command = BeginOrderPackingCommand( CommandId(commandId.toString()),OrderId(orderId))
             val commandId = command.id
-            mediator.send(command).bind()
-            commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
+            commandQueue.push(command) //?
+            commandQueue.getCommandStatus(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
             {
@@ -212,10 +212,8 @@ internal class OrderController(
                 parcelDimensions
             )
             val commandId = command.id
-            mediator.send(
-                command
-            ).bind()
-            commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
+            commandQueue.push(command)
+            commandQueue.getCommandStatus(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
             {
@@ -237,7 +235,7 @@ internal class OrderController(
     private fun getCommandResultResponse(orderId: OrderId, commandId: CommandId): ResponseEntity<*> {
         return either {
             ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
-            commandResultStorage.findById(commandId) ?: raise(CommandNotFoundError.forId(commandId))
+            commandQueue.getCommandStatus(commandId) ?: raise(CommandNotFoundError.forId(commandId))
         }.fold<ResponseEntity<*>>(
             { mapToError(it) },
             { ResponseEntity.ok(commandPresenter.toDto(it)) })
