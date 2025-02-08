@@ -1,12 +1,15 @@
 package pl.szczygieldev.product
 
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.MediaTypeFactory
 import org.springframework.stereotype.Component
-import pl.szczygieldev.product.application.port.`in`.ProductUseCase
+import pl.szczygieldev.product.application.CreateProductCommandHandler
 import pl.szczygieldev.product.application.port.`in`.command.CreateProductCommand
 import pl.szczygieldev.product.application.port.out.Products
 import pl.szczygieldev.product.domain.ImageId
@@ -15,7 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 @Component("productModule.Warmup")
 internal class Warmup(
-    val productUseCase: ProductUseCase,
+    val createProductCommandHandler: CreateProductCommandHandler,
     val imageRepository: ImageRepository,
     val products: Products
 ) {
@@ -31,9 +34,9 @@ internal class Warmup(
 
     @EventListener(ApplicationReadyEvent::class)
     suspend fun initData() {
-        transaction {
+        newSuspendedTransaction {
             initializeImage("static/images/products/1.jpg")?.let {
-                productUseCase.create(
+                createProductCommandHandler.handle(
                     CreateProductCommand(
                         products.nextIdentity(),
                         "Produkt A",
@@ -44,7 +47,7 @@ internal class Warmup(
                 )
             }
             initializeImage("static/images/products/2.jpg")?.let {
-                productUseCase.create(
+                createProductCommandHandler.handle(
                     CreateProductCommand(
                         products.nextIdentity(),
                         "Produkt B",
@@ -55,7 +58,7 @@ internal class Warmup(
                 )
             }
             initializeImage("static/images/products/3.jpg")?.let {
-                productUseCase.create(
+                createProductCommandHandler.handle(
                     CreateProductCommand(
                         products.nextIdentity(),
                         "Produkt C",
@@ -66,7 +69,7 @@ internal class Warmup(
                 )
             }
             initializeImage("static/images/products/4.jpg")?.let {
-                productUseCase.create(
+                createProductCommandHandler.handle(
                     CreateProductCommand(
                         products.nextIdentity(),
                         "Produkt D",
@@ -77,7 +80,7 @@ internal class Warmup(
                 )
             }
             initializeImage("static/images/products/5.jpg")?.let {
-                productUseCase.create(
+                createProductCommandHandler.handle(
                     CreateProductCommand(
                         products.nextIdentity(),
                         "Produkt E",
@@ -88,7 +91,7 @@ internal class Warmup(
                 )
             }
             initializeImage("static/images/products/6.jpg")?.let {
-                productUseCase.create(
+                createProductCommandHandler.handle(
                     CreateProductCommand(
                         products.nextIdentity(),
                         "Produkt F",
@@ -99,7 +102,7 @@ internal class Warmup(
                 )
             }
             initializeImage("static/images/products/7.jpg")?.let {
-                productUseCase.create(
+                createProductCommandHandler.handle(
                     CreateProductCommand(
                         products.nextIdentity(),
                         "Produkt G",
@@ -110,7 +113,7 @@ internal class Warmup(
                 )
             }
             initializeImage("static/images/products/8.jpg")?.let {
-                productUseCase.create(
+                createProductCommandHandler.handle(
                     CreateProductCommand(
                         products.nextIdentity(),
                         "Produkt H",

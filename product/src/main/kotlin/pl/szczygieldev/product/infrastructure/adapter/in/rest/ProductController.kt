@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.*
 import pl.szczygieldev.ecommercelibrary.command.Mediator
 import pl.szczygieldev.product.application.port.`in`.command.CreateProductCommand
 import pl.szczygieldev.product.application.port.`in`.command.UpdateProductCommand
+import pl.szczygieldev.product.application.port.`in`.query.GetAllProductsQuery
+import pl.szczygieldev.product.application.port.`in`.query.GetPaginatedProductsQuery
+import pl.szczygieldev.product.application.port.`in`.query.GetProductByIdQuery
 import pl.szczygieldev.product.application.port.out.Products
 import pl.szczygieldev.product.domain.*
 import pl.szczygieldev.product.domain.error.AppError
@@ -25,22 +28,25 @@ internal class ProductController(
     val productPresenter: ProductPresenter
 ) {
     @GetMapping
-    fun getAll(
+    suspend fun getAll(
         @RequestParam(required = false) offset: Long?,
         @RequestParam(required = false) limit: Int?
     ): ResponseEntity<List<ProductDto>> {
         if (offset != null && limit != null) {
-            return ResponseEntity.ok().body(products.findPage(offset, limit).map { productPresenter.toDto(it) })
+
+            return ResponseEntity.ok()
+                .body(mediator.send(GetPaginatedProductsQuery(offset, limit)).map { productPresenter.toDto(it) })
         }
 
-        return ResponseEntity.ok().body(products.findAll().map { productPresenter.toDto(it) })
+        return ResponseEntity.ok().body(mediator.send(GetAllProductsQuery()).map { productPresenter.toDto(it) })
     }
 
     @GetMapping("/{id}")
-    fun getById(@PathVariable id: UUID): ResponseEntity<*> {
+    suspend fun getById(@PathVariable id: UUID): ResponseEntity<*> {
         return either<AppError, Product> {
             val productId = ProductId(id)
-            products.findById(productId) ?: raise(ProductNotFoundError(productId.id.toString()))
+
+            mediator.send(GetProductByIdQuery(productId)) ?: raise(ProductNotFoundError(productId.id.toString()))
         }.fold({ mapToError(it) }, { product -> return ResponseEntity.ok().body(productPresenter.toDto(product)) })
     }
 
@@ -57,7 +63,7 @@ internal class ProductController(
                     ImageId(request.imageId)
                 )
             )
-            products.findById(productId) ?: raise(ProductNotFoundError(productId.id.toString()))
+            mediator.send(GetProductByIdQuery(productId)) ?: raise(ProductNotFoundError(productId.id.toString()))
         }.fold({ mapToError(it) }, { product -> return ResponseEntity.ok().body(productPresenter.toDto(product)) })
     }
 
@@ -65,9 +71,9 @@ internal class ProductController(
     fun delete(@PathVariable id: UUID): ResponseEntity<*> {
         return either<AppError, Boolean> {
             val productId = ProductId(id)
-            val result = products.delete(productId)
+            val result = products.delete(productId) // FIXME : implement as command
 
-            if(!result){
+            if (!result) {
                 raise(ProductNotFoundError(productId.id.toString()))
             }
             result
@@ -87,7 +93,7 @@ internal class ProductController(
                     ImageId(request.imageId)
                 )
             )
-            products.findById(productId) ?: raise(ProductNotFoundError(productId.id.toString()))
+            mediator.send(GetProductByIdQuery(productId)) ?: raise(ProductNotFoundError(productId.id.toString()))
         }.fold({ mapToError(it) }, { product -> return ResponseEntity.ok().body(productPresenter.toDto(product)) })
     }
 }
