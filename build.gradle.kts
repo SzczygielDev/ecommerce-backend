@@ -22,11 +22,27 @@ configurations {
 
 repositories {
     mavenCentral()
+    mavenLocal()
+}
+
+allprojects {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/szczygieldev/ecommerce-library")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+            }
+        }
+    }
 }
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation(project(mapOf("path" to ":product")))
+    implementation(project(mapOf("path" to ":order")))
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -44,7 +60,6 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.11")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
     runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.9.0-RC")
-    implementation("io.minio:minio:8.5.12")
     implementation("org.springframework.boot:spring-boot-starter-mail:3.3.4")
     implementation("com.github.spullara.mustache.java:compiler:0.9.14")
 
@@ -57,7 +72,8 @@ dependencies {
 
     implementation("com.trendyol:kediatr-core:3.0.0")
     implementation("com.trendyol:kediatr-spring-starter:3.0.0")
-
+    implementation("org.springframework.boot:spring-boot-gradle-plugin:3.3.5")
+    implementation("pl.szczygieldev:ecommerce-library:3.0.0")
 }
 
 tasks.withType<KotlinCompile> {

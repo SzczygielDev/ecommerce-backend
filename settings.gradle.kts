@@ -3,3 +3,6 @@ plugins {
 }
 rootProject.name = "ecommerce-backend"
 include("shared")
+include("order")
+include("product")
+include("external")
