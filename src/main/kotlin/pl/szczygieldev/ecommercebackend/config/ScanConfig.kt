@@ -13,7 +13,8 @@ import pl.szczygieldev.ecommercelibrary.ddd.core.DomainService
     basePackages = ["pl.szczygieldev.ecommercebackend",
                     "pl.szczygieldev.product",
                     "pl.szczygieldev.order",
-                    "pl.szczygieldev.external"
+                    "pl.szczygieldev.external",
+                    "pl.szczygieldev.cart",
                    ],
     includeFilters = [
         ComponentScan.Filter(

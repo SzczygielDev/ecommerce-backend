@@ -22,11 +22,12 @@ configurations {
 
 repositories {
     mavenCentral()
-    mavenLocal()
 }
 
 allprojects {
+    apply(plugin = "org.jetbrains.kotlin.jvm")
     repositories {
+        mavenLocal()
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/szczygieldev/ecommerce-library")
@@ -36,6 +37,9 @@ allprojects {
             }
         }
     }
+    dependencies {
+        implementation("pl.szczygieldev:ecommerce-library:4.0.0")
+    }
 }
 
 dependencies {
@@ -43,6 +47,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation(project(mapOf("path" to ":product")))
     implementation(project(mapOf("path" to ":order")))
+    implementation(project(mapOf("path" to ":cart")))
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -73,7 +78,6 @@ dependencies {
     implementation("com.trendyol:kediatr-core:3.0.0")
     implementation("com.trendyol:kediatr-spring-starter:3.0.0")
     implementation("org.springframework.boot:spring-boot-gradle-plugin:3.3.5")
-    implementation("pl.szczygieldev:ecommerce-library:3.0.0")
 }
 
 tasks.withType<KotlinCompile> {

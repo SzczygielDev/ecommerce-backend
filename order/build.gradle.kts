@@ -9,6 +9,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.boot:spring-boot-starter:3.2.5")
     implementation(project(mapOf("path" to ":product")))
+    implementation(project(mapOf("path" to ":cart")))
     implementation(project(mapOf("path" to ":external")))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("org.springframework.boot:spring-boot-starter-web:3.2.5")
@@ -35,10 +36,8 @@ dependencies {
     implementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     testImplementation("io.mockk:mockk:1.13.11")
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.4.0")
-    implementation("pl.szczygieldev:ecommerce-library:3.0.0")
 }
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 kotlin {

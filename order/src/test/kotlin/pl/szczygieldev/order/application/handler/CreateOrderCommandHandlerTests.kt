@@ -5,7 +5,6 @@ import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.*
 import pl.szczygieldev.order.infrastructure.adapter.`in`.command.handler.CreateOrderCommandHandler
-import pl.szczygieldev.order.application.port.`in`.CartUseCase
 import pl.szczygieldev.order.application.port.`in`.OrderUseCase
 import pl.szczygieldev.order.application.port.`in`.command.CreateOrderCommand
 import pl.szczygieldev.order.domain.CartId
@@ -16,13 +15,13 @@ import java.util.*
 
 internal class CreateOrderCommandHandlerTests : FunSpec() {
     val orderUseCaseMock = mockk<OrderUseCase>();
-    val cartUseCaseMock = mockk<CartUseCase>();
-    var commandHandler = CreateOrderCommandHandler(orderUseCaseMock, cartUseCaseMock)
+
+    var commandHandler = CreateOrderCommandHandler(orderUseCaseMock)
 
     init {
         isolationMode = IsolationMode.InstancePerLeaf
         coEvery { orderUseCaseMock.createOrder(any()) } returns either { }
-        coEvery { cartUseCaseMock.createCart(any()) } returns either { }
+
 
         test("createOrder and createCart should be called") {
             //Arrange
@@ -34,7 +33,7 @@ internal class CreateOrderCommandHandlerTests : FunSpec() {
 
             //Assert
             coVerify { orderUseCaseMock.createOrder(any()) }
-            coVerify { cartUseCaseMock.createCart(any()) }
+
         }
     }
 }

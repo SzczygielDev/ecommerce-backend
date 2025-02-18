@@ -10,24 +10,7 @@ import pl.szczygieldev.order.infrastructure.adapter.error.CommandNotFoundError
 
 internal fun mapToError(error: AppError): ResponseEntity<*> {
     return when (error) {
-        //region Cart
-        is CartAlreadySubmittedError -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, error.message))
 
-        is CartNotActiveError -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, error.message))
-
-        is CartNotFoundError -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.message))
-        //endregion
-
-        //region PriceCalculator
-        is MissingProductForCalculateError -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.message))
-
-        is UnableToCalculateCartTotalError -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, error.message))
-        //endregion
 
         //region Order
         is AlreadyAcceptedOrderError ->  ResponseEntity.status(HttpStatus.CONFLICT)
@@ -63,6 +46,9 @@ internal fun mapToError(error: AppError): ResponseEntity<*> {
         }
         //endregion
         is ProductNotFoundError -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.message))
+
+        is CartNotFoundError ->  ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, error.message))
     }
 }
