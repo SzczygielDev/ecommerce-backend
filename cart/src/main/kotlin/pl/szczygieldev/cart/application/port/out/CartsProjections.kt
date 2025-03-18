@@ -1,6 +1,6 @@
 package pl.szczygieldev.cart.application.port.out
 
-import pl.szczygieldev.cart.CartProjection
+import pl.szczygieldev.cart.api.CartProjection
 import pl.szczygieldev.cart.domain.CartId
 import pl.szczygieldev.cart.domain.UserId
 

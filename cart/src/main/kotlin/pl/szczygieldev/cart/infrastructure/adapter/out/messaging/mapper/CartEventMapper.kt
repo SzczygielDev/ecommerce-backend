@@ -1,6 +1,6 @@
 package pl.szczygieldev.cart.infrastructure.adapter.out.messaging.mapper
 
-import pl.szczygieldev.cart.CartSubmittedEvent
+import pl.szczygieldev.cart.api.CartSubmittedEvent
 import pl.szczygieldev.cart.domain.CartCreated
 import pl.szczygieldev.cart.domain.CartEvent
 import pl.szczygieldev.cart.domain.CartSubmitted

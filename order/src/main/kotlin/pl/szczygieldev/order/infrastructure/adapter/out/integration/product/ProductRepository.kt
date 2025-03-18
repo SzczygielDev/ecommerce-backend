@@ -5,7 +5,7 @@ import pl.szczygieldev.order.application.port.out.Products
 import pl.szczygieldev.order.domain.ImageId
 import pl.szczygieldev.order.domain.Product
 import pl.szczygieldev.order.domain.ProductId
-import pl.szczygieldev.product.ProductFacade
+import pl.szczygieldev.product.api.ProductFacade
 import java.util.*
 
 

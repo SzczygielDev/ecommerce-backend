@@ -1,4 +1,4 @@
-package pl.szczygieldev.cart
+package pl.szczygieldev.cart.api
 
 import java.util.*
 

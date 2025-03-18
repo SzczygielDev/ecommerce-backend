@@ -4,7 +4,7 @@ import org.springframework.stereotype.Repository
 import pl.szczygieldev.cart.application.port.out.Products
 import pl.szczygieldev.cart.domain.Product
 import pl.szczygieldev.cart.domain.ProductId
-import pl.szczygieldev.product.ProductFacade
+import pl.szczygieldev.product.api.ProductFacade
 import java.util.UUID
 
 @Repository("cartModule.ProductRepository")

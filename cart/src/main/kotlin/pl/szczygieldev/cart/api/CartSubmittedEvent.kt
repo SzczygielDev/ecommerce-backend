@@ -1,4 +1,4 @@
-package pl.szczygieldev.cart
+package pl.szczygieldev.cart.api
 
 import pl.szczygieldev.ecommercelibrary.messaging.IntegrationEvent
 import java.time.Instant

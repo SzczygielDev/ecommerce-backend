@@ -1,4 +1,4 @@
-package pl.szczygieldev.cart
+package pl.szczygieldev.cart.api
 
 import org.springframework.stereotype.Component
 import pl.szczygieldev.cart.application.port.out.CartsProjections

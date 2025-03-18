@@ -1,7 +1,7 @@
 package pl.szczygieldev.cart.infrastructure.adapter.`in`.api.resource
 
 import org.springframework.stereotype.Component
-import pl.szczygieldev.cart.CartProjection
+import pl.szczygieldev.cart.api.CartProjection
 import pl.szczygieldev.cart.domain.CartStatus
 
 @Component

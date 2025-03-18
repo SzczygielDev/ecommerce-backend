@@ -1,4 +1,4 @@
-package pl.szczygieldev.product
+package pl.szczygieldev.product.api
 
 import java.math.BigDecimal
 import java.time.Instant

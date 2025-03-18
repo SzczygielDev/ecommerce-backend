@@ -1,7 +1,7 @@
 package pl.szczygieldev.order.infrastructure.adapter.out.integration.cart
 
 import org.springframework.stereotype.Repository
-import pl.szczygieldev.cart.CartFacade
+import pl.szczygieldev.cart.api.CartFacade
 import pl.szczygieldev.order.application.port.out.Carts
 import pl.szczygieldev.order.domain.Cart
 import pl.szczygieldev.order.domain.CartId

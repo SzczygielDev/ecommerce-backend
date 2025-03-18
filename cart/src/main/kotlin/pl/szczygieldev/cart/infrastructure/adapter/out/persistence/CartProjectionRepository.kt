@@ -4,11 +4,10 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Repository
-import pl.szczygieldev.cart.CartProjection
+import pl.szczygieldev.cart.api.CartProjection
 import pl.szczygieldev.cart.application.port.out.CartsProjections
 import pl.szczygieldev.cart.domain.CartId
 import pl.szczygieldev.cart.domain.CartStatus
-import pl.szczygieldev.cart.domain.ProductId
 import pl.szczygieldev.cart.domain.UserId
 import pl.szczygieldev.cart.infrastructure.adapter.out.persistence.table.CartProjectionEntryTable
 import pl.szczygieldev.cart.infrastructure.adapter.out.persistence.table.CartProjectionTable

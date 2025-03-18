@@ -1,4 +1,4 @@
-package pl.szczygieldev.product
+package pl.szczygieldev.product.api
 
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Component

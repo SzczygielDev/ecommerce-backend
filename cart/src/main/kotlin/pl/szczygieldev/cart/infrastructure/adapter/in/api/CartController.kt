@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*
 import pl.szczygieldev.cart.application.port.`in`.command.AddItemToCartCommand
 import pl.szczygieldev.cart.application.port.`in`.command.RemoveItemFromCartCommand
 import pl.szczygieldev.cart.application.port.`in`.command.SubmitCartCommand
-import pl.szczygieldev.cart.CartProjection
+import pl.szczygieldev.cart.api.CartProjection
 import pl.szczygieldev.cart.application.port.out.CartsProjections
 import pl.szczygieldev.cart.domain.AppError
 import pl.szczygieldev.cart.domain.CartId
