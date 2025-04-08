@@ -1,6 +1,7 @@
 package pl.szczygieldev.order.infrastructure.adapter.out.persistence
 
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.upsert
 import org.springframework.stereotype.Repository
@@ -23,7 +24,7 @@ internal class OrderRepository(val eventStore: EventStore) : Orders {
         return Order.fromEvents(id, eventsForOrder)
     }
 
-    override fun save(order: Order, version: Int): Unit = transaction {
+    override suspend fun save(order: Order, version: Int): Unit = newSuspendedTransaction {
         val occurredEvents = order.occurredEvents()
         eventStore.appendEvents(order.orderId, occurredEvents, version)
         order.clearOccurredEvents()

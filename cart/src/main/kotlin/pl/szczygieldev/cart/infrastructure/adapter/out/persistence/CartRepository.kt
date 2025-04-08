@@ -1,5 +1,6 @@
 package pl.szczygieldev.cart.infrastructure.adapter.out.persistence
 
+import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Repository
 import pl.szczygieldev.cart.application.port.out.Carts
 import pl.szczygieldev.cart.domain.Cart
@@ -18,7 +19,7 @@ internal class CartRepository(val eventStore: EventStore) : Carts {
         return Cart.fromEvents(id, eventsForCart)
     }
 
-    override fun save(cart: Cart, version: Int) {
+    override fun save(cart: Cart, version: Int) = runBlocking{
         val occurredEvents = cart.occurredEvents()
         eventStore.appendEvents(cart.cartId,occurredEvents,version)
         cart.clearOccurredEvents()

@@ -1,5 +1,6 @@
 package pl.szczygieldev.product.infrastructure.adapter.out.persistence
 
+import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Repository
 import pl.szczygieldev.ecommercelibrary.eventstore.EventStore
 import pl.szczygieldev.product.application.port.out.Products
@@ -21,7 +22,8 @@ internal class ProductRepository(val eventStore: EventStore) : Products {
     override fun nextIdentity(): ProductId = ProductId(UUID.randomUUID())
 
     override fun findById(id: ProductId): Product? = transaction {
-        val result = ProductTable.selectAll().where(ProductTable.id.eq(id.idAsUUID())).singleOrNull() ?: return@transaction null
+        val result =
+            ProductTable.selectAll().where(ProductTable.id.eq(id.idAsUUID())).singleOrNull() ?: return@transaction null
 
         val product = Product.fromSnapshot(
             ProductId(result[ProductTable.id]),
@@ -59,7 +61,9 @@ internal class ProductRepository(val eventStore: EventStore) : Products {
             it[basePrice] = product.price.amount
             it[imageId] = product.imageId.id
         }
-        eventStore.appendEvents(product.productId, product.occurredEvents(), version)
+        runBlocking {
+            eventStore.appendEvents(product.productId, product.occurredEvents(), version)
+        }
         product.clearOccurredEvents()
         return@transaction product
     }

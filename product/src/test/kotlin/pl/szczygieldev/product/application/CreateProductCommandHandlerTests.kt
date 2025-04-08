@@ -2,10 +2,7 @@ package pl.szczygieldev.product.application
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.slot
-import io.mockk.verify
+import io.mockk.*
 import pl.szczygieldev.product.application.port.`in`.command.CreateProductCommand
 import pl.szczygieldev.product.application.port.out.Products
 import pl.szczygieldev.product.domain.ImageId
@@ -30,18 +27,18 @@ internal class CreateProductCommandHandlerTests  : FunSpec() {
 
 
             val savedProduct = slot<Product>()
-            every { productsMock.save(capture(savedProduct), any()) } returns Product.create(
+            coEvery { productsMock.save(capture(savedProduct), any()) } returns Product.create(
                 productId, ProductTitle(command.title),
                 ProductDescription(command.description), ProductPrice(BigDecimal.valueOf(command.price)), imageId
             )
-            every { productsMock.nextIdentity() } returns productId
+            coEvery  { productsMock.nextIdentity() } returns productId
 
             //Act
             val result = createProductCommandHandler.handle(command)
 
             //Assert
             savedProduct.captured.productId.sameValueAs(productId).shouldBe(true)
-            verify { productsMock.save(any(), any()) }
+            coVerify { productsMock.save(any(), any()) }
         }
     }
 }

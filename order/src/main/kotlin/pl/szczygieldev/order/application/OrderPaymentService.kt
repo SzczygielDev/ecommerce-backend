@@ -18,7 +18,7 @@ internal class OrderPaymentService(
     val orderEventPublisher: DomainEventPublisher<OrderEvent>,
     val paymentService: PaymentService,
 ) : OrderPaymentUseCase {
-    override fun pay(command: ProcessPaymentCommand): Either<AppError, Unit> = either {
+    override suspend fun pay(command: ProcessPaymentCommand): Either<AppError, Unit> = either {
         val paymentId = command.paymentId
         val paymentTransaction = command.paymentTransaction
 

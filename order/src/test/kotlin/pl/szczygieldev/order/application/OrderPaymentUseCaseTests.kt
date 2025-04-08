@@ -53,7 +53,7 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
         val paymentTransaction = PaymentTransaction(paymentTransactionId, amount, Instant.now())
 
         val orderSlot = slot<Order>()
-        every { ordersMock.save(capture(orderSlot), any()) } just runs
+        coEvery { ordersMock.save(capture(orderSlot), any()) } just runs
         every { orderEventPublisherMock.publishBatch(any()) } just runs
         every { paymentServiceMock.verifyPayment(paymentId) } just runs
         every { ordersMock.findByPaymentId(paymentId) } returns order
@@ -105,7 +105,7 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
             orderPaymentService.pay(command)
 
             //Assert
-            verify { ordersMock.save(order, any()) }
+            coVerify { ordersMock.save(order, any()) }
         }
 
         test("Order occurred events should be published when no error occurred") {

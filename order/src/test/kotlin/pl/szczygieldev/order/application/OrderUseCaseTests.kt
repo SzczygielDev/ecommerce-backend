@@ -37,7 +37,7 @@ internal class OrderUseCaseTests : FunSpec() {
 
     init {
         isolationMode = IsolationMode.InstancePerLeaf
-        every { ordersMock.save(any(), any()) } just runs
+        coEvery { ordersMock.save(any(), any()) } just runs
         every { orderEventPublisherMock.publish(any()) } just runs
         every { orderEventPublisherMock.publishBatch(any()) } just runs
 
@@ -78,7 +78,7 @@ internal class OrderUseCaseTests : FunSpec() {
 
         every { ordersMock.nextIdentity() } returns orderId
         val orderSlot = slot<Order>()
-        every { ordersMock.save(capture(orderSlot), any()) } just runs
+        coEvery { ordersMock.save(capture(orderSlot), any()) } just runs
 
         every { paymentServiceMock.registerPayment(any(), any(), any()) } returns paymentRegistration
         every { cartsMock.findById(cartId) } returns cart
@@ -177,7 +177,7 @@ internal class OrderUseCaseTests : FunSpec() {
                 val result = orderService.acceptOrder(command)
 
                 //Assert
-                verify { ordersMock.save(order, any()) }
+                coVerify { ordersMock.save(order, any()) }
             }
 
             test("Order occurred events should be published when no error occurred") {
@@ -227,7 +227,7 @@ internal class OrderUseCaseTests : FunSpec() {
                 orderService.rejectOrder(command)
 
                 //Assert
-                verify { ordersMock.save(order, any()) }
+                coVerify { ordersMock.save(order, any()) }
             }
 
             test("Order occurred events should be published when no error occurred") {
@@ -277,7 +277,7 @@ internal class OrderUseCaseTests : FunSpec() {
                 orderService.cancelOrder(command)
 
                 //Assert
-                verify { ordersMock.save(order, any()) }
+                coVerify { ordersMock.save(order, any()) }
             }
 
             test("Order occurred events should be published when no error occurred") {
@@ -331,7 +331,7 @@ internal class OrderUseCaseTests : FunSpec() {
                 orderService.returnOrder(command)
 
                 //Assert
-                verify { ordersMock.save(order, any()) }
+                coVerify { ordersMock.save(order, any()) }
             }
 
             test("Order occurred events should be published when no error occurred") {

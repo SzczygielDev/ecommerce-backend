@@ -41,7 +41,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
     init {
         isolationMode = IsolationMode.InstancePerLeaf
 
-        every { ordersMock.save(any(), any()) } just runs
+        coEvery { ordersMock.save(any(), any()) } just runs
         every { orderEventPublisherMock.publish(any()) } just runs
         every { orderEventPublisherMock.publishBatch(any()) } just runs
 
@@ -135,7 +135,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 orderShippingUseCase.beginPacking(command)
 
                 //Assert
-                verify { ordersMock.save(order, any()) }
+                coVerify { ordersMock.save(order, any()) }
             }
 
             test("Order occurred events should be published when no error occurred") {
@@ -233,7 +233,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 orderShippingUseCase.completePacking(command)
 
                 //Assert
-                verify { ordersMock.save(order, any()) }
+                coVerify { ordersMock.save(order, any()) }
             }
 
             test("Order occurred events should be published when no error occurred") {
@@ -303,7 +303,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 orderShippingUseCase.changeDeliveryStatus(command)
 
                 //Assert
-                verify { ordersMock.save(order, any()) }
+                coVerify { ordersMock.save(order, any()) }
             }
 
             test("Order occurred events should be published when no error occurred") {
