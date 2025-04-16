@@ -15,7 +15,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.arrow-kt:arrow-core:1.2.4")
     implementation("io.arrow-kt:arrow-fx-coroutines:1.2.4")
-    implementation("com.trendyol:kediatr-core:3.0.0")
+    implementation("com.trendyol:kediatr-core:3.1.1")
     implementation("com.trendyol:kediatr-spring-starter:3.0.0")
 
     implementation("org.springframework.boot:spring-boot-starter:3.2.5")

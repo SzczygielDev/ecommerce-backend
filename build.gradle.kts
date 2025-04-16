@@ -75,7 +75,7 @@ dependencies {
     runtimeOnly("org.jetbrains.exposed:exposed-kotlin-datetime:0.55.0")
     implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.55.0")
 
-    implementation("com.trendyol:kediatr-core:3.0.0")
+    implementation("com.trendyol:kediatr-core:3.1.1")
     implementation("com.trendyol:kediatr-spring-starter:3.0.0")
     implementation("org.springframework.boot:spring-boot-gradle-plugin:3.3.5")
 }

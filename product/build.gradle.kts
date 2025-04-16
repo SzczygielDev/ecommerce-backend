@@ -20,7 +20,7 @@ dependencies {
     implementation("io.arrow-kt:arrow-core:1.2.4")
 
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
-    implementation("com.trendyol:kediatr-core:3.0.0")
+    implementation("com.trendyol:kediatr-core:3.1.1")
     implementation("com.trendyol:kediatr-spring-starter:3.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
     runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.9.0-RC")
