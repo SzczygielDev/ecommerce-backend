@@ -1,42 +1,54 @@
 package pl.szczygieldev.order.infrastructure.adapter.`in`.messaging
 
 import arrow.core.raise.either
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import pl.szczygieldev.ecommercelibrary.command.CommandQueue
-import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventHandler
+import pl.szczygieldev.ecommercelibrary.event.ReactiveAsyncEventHandler
+import pl.szczygieldev.ecommercelibrary.eventstore.EventStore
+import pl.szczygieldev.ecommercelibrary.messaging.InMemoryMessageQueue
+import pl.szczygieldev.ecommercelibrary.messaging.config.MessageQueueConfig
 import pl.szczygieldev.order.application.port.`in`.command.SendOrderConfirmationMailCommand
 import pl.szczygieldev.order.domain.error.AppError
 import pl.szczygieldev.order.domain.event.*
+
 @Component
 internal class OrderEventHandler(
-    val queue: CommandQueue
+    val queue: CommandQueue,
+    objectMapper: ObjectMapper,
+    eventStore: EventStore,
 ) :
-    DomainEventHandler<OrderEvent> {
+    ReactiveAsyncEventHandler<OrderEvent>(
+        OrderEvent::class, objectMapper, eventStore, InMemoryMessageQueue(
+            MessageQueueConfig()
+        )
+    ) {
     companion object {
         private val log = KotlinLogging.logger { }
     }
+    override suspend fun handle(notification: OrderEvent) {
+        val domainEvent = notification
+        either<AppError, Unit> {
+            when (domainEvent) {
+                is OrderCreated -> {}
+                is OrderAccepted -> {}
+                is OrderCanceled -> {}
+                is OrderPackaged -> {}
+                is OrderPackagingStarted -> {}
+                is OrderRejected -> {}
+                is OrderPaymentReceived -> {}
+                is OrderInvalidAmountPaid -> {}
+                is OrderPaid -> {
+                    queue.push(SendOrderConfirmationMailCommand(domainEvent.orderId))
+                }
 
-    @EventListener
-    override suspend fun handleEvent(domainEvent: OrderEvent) = either<AppError, Unit> {
-        when (domainEvent) {
-            is OrderCreated -> {}
-            is OrderAccepted -> {}
-            is OrderCanceled -> {}
-            is OrderPackaged -> {}
-            is OrderPackagingStarted -> {}
-            is OrderRejected -> {}
-            is OrderPaymentReceived -> {}
-            is OrderInvalidAmountPaid -> {}
-            is OrderPaid -> {
-                queue.push(SendOrderConfirmationMailCommand(domainEvent.orderId))
+                is OrderDeliveryStatusChanged -> {}
             }
-            is OrderDeliveryStatusChanged -> {}
-        }
-    }.fold({
-        log.error { "Event handling failed=${domainEvent}" }
-    }, {
-        log.info { "Event handled=${domainEvent}" }
-    })
+        }.fold({
+            log.error { "Event handling failed=${domainEvent}" }
+        }, {
+            log.info { "Event handled=${domainEvent}" }
+        })
+    }
 }
