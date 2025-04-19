@@ -1,11 +1,9 @@
 package pl.szczygieldev.cart.infrastructure.adapter.`in`.messaging
 
-import arrow.core.raise.either
 import com.trendyol.kediatr.NotificationHandler
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import pl.szczygieldev.cart.application.port.out.CartsProjections
-import pl.szczygieldev.cart.domain.AppError
 import pl.szczygieldev.cart.domain.CartTotalRecalculated
 import pl.szczygieldev.cart.domain.PriceCalculatorEvent
 @Component("cartModule.PriceCalculatorEventHandler")
