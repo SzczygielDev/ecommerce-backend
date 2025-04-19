@@ -8,7 +8,7 @@ import pl.szczygieldev.cart.api.CartProjection
 import pl.szczygieldev.cart.application.port.out.CartsProjections
 import pl.szczygieldev.cart.domain.CartId
 import pl.szczygieldev.cart.domain.CartStatus
-import pl.szczygieldev.cart.domain.UserId
+import pl.szczygieldev.cart.domain.ClientId
 import pl.szczygieldev.cart.infrastructure.adapter.out.persistence.table.CartProjectionEntryTable
 import pl.szczygieldev.cart.infrastructure.adapter.out.persistence.table.CartProjectionTable
 
@@ -60,7 +60,7 @@ internal class CartProjectionRepository : CartsProjections {
 
 
     //TODO - replace when implementing users
-    override fun findActiveForUser(id: UserId): CartProjection? =
+    override fun findActiveForClient(id: ClientId): CartProjection? =
         transaction {
             val cartProjectionEntity = CartProjectionTable
                 .selectAll().where(CartProjectionTable.status.eq(CartStatus.ACTIVE)).singleOrNull()

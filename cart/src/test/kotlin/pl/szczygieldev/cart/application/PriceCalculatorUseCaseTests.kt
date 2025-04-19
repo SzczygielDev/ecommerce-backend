@@ -36,7 +36,8 @@ internal class PriceCalculatorUseCaseTests() : FunSpec() {
         test("Calculating cart total for non existing cart should raise CartNotFoundError") {
             //Arrange
             val cartId = CartId(UUID.randomUUID())
-            val emptyCart = Cart.create(cartId)
+            val clientId = ClientId(UUID.randomUUID())
+            val emptyCart = Cart.create(cartId, clientId)
 
             every { cartsMock.findById(cartId) } returns emptyCart
             every { cartsMock.findById(any()) } returns null
@@ -50,14 +51,15 @@ internal class PriceCalculatorUseCaseTests() : FunSpec() {
 
             //Assert
             val error = result.leftOrNull().shouldNotBeNull()
-            error.shouldBeInstanceOf<CartNotFoundError>()
+            error.shouldBeInstanceOf<CalculateCartTotalCommand.CartNotFoundError>()
         }
 
         test("Calculating cart total when products cannot be found should raise UnableToCalculateCartTotalError") {
             //Arrange
             val cartId = CartId(UUID.randomUUID())
             val productId = ProductId(UUID.randomUUID())
-            val cart = Cart.create(cartId)
+            val clientId = ClientId(UUID.randomUUID())
+            val cart = Cart.create(cartId,clientId)
             cart.addItem(productId, 1)
 
 
@@ -73,7 +75,7 @@ internal class PriceCalculatorUseCaseTests() : FunSpec() {
 
             //Assert
             val error = result.leftOrNull().shouldNotBeNull()
-            error.shouldBeInstanceOf<UnableToCalculateCartTotalError>()
+            error.shouldBeInstanceOf<CalculateCartTotalCommand.UnableToCalculateCartTotalError>()
         }
 
         test("Calculating cart total should return correct amount inside CartTotalRecalculated event") {
@@ -89,7 +91,8 @@ internal class PriceCalculatorUseCaseTests() : FunSpec() {
                 BigDecimal.valueOf(500),
             )
             val cartId = CartId(UUID.randomUUID())
-            val cart = Cart.create(cartId)
+            val clientId = ClientId(UUID.randomUUID())
+            val cart = Cart.create(cartId,clientId)
             cart.addItem(productA.productId, 4)
             cart.addItem(productB.productId, 2)
 

@@ -4,9 +4,9 @@ import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEvent
 
 
 internal sealed class CartEvent() : DomainEvent<CartEvent>()
-internal class CartCreated(val cartId: CartId) : CartEvent(){
+internal class CartCreated(val cartId: CartId, val clientId: ClientId) : CartEvent(){
   override fun toString(): String {
-    return "CartCreated(id=$id occuredOn=$occurredOn cartId=$cartId)"
+    return "CartCreated(id=$id occuredOn=$occurredOn cartId=$cartId clientId=$clientId)"
   }
 }
 internal class ItemAddedToCart(val productId: ProductId, val quantity: Int, val cartId: CartId) : CartEvent(){

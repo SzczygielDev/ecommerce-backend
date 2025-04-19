@@ -37,31 +37,36 @@ internal class CartUseCaseTests : FunSpec() {
         test("Submitting cart should raise CartNotFoundError when cart not found") {
             //Arrange
             val cartId = CartId(UUID.randomUUID())
+            val clientId = ClientId(UUID.randomUUID())
             val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
             val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
 
+            every { cartsMock.findActiveForClient(clientId) } returns null
             every { cartsMock.findById(cartId) } returns null
 
             //Act
             val result =
-                cartUseCase.submitCart(SubmitCartCommand(cartId.idAsUUID(), deliveryProvider, paymentServiceProvider))
+                cartUseCase.submitCart(SubmitCartCommand(clientId, deliveryProvider, paymentServiceProvider))
 
             //Assert
             result.isLeft().shouldBe(true)
             val error = result.leftOrNull().shouldNotBeNull()
-            error.shouldBeInstanceOf<CartNotFoundError>()
+            error.shouldBeInstanceOf<SubmitCartCommand.CartNotFoundError>()
         }
         test("Submitting cart should call submit on it when cart found") {
             //Arrange
             val cartId = CartId(UUID.randomUUID())
-            val cart = spyk<Cart>(Cart.create(cartId))
+            val clientId = ClientId(UUID.randomUUID())
+            val cart = spyk<Cart>(Cart.create(cartId,clientId))
             every { cartsMock.nextIdentity() } returns CartId(UUID.randomUUID())
             every { cartsMock.findById(cartId) } returns cart
+            every { cartsMock.findActiveForClient(clientId) } returns cart
+
             val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
             val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
 
             //Act
-            cartUseCase.submitCart(SubmitCartCommand(cartId.idAsUUID(), deliveryProvider, paymentServiceProvider))
+            cartUseCase.submitCart(SubmitCartCommand(clientId, deliveryProvider, paymentServiceProvider))
 
             //Assert
             verify { cart.submit(deliveryProvider, paymentServiceProvider) }
@@ -70,7 +75,8 @@ internal class CartUseCaseTests : FunSpec() {
         test("Submitting cart should create new cart") {
             //Arrange
             val cartId = CartId(UUID.randomUUID())
-            val cart = Cart.create(cartId)
+            val clientId = ClientId(UUID.randomUUID())
+            val cart = Cart.create(cartId,clientId)
             val newCartId = CartId(UUID.randomUUID())
             val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
             val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
@@ -80,9 +86,10 @@ internal class CartUseCaseTests : FunSpec() {
             every { cartsMock.nextIdentity() } returns newCartId
             every { cartsMock.findById(cartId) } returns cart
             every { cartsMock.save(capture(savedCartsSlot), any()) } just runs
+            every { cartsMock.findActiveForClient(clientId) } returns cart
 
             //Act
-            cartUseCase.submitCart(SubmitCartCommand(cartId.idAsUUID(), deliveryProvider, paymentServiceProvider))
+            cartUseCase.submitCart(SubmitCartCommand(clientId, deliveryProvider, paymentServiceProvider))
 
             //Assert
             savedCartsSlot.size.shouldBe(2)
@@ -92,7 +99,8 @@ internal class CartUseCaseTests : FunSpec() {
         test("Submitting cart should publish events from current and new cart") {
             //Arrange
             val cartId = CartId(UUID.randomUUID())
-            val cart = Cart.create(cartId)
+            val clientId = ClientId(UUID.randomUUID())
+            val cart = Cart.create(cartId,clientId)
             val newCartId = CartId(UUID.randomUUID())
             val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
             val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
@@ -103,8 +111,10 @@ internal class CartUseCaseTests : FunSpec() {
             every { cartsMock.findById(cartId) } returns cart
             every { cartsMock.save(any(), any()) } just runs
             every { eventPublisherMock.publishBatch(capture(events)) } just runs
+            every { cartsMock.findActiveForClient(clientId) } returns cart
+
             //Act
-            cartUseCase.submitCart(SubmitCartCommand(cartId.idAsUUID(), deliveryProvider, paymentServiceProvider))
+            cartUseCase.submitCart(SubmitCartCommand(clientId, deliveryProvider, paymentServiceProvider))
 
             //Assert
             val publishedEvents = events.first()
@@ -115,39 +125,44 @@ internal class CartUseCaseTests : FunSpec() {
         test("Adding product to cart should raise CartNotFoundError when cart not found") {
             //Arrange
             val cartId = CartId(UUID.randomUUID())
+            val clientId = ClientId(UUID.randomUUID())
             val productId = ProductId(UUID.randomUUID())
             every { cartsMock.findById(cartId) } returns null
+            every { cartsMock.findActiveForClient(clientId) } returns null
 
             //Act
-            val result = cartUseCase.addProductToCart(AddItemToCartCommand(cartId.idAsUUID(), productId.idAsUUID(), 1))
+            val result = cartUseCase.addProductToCart(AddItemToCartCommand(clientId, productId, 1))
 
             //Assert
             result.isLeft().shouldBe(true)
             val error = result.leftOrNull().shouldNotBeNull()
-            error.shouldBeInstanceOf<CartNotFoundError>()
+            error.shouldBeInstanceOf<AddItemToCartCommand.CartNotFoundError>()
         }
 
         test("Adding product to cart should raise ProductNotFoundError when product not found") {
             //Arrange
             val cartId = CartId(UUID.randomUUID())
+            val clientId = ClientId(UUID.randomUUID())
             val productId = ProductId(UUID.randomUUID())
-            val cart = Cart.create(cartId)
+            val cart = Cart.create(cartId,clientId)
             every { cartsMock.findById(cartId) } returns cart
             every { productsMock.findById(productId) } returns null
+            every { cartsMock.findActiveForClient(clientId) } returns cart
 
             //Act
-            val result = cartUseCase.addProductToCart(AddItemToCartCommand(cartId.idAsUUID(), productId.idAsUUID(), 1))
+            val result = cartUseCase.addProductToCart(AddItemToCartCommand(clientId, productId, 1))
 
             //Assert
             result.isLeft().shouldBe(true)
             val error = result.leftOrNull().shouldNotBeNull()
-            error.shouldBeInstanceOf<ProductNotFoundError>()
+            error.shouldBeInstanceOf<AddItemToCartCommand.ProductNotFoundError>()
         }
 
         test("Adding product to cart should call addItem with found product") {
             //Arrange
             val cartId = CartId(UUID.randomUUID())
-            val cart = spyk<Cart>(Cart.create(cartId))
+            val clientId = ClientId(UUID.randomUUID())
+            val cart = spyk<Cart>(Cart.create(cartId,clientId))
             val productId = ProductId(UUID.randomUUID())
             val product = Product(
                 productId,
@@ -156,7 +171,9 @@ internal class CartUseCaseTests : FunSpec() {
             )
             every { cartsMock.findById(cartId) } returns cart
             every { productsMock.findById(productId) } returns product
-            val command = AddItemToCartCommand(cartId.idAsUUID(), productId.idAsUUID(), 1)
+            every { cartsMock.findActiveForClient(clientId) } returns cart
+
+            val command = AddItemToCartCommand(clientId, productId, 1)
 
             //Act
             val result = cartUseCase.addProductToCart(command)
@@ -168,22 +185,25 @@ internal class CartUseCaseTests : FunSpec() {
         test("Removing product from cart should raise CartNotFoundError when cart not found") {
             //Arrange
             val cartId = CartId(UUID.randomUUID())
+            val clientId = ClientId(UUID.randomUUID())
             val productId = ProductId(UUID.randomUUID())
             every { cartsMock.findById(cartId) } returns null
+            every { cartsMock.findActiveForClient(clientId) } returns null
 
             //Act
-            val result = cartUseCase.removeProductFromCart(RemoveItemFromCartCommand(cartId.idAsUUID(), productId.idAsUUID()))
+            val result = cartUseCase.removeProductFromCart(RemoveItemFromCartCommand(clientId, productId.idAsUUID()))
 
             //Assert
             result.isLeft().shouldBe(true)
             val error = result.leftOrNull().shouldNotBeNull()
-            error.shouldBeInstanceOf<CartNotFoundError>()
+            error.shouldBeInstanceOf<RemoveItemFromCartCommand.CartNotFoundError>()
         }
 
         test("Removing product from cart should call removeItem on it when cart found") {
             //Arrange
             val cartId = CartId(UUID.randomUUID())
-            val cart = spyk<Cart>(Cart.create(cartId))
+            val clientId = ClientId(UUID.randomUUID())
+            val cart = spyk<Cart>(Cart.create(cartId,clientId))
             val productId = ProductId(UUID.randomUUID())
             val product = Product(
                 productId,
@@ -194,7 +214,9 @@ internal class CartUseCaseTests : FunSpec() {
 
             every { cartsMock.findById(cartId) } returns cart
             every { productsMock.findById(productId) } returns product
-            val command = RemoveItemFromCartCommand(cartId.idAsUUID(), productId.idAsUUID())
+            every { cartsMock.findActiveForClient(clientId) } returns cart
+
+            val command = RemoveItemFromCartCommand(clientId, productId.idAsUUID())
 
             //Act
             val result = cartUseCase.removeProductFromCart(command)
@@ -205,7 +227,8 @@ internal class CartUseCaseTests : FunSpec() {
 
         test("Cart should be saved when no error occurred") {
             //Arrange
-            val command = CreateCartCommand()
+            val clientId = ClientId(UUID.randomUUID())
+            val command = CreateCartCommand(clientId)
             val cartId = CartId(UUID.randomUUID())
             every { cartsMock.nextIdentity() } returns cartId
 
@@ -218,7 +241,8 @@ internal class CartUseCaseTests : FunSpec() {
 
         test("Cart occurred events should be published when no error occurred"){
             //Arrange
-            val command = CreateCartCommand()
+            val clientId = ClientId(UUID.randomUUID())
+            val command = CreateCartCommand(clientId)
             val cartId = CartId(UUID.randomUUID())
             every { cartsMock.nextIdentity() } returns cartId
 

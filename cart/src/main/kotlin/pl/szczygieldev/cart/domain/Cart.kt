@@ -9,6 +9,9 @@ import pl.szczygieldev.ecommercelibrary.ddd.core.EventSourcedEntity
 internal class Cart private constructor(val cartId: CartId) : EventSourcedEntity<CartEvent>() {
     data class Entry(val productId: ProductId, val quantity: Int)
 
+    private lateinit var _clientId: ClientId
+    val clientId: ClientId
+        get() = _clientId.copy()
     private var status: CartStatus = CartStatus.ACTIVE
 
     private var _items: MutableList<Entry> = mutableListOf()
@@ -16,9 +19,9 @@ internal class Cart private constructor(val cartId: CartId) : EventSourcedEntity
         get() = _items.map { it.copy() }.toList()
 
     companion object {
-        fun create(cartId: CartId): Cart {
+        fun create(cartId: CartId, clientId: ClientId): Cart {
             val cart = Cart(cartId)
-            cart.raiseEvent(CartCreated(cartId))
+            cart.raiseEvent(CartCreated(cartId,clientId))
             return cart
         }
 
@@ -30,24 +33,24 @@ internal class Cart private constructor(val cartId: CartId) : EventSourcedEntity
         }
     }
 
-    fun addItem(productId: ProductId, quantity: Int): Either<CartError, Unit> = either {
+    fun addItem(productId: ProductId, quantity: Int): Either<AddToCartError, Unit> = either {
         if (status != CartStatus.ACTIVE) {
-            raise(CartNotActiveError.forId(cartId))
+            raise(AddToCartError.CartNotActiveError.forId(cartId))
         }
         require(quantity > 0)  { "Item quantity must be positive value, provided='$quantity'" }
         raiseEvent(ItemAddedToCart(productId, quantity, cartId))
     }
 
-    fun removeItem(productId: ProductId): Either<CartError, Unit> = either {
+    fun removeItem(productId: ProductId): Either<ItemRemoveError, Unit> = either {
         if (status != CartStatus.ACTIVE) {
-            raise(CartNotActiveError.forId(cartId))
+            raise(ItemRemoveError.CartNotActiveError.forId(cartId))
         }
         raiseEvent(ItemRemovedFromCart(productId, cartId))
     }
 
-    fun submit(deliveryProvider: DeliveryProvider, paymentServiceProvider: PaymentServiceProvider): Either<CartError, Unit> = either {
+    fun submit(deliveryProvider: DeliveryProvider, paymentServiceProvider: PaymentServiceProvider): Either<SubmitError, Unit> = either {
         if (status == CartStatus.SUBMITTED) {
-            raise(CartAlreadySubmittedError.forId(cartId))
+            raise(SubmitError.CartAlreadySubmittedError.forId(cartId))
         }
         raiseEvent(CartSubmitted(cartId,paymentServiceProvider,deliveryProvider))
     }
@@ -55,11 +58,15 @@ internal class Cart private constructor(val cartId: CartId) : EventSourcedEntity
     //region Event sourcing handlers
     override fun applyEvent(event: CartEvent) {
         when (event) {
-            is CartCreated -> {}
+            is CartCreated -> apply(event)
             is CartSubmitted -> apply(event)
             is ItemAddedToCart -> apply(event)
             is ItemRemovedFromCart -> apply(event)
         }
+    }
+
+    private fun apply(event: CartCreated) {
+        _clientId = event.clientId
     }
 
     private fun apply(event: CartSubmitted) {

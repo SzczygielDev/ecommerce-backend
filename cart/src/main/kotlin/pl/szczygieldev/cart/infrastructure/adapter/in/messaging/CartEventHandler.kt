@@ -10,7 +10,6 @@ import pl.szczygieldev.cart.application.port.out.CartsProjections
 import pl.szczygieldev.cart.domain.*
 import pl.szczygieldev.cart.domain.CartCreated
 import pl.szczygieldev.cart.domain.CartEvent
-import pl.szczygieldev.cart.domain.CartNotFoundError
 import pl.szczygieldev.cart.domain.CartStatus
 import pl.szczygieldev.cart.domain.CartSubmitted
 import pl.szczygieldev.ecommercelibrary.command.CommandError
@@ -29,7 +28,8 @@ internal class CartEventHandler(
 
     override suspend fun handle(notification: CartEvent) {
         val domainEvent = notification
-        either<CommandError, Unit> {
+
+        try {
             when (domainEvent) {
                 is CartCreated -> cartsProjections.save(
                     CartProjection(
@@ -43,7 +43,7 @@ internal class CartEventHandler(
                 is CartSubmitted -> {
                     cartsProjections.save(
                         cartsProjections.findById(domainEvent.cartId)?.copy(status = CartStatus.SUBMITTED.toString())
-                            ?: raise(CartNotFoundError.forId(domainEvent.cartId))
+                            ?:  throw Exception("Cart not found for id='${domainEvent.cartId.id()}'")
                     )
                 }
 
@@ -63,10 +63,13 @@ internal class CartEventHandler(
                             }
 
                             it.copy(items = items)
-                        } ?: raise(CartNotFoundError.forId(domainEvent.cartId))
+                        } ?:  throw Exception("Cart not found for id='${domainEvent.cartId.id()}'")
                     cartsProjections.save(cartProjection)
 
-                    mediator.send(CalculateCartTotalCommand(domainEvent.cartId)).bind()
+                    val result = mediator.send(CalculateCartTotalCommand(domainEvent.cartId))
+                    result.onLeft { error ->
+                        throw Exception("Failed to calculate cart total for cart id='${domainEvent.cartId.id()}'")
+                    }
                 }
 
                 is ItemRemovedFromCart -> {
@@ -76,18 +79,22 @@ internal class CartEventHandler(
                         items.removeAll(itemsToRemove)
 
                         cartsProjection.copy(items = items)
-                    } ?: raise(CartNotFoundError.forId(domainEvent.cartId))
+                    } ?:  throw Exception("Cart not found for id='${domainEvent.cartId.id()}'")
                     cartsProjections.save(cartProjection)
 
-                    mediator.send(CalculateCartTotalCommand(domainEvent.cartId)).bind()
+                    val result = mediator.send(CalculateCartTotalCommand(domainEvent.cartId))
+
+                    result.onLeft { error ->
+                        throw Exception("Failed to calculate cart total for cart id='${domainEvent.cartId.id()}'")
+                    }
                 }
 
 
             }
-        }.fold({
-            log.error { "Event handling failed=${domainEvent}" }
-        }, {
             log.info { "Event handled=${domainEvent}" }
-        })
+        }
+        catch (e: Exception) {
+            log.error { "Event handling failed=${domainEvent}" }
+        }
     }
 }

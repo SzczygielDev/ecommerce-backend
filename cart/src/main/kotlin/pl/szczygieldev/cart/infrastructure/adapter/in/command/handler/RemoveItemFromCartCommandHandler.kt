@@ -8,8 +8,8 @@ import pl.szczygieldev.cart.application.port.`in`.command.RemoveItemFromCartComm
 import pl.szczygieldev.cart.domain.AppError
 
 internal class RemoveItemFromCartCommandHandler(val cartUseCase: CartUseCase) :
-    CommandWithResultHandler<RemoveItemFromCartCommand, Either<AppError, Unit>> {
-    override suspend fun handle(command: RemoveItemFromCartCommand): Either<AppError, Unit> = either {
+    CommandWithResultHandler<RemoveItemFromCartCommand, Either<RemoveItemFromCartCommand.Error, Unit>> {
+    override suspend fun handle(command: RemoveItemFromCartCommand): Either<RemoveItemFromCartCommand.Error, Unit> = either {
         cartUseCase.removeProductFromCart(command).bind()
     }
 }

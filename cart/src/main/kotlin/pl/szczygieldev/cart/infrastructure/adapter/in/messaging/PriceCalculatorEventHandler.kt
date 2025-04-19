@@ -6,7 +6,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import pl.szczygieldev.cart.application.port.out.CartsProjections
 import pl.szczygieldev.cart.domain.AppError
-import pl.szczygieldev.cart.domain.CartNotFoundError
 import pl.szczygieldev.cart.domain.CartTotalRecalculated
 import pl.szczygieldev.cart.domain.PriceCalculatorEvent
 @Component("cartModule.PriceCalculatorEventHandler")
@@ -19,19 +18,21 @@ internal class PriceCalculatorEventHandler(private val cartsProjections: CartsPr
 
     override suspend fun handle(notification: PriceCalculatorEvent){
         val domainEvent = notification
-        either<AppError, Unit> {
+
+        try {
+
             when (domainEvent) {
                 is CartTotalRecalculated -> {
                     val foundCart =
-                        cartsProjections.findById(domainEvent.cartId) ?: raise(CartNotFoundError.forId(domainEvent.cartId))
+                        cartsProjections.findById(domainEvent.cartId) ?: throw Exception("Cart not found for id='${domainEvent.cartId.id()}'")
 
                     cartsProjections.save(foundCart.copy(amount = domainEvent.amount))
                 }
             }
-        }.fold({
-            log.error { "Event handling failed=${domainEvent}" }
-        }, {
             log.info { "Event handled=${domainEvent}" }
-        })
+        }
+        catch (ex: Exception){
+            log.error { "Event handling failed=${domainEvent}" }
+        }
     }
 }

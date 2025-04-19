@@ -10,11 +10,8 @@ import pl.szczygieldev.cart.application.port.`in`.command.SubmitCartCommand
 import pl.szczygieldev.cart.application.port.out.Carts
 import pl.szczygieldev.cart.application.port.out.Products
 import pl.szczygieldev.cart.domain.*
-import pl.szczygieldev.cart.domain.AppError
 import pl.szczygieldev.cart.domain.Cart
 import pl.szczygieldev.cart.domain.CartEvent
-import pl.szczygieldev.cart.domain.CartId
-import pl.szczygieldev.cart.domain.CartNotFoundError
 import pl.szczygieldev.ecommercelibrary.architecture.UseCase
 import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventPublisher
 
@@ -24,23 +21,37 @@ internal class CartService(
     val carts: Carts,
     val products: Products,
     val cartEventPublisher: DomainEventPublisher<CartEvent>,
-) : CartUseCase {
 
-    override suspend fun createCart(command: CreateCartCommand): Either<AppError, Unit> = either {
-        val cart = Cart.create(carts.nextIdentity())
-        val version = cart.version
-        val events = cart.occurredEvents()
-        carts.save(cart, version)
-        cartEventPublisher.publishBatch(events)
-    }
+    ) : CartUseCase {
 
-    override fun submitCart(command: SubmitCartCommand): Either<AppError, Unit> = either {
-        val cartId = CartId(command.cartId)
-        val cart = carts.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
+
+    override suspend fun createCart(command: CreateCartCommand): Either<CreateCartCommand.Error, Unit> =
+        either {
+            val cart = Cart.create(carts.nextIdentity(),command.clientId)
+            val version = cart.version
+            val events = cart.occurredEvents()
+            carts.save(cart, version)
+            cartEventPublisher.publishBatch(events)
+        }
+
+    override fun submitCart(command: SubmitCartCommand): Either<SubmitCartCommand.Error, Unit> = either {
+        val clientId = command.clientId
+
+        val cart = carts.findActiveForClient(clientId) ?: raise(SubmitCartCommand.CartNotFoundError.ClientId(clientId))
         val currentVersion = cart.version
 
-        cart.submit(command.deliveryProvider, command.paymentServiceProvider).bind()
-        val newCart = Cart.create(carts.nextIdentity())
+        val result = cart.submit(command.deliveryProvider, command.paymentServiceProvider)
+
+        result.onLeft { error ->
+            val mappedError = when (error) {
+                is SubmitError.CartAlreadySubmittedError -> SubmitCartCommand.CartAlreadySubmittedError.fromDomainError(
+                    error
+                )
+            }
+            raise(mappedError)
+        }
+
+        val newCart = Cart.create(carts.nextIdentity(),clientId)
         val newCartVersion = newCart.version
 
         val events = cart.occurredEvents() + newCart.occurredEvents()
@@ -50,32 +61,50 @@ internal class CartService(
         cartEventPublisher.publishBatch(events)
     }
 
-    override fun addProductToCart(command: AddItemToCartCommand): Either<AppError, Unit> = either {
-        val cartId = CartId(command.cartId)
-        val cart = carts.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
+    override fun addProductToCart(command: AddItemToCartCommand): Either<AddItemToCartCommand.Error, Unit> = either {
+        val clientId = command.clientId
+
+
+        val cart =
+            carts.findActiveForClient(clientId) ?: raise(AddItemToCartCommand.CartNotFoundError.forClientId(clientId))
+
         val currentVersion = cart.version
 
-        val productId = ProductId(command.productId)
-        val product = products.findById(productId) ?: raise(ProductNotFoundError())
+        val productId = ProductId(command.productId.id)
+        val product = products.findById(productId) ?: raise(AddItemToCartCommand.ProductNotFoundError())
 
-        cart.addItem(product.productId, command.quantity).bind()
-
+        val result = cart.addItem(product.productId, command.quantity)
+        result.onLeft { error ->
+            when (error) {
+                is AddToCartError.CartNotActiveError -> AddItemToCartCommand.CartNotActiveError.fromDomainError(error)
+            }
+        }
         val events = cart.occurredEvents()
         carts.save(cart, currentVersion)
 
         cartEventPublisher.publishBatch(events)
     }
 
-    override fun removeProductFromCart(command: RemoveItemFromCartCommand): Either<AppError, Unit> = either {
-        val cartId = CartId(command.cartId)
-        val cart = carts.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
-        val currentVersion = cart.version
+    override fun removeProductFromCart(command: RemoveItemFromCartCommand): Either<RemoveItemFromCartCommand.Error, Unit> =
+        either {
+            val clientId = command.clientId
 
-        cart.removeItem(ProductId(command.productId)).bind()
+            val cart = carts.findActiveForClient(clientId) ?: raise(
+                RemoveItemFromCartCommand.CartNotFoundError.forClientId(clientId)
+            )
+            val currentVersion = cart.version
 
-        val events = cart.occurredEvents()
-        carts.save(cart, currentVersion)
+            val result = cart.removeItem(ProductId(command.productId))
+            result.onLeft { error ->
+                when (error) {
+                    is ItemRemoveError.CartNotActiveError -> RemoveItemFromCartCommand.CartNotActiveError.fromDomainError(
+                        error
+                    )
+                }
+            }
+            val events = cart.occurredEvents()
+            carts.save(cart, currentVersion)
 
-        cartEventPublisher.publishBatch(events)
-    }
+            cartEventPublisher.publishBatch(events)
+        }
 }

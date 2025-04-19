@@ -12,7 +12,8 @@ internal class CartTests : FunSpec({
     test("Adding item to submitted cart should fail") {
         //Arrange
         val cartId = CartId(UUID.randomUUID())
-        val cart = Cart.create(cartId)
+        val clientId = ClientId(UUID.randomUUID())
+        val cart = Cart.create(cartId,clientId)
         val productId = ProductId(UUID.randomUUID())
         val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
         val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
@@ -24,13 +25,14 @@ internal class CartTests : FunSpec({
         //Assert
         result.isLeft().shouldBe(true)
         val error = result.leftOrNull().shouldNotBeNull()
-        error.shouldBeInstanceOf<CartNotActiveError>()
+        error.shouldBeInstanceOf<AddToCartError.CartNotActiveError>()
     }
 
     test("Removing item from submitted cart should fail") {
         //Arrange
         val cartId = CartId(UUID.randomUUID())
-        val cart = Cart.create(cartId)
+        val clientId = ClientId(UUID.randomUUID())
+        val cart = Cart.create(cartId,clientId)
         val productId = ProductId(UUID.randomUUID())
         val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
         val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
@@ -42,13 +44,14 @@ internal class CartTests : FunSpec({
         //Assert
         result.isLeft().shouldBe(true)
         val error = result.leftOrNull().shouldNotBeNull()
-        error.shouldBeInstanceOf<CartNotActiveError>()
+        error.shouldBeInstanceOf<ItemRemoveError.CartNotActiveError>()
     }
 
     test("Calling submit multiple times should fail") {
         //Arrange
         val cartId = CartId(UUID.randomUUID())
-        val cart = Cart.create(cartId)
+        val clientId = ClientId(UUID.randomUUID())
+        val cart = Cart.create(cartId,clientId)
         val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
         val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
 
@@ -59,13 +62,14 @@ internal class CartTests : FunSpec({
         //Assert
         secondSubmit.isLeft().shouldBe(true)
         val error = secondSubmit.leftOrNull().shouldNotBeNull()
-        error.shouldBeInstanceOf<CartAlreadySubmittedError>()
+        error.shouldBeInstanceOf<SubmitError.CartAlreadySubmittedError>()
     }
 
     test("Adding negative quantity of products should throw IllegalArgumentException") {
         //Arrange
         val cartId = CartId(UUID.randomUUID())
-        val cart = Cart.create(cartId)
+        val clientId = ClientId(UUID.randomUUID())
+        val cart = Cart.create(cartId,clientId)
         val productId = ProductId(UUID.randomUUID())
 
         //Act & Assert
@@ -75,7 +79,8 @@ internal class CartTests : FunSpec({
     test("Adding zero quantity of products should throw IllegalArgumentException") {
         //Arrange
         val cartId = CartId(UUID.randomUUID())
-        val cart = Cart.create(cartId)
+        val clientId = ClientId(UUID.randomUUID())
+        val cart = Cart.create(cartId,clientId)
         val productId = ProductId(UUID.randomUUID())
 
         //Act & Assert

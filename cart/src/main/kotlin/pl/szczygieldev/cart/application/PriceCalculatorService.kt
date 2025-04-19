@@ -7,9 +7,6 @@ import pl.szczygieldev.cart.application.port.`in`.PriceCalculatorUseCase
 import pl.szczygieldev.cart.application.port.`in`.command.CalculateCartTotalCommand
 import pl.szczygieldev.cart.application.port.out.Carts
 import pl.szczygieldev.cart.application.port.out.Products
-import pl.szczygieldev.cart.domain.*
-import pl.szczygieldev.cart.domain.AppError
-import pl.szczygieldev.cart.domain.CartNotFoundError
 import pl.szczygieldev.cart.domain.CartTotalRecalculated
 import pl.szczygieldev.cart.domain.PriceCalculator
 import pl.szczygieldev.cart.domain.PriceCalculatorEvent
@@ -23,22 +20,24 @@ internal class PriceCalculatorService(
     val carts: Carts,
     val priceCalculatorEventPublisher: DomainEventPublisher<PriceCalculatorEvent>,
 ) : PriceCalculatorUseCase {
-    override fun calculateCartTotal(command: CalculateCartTotalCommand): Either<AppError, Unit> = either {
-        val cartId = command.cartId
-        val cart = carts.findById(cartId) ?: raise(CartNotFoundError.forId(cartId))
+    override fun calculateCartTotal(command: CalculateCartTotalCommand): Either<CalculateCartTotalCommand.Error, Unit> =
+        either {
+            val cartId = command.cartId
+            val cart = carts.findById(cartId) ?: raise(CalculateCartTotalCommand.CartNotFoundError.forId(cartId))
 
-        val total = cart.items.mapOrAccumulate { cartEntry ->
-            val product = products.findById(cartEntry.productId)
-                ?: raise(MissingProductForCalculateError.forProduct(cartEntry.productId))
+            val total = cart.items.mapOrAccumulate { cartEntry ->
+                val product = products.findById(cartEntry.productId)
+                    ?: raise(CalculateCartTotalCommand.MissingProductForCalculateError.forProduct(cartEntry.productId))
 
-            return@mapOrAccumulate product
-        }.fold({ errors ->
-            val ids = errors.map { error -> error.productId.id() }.toList().toString()
-            raise(UnableToCalculateCartTotalError("Failed to fetch products with ids='$ids'"))
-        }, { products ->
-            priceCalculator.calculate(cart, products) ?: raise(UnableToCalculateCartTotalError("Failed to calculate cart"))
-        })
+                return@mapOrAccumulate product
+            }.fold({ errors ->
+                val ids = errors.map { error -> error.productId.id() }.toList().toString()
+                raise(CalculateCartTotalCommand.UnableToCalculateCartTotalError("Failed to fetch products with ids='$ids'"))
+            }, { products ->
+                priceCalculator.calculate(cart, products)
+                    ?: raise(CalculateCartTotalCommand.UnableToCalculateCartTotalError("Failed to calculate cart"))
+            })
 
-        priceCalculatorEventPublisher.publish(CartTotalRecalculated(command.cartId, total))
-    }
+            priceCalculatorEventPublisher.publish(CartTotalRecalculated(command.cartId, total))
+        }
 }

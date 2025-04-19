@@ -11,7 +11,8 @@ class PriceCalculatorTests : BehaviorSpec({
     context("Calculate price for empty cart") {
         given("a cart with no item") {
             val cartId = CartId(UUID.randomUUID())
-            val cart = Cart.create(cartId)
+            val clientId = ClientId(UUID.randomUUID())
+            val cart = Cart.create(cartId,clientId)
 
             `when`("price is calculated") {
                 val total = calculator.calculate(cart, emptyList())
@@ -26,7 +27,8 @@ class PriceCalculatorTests : BehaviorSpec({
     context("Calculate price for cart with multiple items") {
         given("a cart with multiple items") {
             val cartId = CartId(UUID.randomUUID())
-            val cart = Cart.create(cartId)
+            val clientId = ClientId(UUID.randomUUID())
+            val cart = Cart.create(cartId,clientId)
 
             val products = mutableListOf<Product>()
             val productAId = ProductId(UUID.randomUUID())
@@ -52,7 +54,8 @@ class PriceCalculatorTests : BehaviorSpec({
     context("Calculate price for cart with multiple items without product data") {
         given("a cart with multiple items") {
             val cartId = CartId(UUID.randomUUID())
-            val cart = Cart.create(cartId)
+            val clientId = ClientId(UUID.randomUUID())
+            val cart = Cart.create(cartId,clientId)
 
             val products = mutableListOf<Product>()
             val productAId = ProductId(UUID.randomUUID())
