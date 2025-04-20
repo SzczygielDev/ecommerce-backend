@@ -58,12 +58,12 @@ internal class OrderTests : BehaviorSpec({
             then("packing process cannot start") {
                 val result = order.beginPacking()
                 result.isLeft().shouldBe(true)
-                result.leftOrNull().shouldBeInstanceOf<CannotPackageNotAcceptedOrderError>()
+                result.leftOrNull().shouldBeInstanceOf<PackingError.CannotPackageNotAcceptedOrderError>()
             }
             then("packing process cannot be completed") {
                 val result = order.completePacking(parcelId, dimensions)
                 result.isLeft().shouldBe(true)
-                result.leftOrNull().shouldBeInstanceOf<PackingNotInProgressError>()
+                result.leftOrNull().shouldBeInstanceOf<CompletePackingError.PackingNotInProgressError>()
             }
         }
 
@@ -96,12 +96,12 @@ internal class OrderTests : BehaviorSpec({
             then("it cannot be accepted again") {
                 val result = order.accept()
                 result.isLeft().shouldBe(true)
-                result.leftOrNull().shouldBeInstanceOf<AlreadyAcceptedOrderError>()
+                result.leftOrNull().shouldBeInstanceOf<AcceptError.AlreadyAcceptedOrderError>()
             }
             then("it cannot be rejected") {
                 val result = order.accept()
                 result.isLeft().shouldBe(true)
-                result.leftOrNull().shouldBeInstanceOf<AlreadyAcceptedOrderError>()
+                result.leftOrNull().shouldBeInstanceOf<AcceptError.AlreadyAcceptedOrderError>()
             }
             then("can be paid") {
                 order.pay(
@@ -131,7 +131,7 @@ internal class OrderTests : BehaviorSpec({
                 then("packing process cannot start") {
                     val result = order.beginPacking()
                     result.isLeft().shouldBe(true)
-                    result.leftOrNull().shouldBeInstanceOf<NotPaidOrderError>()
+                    result.leftOrNull().shouldBeInstanceOf<PackingError.NotPaidOrderError>()
                 }
             }
         }
@@ -161,7 +161,7 @@ internal class OrderTests : BehaviorSpec({
             then("packing process cannot start") {
                 val result = order.beginPacking()
                 result.isLeft().shouldBe(true)
-                result.leftOrNull().shouldBeInstanceOf<CannotPackageNotAcceptedOrderError>()
+                result.leftOrNull().shouldBeInstanceOf<PackingError.CannotPackageNotAcceptedOrderError>()
             }
         }
 
@@ -292,7 +292,7 @@ internal class OrderTests : BehaviorSpec({
                 val result = order.cancel()
                 result.isLeft().shouldBe(true)
                 order.occurredEvents().filterIsInstance<OrderCanceled>().shouldBeEmpty()
-                result.leftOrNull().shouldBeInstanceOf<CannotCancelSentOrderError>()
+                result.leftOrNull().shouldBeInstanceOf<CancelError.CannotCancelSentOrderError>()
             }
         }
     }
@@ -393,7 +393,7 @@ internal class OrderTests : BehaviorSpec({
             then("cannot be returned"){
                 val result = order.returnOrder()
                 result.isLeft().shouldBe(true)
-                result.leftOrNull().shouldBeInstanceOf<CannotReturnNotReceivedOrderError>()
+                result.leftOrNull().shouldBeInstanceOf<ReturnError.CannotReturnNotReceivedOrderError>()
             }
             `when`("its in delivery") {
                 order.changeDeliveryStatus(DeliveryStatus.IN_DELIVERY)
@@ -406,7 +406,7 @@ internal class OrderTests : BehaviorSpec({
                 then("cannot be returned"){
                     val result = order.returnOrder()
                     result.isLeft().shouldBe(true)
-                    result.leftOrNull().shouldBeInstanceOf<CannotReturnNotReceivedOrderError>()
+                    result.leftOrNull().shouldBeInstanceOf<ReturnError.CannotReturnNotReceivedOrderError>()
                 }
             }
             `when`("its delivered") {

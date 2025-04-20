@@ -1,18 +1,15 @@
 package pl.szczygieldev.order.infrastructure.adapter.`in`.api
 
-import arrow.core.raise.either
+import org.springframework.http.HttpStatus
+import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import pl.szczygieldev.order.application.port.`in`.query.model.OrderProjection
 import pl.szczygieldev.order.application.port.out.OrdersProjections
 import pl.szczygieldev.order.domain.CartId
 import pl.szczygieldev.order.domain.OrderId
-import pl.szczygieldev.order.domain.error.AppError
-import pl.szczygieldev.order.domain.error.OrderNotFoundError
-import pl.szczygieldev.order.infrastructure.adapter.`in`.api.advice.mapToError
 import pl.szczygieldev.order.infrastructure.adapter.`in`.api.presenter.OrderPresenter
 import java.util.*
 
@@ -48,20 +45,22 @@ internal class AdminOrderController(
 
 
     private fun getOrder(orderId: UUID): ResponseEntity<*> {
-        return either<AppError, OrderProjection> {
-            val id = OrderId(orderId)
-            ordersProjections.findById(id) ?: raise(OrderNotFoundError.forId(id))
-        }.fold<ResponseEntity<*>>(
-            { mapToError(it) },
-            { ResponseEntity.ok(orderPresenter.toFullDto(it)) })
+        val id = OrderId(orderId)
+        val order = ordersProjections.findById(id) ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(
+                ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "Cannot find order with id='${id.id()}'.")
+            )
+
+        return ResponseEntity.ok(orderPresenter.toFullDto(order))
     }
 
     private fun getOrderByCartId(cartId: UUID): ResponseEntity<*> {
-        return either<AppError, OrderProjection> {
-            val id = CartId(cartId)
-            ordersProjections.findByCartId(id) ?: raise(OrderNotFoundError.forCartId(id))
-        }.fold<ResponseEntity<*>>(
-            { mapToError(it) },
-            { ResponseEntity.ok(orderPresenter.toFullDto(it)) })
+        val id = CartId(cartId)
+        val order = ordersProjections.findByCartId(id) ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(
+                ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "Cannot find order with cart id='${id.id()}'.")
+            )
+
+        return ResponseEntity.ok(orderPresenter.toFullDto(order))
     }
 }

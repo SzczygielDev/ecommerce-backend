@@ -17,8 +17,6 @@ import pl.szczygieldev.order.application.port.out.Orders
 import pl.szczygieldev.order.application.port.out.OrdersProjections
 import pl.szczygieldev.order.application.port.out.ShippingService
 import pl.szczygieldev.order.domain.*
-import pl.szczygieldev.order.domain.error.CannotRegisterParcelError
-import pl.szczygieldev.order.domain.error.OrderNotFoundError
 import pl.szczygieldev.order.domain.event.OrderEvent
 import java.math.BigDecimal
 import java.net.URL
@@ -112,7 +110,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<OrderNotFoundError>()
+                error.shouldBeInstanceOf<BeginOrderPackingCommand.OrderNotFoundError>()
             }
 
             test("Order packing begin should be called") {
@@ -164,7 +162,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<OrderNotFoundError>()
+                error.shouldBeInstanceOf<CompleteOrderPackingCommand.OrderNotFoundError>()
             }
 
             test("OrderNotFoundError should be raised when order projection was not found") {
@@ -178,7 +176,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<OrderNotFoundError>()
+                error.shouldBeInstanceOf<CompleteOrderPackingCommand.OrderNotFoundError>()
             }
 
             test("Parcel should be registered for order") {
@@ -206,7 +204,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<CannotRegisterParcelError>()
+                error.shouldBeInstanceOf<CompleteOrderPackingCommand.CannotRegisterParcelError>()
             }
 
             test("Order packing completion should be called") {
@@ -264,7 +262,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<OrderNotFoundError>()
+                error.shouldBeInstanceOf<ChangeOrderDeliveryStatusCommand.OrderNotFoundError>()
             }
 
             test("OrderNotFoundError should be raised when order was not found") {
@@ -278,7 +276,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<OrderNotFoundError>()
+                error.shouldBeInstanceOf<ChangeOrderDeliveryStatusCommand.OrderNotFoundError>()
             }
 
             test("Order delivery status change should be called") {

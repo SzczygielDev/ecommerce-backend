@@ -11,62 +11,86 @@ import pl.szczygieldev.order.application.port.`in`.command.CompleteOrderPackingC
 import pl.szczygieldev.order.application.port.out.Orders
 import pl.szczygieldev.order.application.port.out.OrdersProjections
 import pl.szczygieldev.order.application.port.out.ShippingService
-import pl.szczygieldev.order.domain.error.AppError
-import pl.szczygieldev.order.domain.error.CannotRegisterParcelError
-import pl.szczygieldev.order.domain.error.OrderNotFoundError
+import pl.szczygieldev.order.domain.error.CompletePackingError.PackingNotInProgressError
+import pl.szczygieldev.order.domain.error.PackingError
 import pl.szczygieldev.order.domain.event.OrderEvent
 
 @UseCase
-internal class OrderShippingService(val orders: Orders,
-                           val orderEventPublisher: DomainEventPublisher<OrderEvent>,
-                           val shippingService: ShippingService,
-                           val ordersProjections: OrdersProjections,
+internal class OrderShippingService(
+    val orders: Orders,
+    val orderEventPublisher: DomainEventPublisher<OrderEvent>,
+    val shippingService: ShippingService,
+    val ordersProjections: OrdersProjections,
 ) : OrderShippingUseCase {
-    override suspend fun beginPacking(command: BeginOrderPackingCommand): Either<AppError, Unit> = either {
-        val orderId = command.orderId
-        val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
-        val orderVersion = order.version
+    override suspend fun beginPacking(command: BeginOrderPackingCommand): Either<BeginOrderPackingCommand.Error, Unit> =
+        either {
+            val orderId = command.orderId
+            val order = orders.findById(orderId) ?: raise(BeginOrderPackingCommand.OrderNotFoundError.forId(orderId))
+            val orderVersion = order.version
 
-        order.beginPacking().bind()
+            val result = order.beginPacking()
+            result.onLeft { error ->
+                when (error) {
+                    is PackingError.CannotPackageNotAcceptedOrderError -> BeginOrderPackingCommand.CannotPackageNotAcceptedOrderError.fromDomainError(
+                        error
+                    )
 
-        val events = order.occurredEvents()
-        orders.save(order, orderVersion)
-        orderEventPublisher.publishBatch(events)
-    }
+                    is PackingError.NotPaidOrderError -> BeginOrderPackingCommand.NotPaidOrderError.fromDomainError(
+                        error
+                    )
+                }
+            }
 
-    override suspend fun completePacking(command: CompleteOrderPackingCommand): Either<AppError, Unit> = either {
-        val orderId = command.orderId
-        val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
-        val orderProjection = ordersProjections.findById(orderId) ?: raise(
-            OrderNotFoundError.forId(orderId)
-        )
-        val orderVersion = order.version
+            val events = order.occurredEvents()
+            orders.save(order, orderVersion)
+            orderEventPublisher.publishBatch(events)
+        }
 
-        val parcelId = shippingService.registerParcel( command.dimensions, orderProjection.delivery.deliveryProvider) ?: raise(
-            CannotRegisterParcelError.forId(orderId)
-        )
-        order.completePacking(parcelId, command.dimensions).bind()
+    override suspend fun completePacking(command: CompleteOrderPackingCommand): Either<CompleteOrderPackingCommand.Error, Unit> =
+        either {
+            val orderId = command.orderId
+            val order = orders.findById(orderId) ?: raise(CompleteOrderPackingCommand.OrderNotFoundError.forId(orderId))
+            val orderProjection = ordersProjections.findById(orderId) ?: raise(
+                CompleteOrderPackingCommand.OrderNotFoundError.forId(orderId)
+            )
+            val orderVersion = order.version
 
-        val events = order.occurredEvents()
-        orders.save(order, orderVersion)
-        orderEventPublisher.publishBatch(events)
-    }
+            val parcelId =
+                shippingService.registerParcel(command.dimensions, orderProjection.delivery.deliveryProvider) ?: raise(
+                    CompleteOrderPackingCommand.CannotRegisterParcelError.forId(orderId)
+                )
+            val result = order.completePacking(parcelId, command.dimensions)
+
+            result.onLeft { error ->
+                when (error) {
+                    is PackingNotInProgressError -> CompleteOrderPackingCommand.PackingNotInProgressError.fromDomainError(
+                        error
+                    )
+                }
+            }
+
+            val events = order.occurredEvents()
+            orders.save(order, orderVersion)
+            orderEventPublisher.publishBatch(events)
+        }
 
 
-    override suspend fun changeDeliveryStatus(command: ChangeOrderDeliveryStatusCommand): Either<AppError, Unit> = either {
-        val parcelIdentifier = command.parcelId
-        val orderProjection = ordersProjections.findByParcelIdentifier(parcelIdentifier) ?: raise(
-            OrderNotFoundError.forParcelId(parcelIdentifier)
-        )
+    override suspend fun changeDeliveryStatus(command: ChangeOrderDeliveryStatusCommand): Either<ChangeOrderDeliveryStatusCommand.Error, Unit> =
+        either {
+            val parcelIdentifier = command.parcelId
+            val orderProjection = ordersProjections.findByParcelIdentifier(parcelIdentifier) ?: raise(
+                ChangeOrderDeliveryStatusCommand.OrderNotFoundError.forParcelId(parcelIdentifier)
+            )
 
-        val orderId = orderProjection.orderId
-        val order = orders.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
-        val orderVersion = order.version
+            val orderId = orderProjection.orderId
+            val order =
+                orders.findById(orderId) ?: raise(ChangeOrderDeliveryStatusCommand.OrderNotFoundError.forId(orderId))
+            val orderVersion = order.version
 
-        order.changeDeliveryStatus(command.status)
+            order.changeDeliveryStatus(command.status)
 
-        val events = order.occurredEvents()
-        orders.save(order, orderVersion)
-        orderEventPublisher.publishBatch(events)
-    }
+            val events = order.occurredEvents()
+            orders.save(order, orderVersion)
+            orderEventPublisher.publishBatch(events)
+        }
 }

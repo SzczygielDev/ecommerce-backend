@@ -8,8 +8,6 @@ import pl.szczygieldev.order.application.port.`in`.OrderPaymentUseCase
 import pl.szczygieldev.order.application.port.`in`.command.ProcessPaymentCommand
 import pl.szczygieldev.order.application.port.out.Orders
 import pl.szczygieldev.order.application.port.out.PaymentService
-import pl.szczygieldev.order.domain.error.AppError
-import pl.szczygieldev.order.domain.error.OrderNotFoundError
 import pl.szczygieldev.order.domain.event.OrderEvent
 
 @UseCase
@@ -18,11 +16,12 @@ internal class OrderPaymentService(
     val orderEventPublisher: DomainEventPublisher<OrderEvent>,
     val paymentService: PaymentService,
 ) : OrderPaymentUseCase {
-    override suspend fun pay(command: ProcessPaymentCommand): Either<AppError, Unit> = either {
+    override suspend fun pay(command: ProcessPaymentCommand): Either<ProcessPaymentCommand.Error, Unit> = either {
         val paymentId = command.paymentId
         val paymentTransaction = command.paymentTransaction
 
-        val order = orders.findByPaymentId(paymentId) ?: raise(OrderNotFoundError.forPaymentId(paymentId))
+        val order =
+            orders.findByPaymentId(paymentId) ?: raise(ProcessPaymentCommand.OrderNotFoundError.forPaymentId(paymentId))
 
         val orderVersion = order.version
         order.pay(paymentTransaction)

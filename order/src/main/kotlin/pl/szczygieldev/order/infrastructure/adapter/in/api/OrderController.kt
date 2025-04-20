@@ -1,7 +1,8 @@
 package pl.szczygieldev.order.infrastructure.adapter.`in`.api
 
-import arrow.core.raise.either
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.http.HttpStatus
+import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -16,12 +17,8 @@ import pl.szczygieldev.order.application.port.out.OrdersProjections
 import pl.szczygieldev.order.domain.OrderId
 import pl.szczygieldev.order.domain.ParcelDimensions
 import java.net.URI
-import pl.szczygieldev.order.application.port.`in`.query.model.OrderProjection
 import pl.szczygieldev.order.domain.CartId
-import pl.szczygieldev.order.domain.error.AppError
-import pl.szczygieldev.order.domain.error.OrderNotFoundError
-import pl.szczygieldev.order.infrastructure.adapter.error.CommandNotFoundError
-import pl.szczygieldev.order.infrastructure.adapter.`in`.api.advice.mapToError
+import pl.szczygieldev.order.infrastructure.adapter.`in`.api.error.CommandNotFoundError
 import pl.szczygieldev.order.infrastructure.adapter.`in`.api.presenter.CommandPresenter
 import pl.szczygieldev.order.infrastructure.adapter.`in`.api.presenter.OrderPresenter
 import java.util.UUID
@@ -49,7 +46,8 @@ internal class OrderController(
         }
         if (offset != null && limit != null) {
             return ResponseEntity.ok(
-                ordersProjections.findPage(offset, limit).map { orderProjection -> orderPresenter.toDto(orderProjection) })
+                ordersProjections.findPage(offset, limit)
+                    .map { orderProjection -> orderPresenter.toDto(orderProjection) })
         }
         return ResponseEntity.ok(
             ordersProjections.findAll().map { orderProjection -> orderPresenter.toDto(orderProjection) })
@@ -57,21 +55,24 @@ internal class OrderController(
 
 
     private fun getOrder(orderId: UUID): ResponseEntity<*> {
-        return either<AppError, OrderProjection> {
-            val id = OrderId(orderId)
-            ordersProjections.findById(id) ?: raise(OrderNotFoundError.forId(id))
-        }.fold<ResponseEntity<*>>(
-            { mapToError(it) },
-            { ResponseEntity.ok(orderPresenter.toDto(it)) })
+        val id = OrderId(orderId)
+        val order = ordersProjections.findById(id) ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(
+                ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "Cannot find order with id='${id.id()}'.")
+            )
+
+        return ResponseEntity.ok(orderPresenter.toDto(order))
     }
 
     private fun getOrderByCartId(cartId: UUID): ResponseEntity<*> {
-        return either<AppError, OrderProjection> {
-            val id = CartId(cartId)
-            ordersProjections.findByCartId(id) ?: raise(OrderNotFoundError.forCartId(id))
-        }.fold<ResponseEntity<*>>(
-            { mapToError(it) },
-            { ResponseEntity.ok(orderPresenter.toDto(it)) })
+        val id = CartId(cartId)
+
+        val order = ordersProjections.findByCartId(id) ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(
+                ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "Cannot find order with cart id='${cartId}'.")
+            )
+
+        return ResponseEntity.ok(orderPresenter.toDto(order))
     }
 
     @PutMapping("/{orderId}/accept-commands/{commandId}")
@@ -80,17 +81,13 @@ internal class OrderController(
         @PathVariable commandId: UUID,
         request: HttpServletRequest
     ): ResponseEntity<*> {
-        return either<AppError, CommandResult> {
-            val commandId = CommandId(commandId.toString())
-            val command = AcceptOrderCommand(commandId, OrderId(orderId))
-            commandQueue.push(command)
-            commandQueue.getCommandStatus(commandId) ?: raise(CommandNotFoundError.forId(commandId))
-        }.fold<ResponseEntity<*>>(
-            { mapToError(it) },
-            {
-                ResponseEntity.created(URI.create("${request.requestURL}/${it.id.id}"))
-                    .body(commandPresenter.toDto(it))
-            })
+        val commandId = CommandId(commandId.toString())
+        val command = AcceptOrderCommand(commandId, OrderId(orderId))
+        commandQueue.push(command)
+        val status = commandQueue.getCommandStatus(commandId) ?: return CommandNotFoundError.forId(commandId)
+
+        return ResponseEntity.created(URI.create("${request.requestURL}/${status.id.id}"))
+            .body(commandPresenter.toDto(status))
     }
 
     @GetMapping("/{orderId}/accept-commands/{commandId}")
@@ -106,16 +103,12 @@ internal class OrderController(
         @PathVariable commandId: UUID,
         request: HttpServletRequest
     ): ResponseEntity<*> {
-        return either<AppError, CommandResult> {
-            val commandId = CommandId(commandId.toString())
-            commandQueue.push(RejectOrderCommand(commandId, OrderId(orderId)))
-            commandQueue.getCommandStatus(commandId) ?: raise(CommandNotFoundError.forId(commandId))
-        }.fold<ResponseEntity<*>>(
-            { mapToError(it) },
-            {
-                ResponseEntity.created(URI.create("${request.requestURL}/${it.id.id}"))
-                    .body(commandPresenter.toDto(it))
-            })
+        val commandId = CommandId(commandId.toString())
+        commandQueue.push(RejectOrderCommand(commandId, OrderId(orderId)))
+        val status = commandQueue.getCommandStatus(commandId) ?: return CommandNotFoundError.forId(commandId)
+
+        return ResponseEntity.created(URI.create("${request.requestURL}/${status.id.id}"))
+            .body(commandPresenter.toDto(status))
     }
 
     @GetMapping("/{orderId}/reject-commands/{commandId}")
@@ -130,16 +123,12 @@ internal class OrderController(
         @PathVariable orderId: UUID, @PathVariable commandId: UUID,
         request: HttpServletRequest
     ): ResponseEntity<*> {
-        return either<AppError, CommandResult> {
-            val commandId = CommandId(commandId.toString())
-            commandQueue.push(CancelOrderCommand(commandId, OrderId(orderId)))
-            commandQueue.getCommandStatus(commandId) ?: raise(CommandNotFoundError.forId(commandId))
-        }.fold<ResponseEntity<*>>(
-            { mapToError(it) },
-            {
-                ResponseEntity.created(URI.create("${request.requestURL}/${it.id.id}"))
-                    .body(commandPresenter.toDto(it))
-            })
+        val commandId = CommandId(commandId.toString())
+        commandQueue.push(CancelOrderCommand(commandId, OrderId(orderId)))
+        val status = commandQueue.getCommandStatus(commandId) ?: return CommandNotFoundError.forId(commandId)
+
+        return ResponseEntity.created(URI.create("${request.requestURL}/${status.id.id}"))
+            .body(commandPresenter.toDto(status))
     }
 
     @GetMapping("/{orderId}/cancel-commands/{commandId}")
@@ -154,16 +143,12 @@ internal class OrderController(
         @PathVariable orderId: UUID, @PathVariable commandId: UUID,
         request: HttpServletRequest
     ): ResponseEntity<*> {
-        return either<AppError, CommandResult> {
-            val commandId = CommandId(commandId.toString())
-            commandQueue.push(ReturnOrderCommand(commandId, OrderId(orderId)))
-            commandQueue.getCommandStatus(commandId) ?: raise(CommandNotFoundError.forId(commandId))
-        }.fold<ResponseEntity<*>>(
-            { mapToError(it) },
-            {
-                ResponseEntity.created(URI.create("${request.requestURL}/${it.id.id}"))
-                    .body(commandPresenter.toDto(it))
-            })
+        val commandId = CommandId(commandId.toString())
+        commandQueue.push(ReturnOrderCommand(commandId, OrderId(orderId)))
+        val status = commandQueue.getCommandStatus(commandId) ?: return CommandNotFoundError.forId(commandId)
+
+        return ResponseEntity.created(URI.create("${request.requestURL}/${status.id.id}"))
+            .body(commandPresenter.toDto(status))
     }
 
     @GetMapping("/{orderId}/return-commands/{commandId}")
@@ -179,17 +164,13 @@ internal class OrderController(
         @PathVariable orderId: UUID, @PathVariable commandId: UUID,
         request: HttpServletRequest
     ): ResponseEntity<*> {
-        return either<AppError, CommandResult> {
-            val command = BeginOrderPackingCommand( CommandId(commandId.toString()),OrderId(orderId))
-            val commandId = command.id
-            commandQueue.push(command)
-            commandQueue.getCommandStatus(commandId) ?: raise(CommandNotFoundError.forId(commandId))
-        }.fold<ResponseEntity<*>>(
-            { mapToError(it) },
-            {
-                ResponseEntity.created(URI.create("${request.requestURL}/${it.id.id}"))
-                    .body(commandPresenter.toDto(it))
-            })
+        val command = BeginOrderPackingCommand(CommandId(commandId.toString()), OrderId(orderId))
+        val commandId = command.id
+        commandQueue.push(command)
+        val status = commandQueue.getCommandStatus(commandId) ?: return CommandNotFoundError.forId(commandId)
+
+        return ResponseEntity.created(URI.create("${request.requestURL}/${status.id.id}"))
+            .body(commandPresenter.toDto(status))
     }
 
     @GetMapping("/{orderId}/beginPacking-commands/{commandId}")
@@ -205,21 +186,17 @@ internal class OrderController(
         @RequestBody parcelDimensions: ParcelDimensions,
         request: HttpServletRequest
     ): ResponseEntity<*> {
-        return either<AppError, CommandResult> {
-            val command = CompleteOrderPackingCommand(
-                CommandId(commandId.toString()),
-                OrderId(orderId),
-                parcelDimensions
-            )
-            val commandId = command.id
-            commandQueue.push(command)
-            commandQueue.getCommandStatus(commandId) ?: raise(CommandNotFoundError.forId(commandId))
-        }.fold<ResponseEntity<*>>(
-            { mapToError(it) },
-            {
-                ResponseEntity.created(URI.create("${request.requestURL}/${it.id.id}"))
-                    .body(commandPresenter.toDto(it))
-            })
+        val command = CompleteOrderPackingCommand(
+            CommandId(commandId.toString()),
+            OrderId(orderId),
+            parcelDimensions
+        )
+        val commandId = command.id
+        commandQueue.push(command)
+        val status = commandQueue.getCommandStatus(commandId) ?: return CommandNotFoundError.forId(commandId)
+
+        return ResponseEntity.created(URI.create("${request.requestURL}/${status.id.id}"))
+            .body(commandPresenter.toDto(status))
     }
 
     @GetMapping("/{orderId}/completePacking-commands/{commandId}")
@@ -233,11 +210,12 @@ internal class OrderController(
     }
 
     private fun getCommandResultResponse(orderId: OrderId, commandId: CommandId): ResponseEntity<*> {
-        return either {
-            ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
-            commandQueue.getCommandStatus(commandId) ?: raise(CommandNotFoundError.forId(commandId))
-        }.fold<ResponseEntity<*>>(
-            { mapToError(it) },
-            { ResponseEntity.ok(commandPresenter.toDto(it)) })
+        ordersProjections.findById(orderId) ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(
+                ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "Cannot find order with id='${orderId.id()}'.")
+            )
+        val status = commandQueue.getCommandStatus(commandId) ?: return CommandNotFoundError.forId(commandId)
+
+        return ResponseEntity.ok(commandPresenter.toDto(status))
     }
 }

@@ -12,8 +12,6 @@ import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventPublisher
 import pl.szczygieldev.order.application.port.`in`.command.*
 import pl.szczygieldev.order.application.port.out.*
 import pl.szczygieldev.order.domain.*
-import pl.szczygieldev.order.domain.error.CartNotFoundError
-import pl.szczygieldev.order.domain.error.OrderNotFoundError
 import pl.szczygieldev.order.domain.event.OrderEvent
 import java.math.BigDecimal
 import java.net.URL
@@ -96,7 +94,7 @@ internal class OrderUseCaseTests : FunSpec() {
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<CartNotFoundError>()
+                error.shouldBeInstanceOf<CreateOrderCommand.CartNotFoundError>()
             }
 
             test("PaymentService should be called with provided amount, payment service provided and return url") {
@@ -154,7 +152,7 @@ internal class OrderUseCaseTests : FunSpec() {
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<OrderNotFoundError>()
+                error.shouldBeInstanceOf<AcceptOrderCommand.OrderNotFoundError>()
             }
 
             test("Order accept should be called when order was found") {
@@ -204,7 +202,7 @@ internal class OrderUseCaseTests : FunSpec() {
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<OrderNotFoundError>()
+                error.shouldBeInstanceOf<RejectOrderCommand.OrderNotFoundError>()
             }
 
             test("Order reject should be called when order was found") {
@@ -254,7 +252,7 @@ internal class OrderUseCaseTests : FunSpec() {
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<OrderNotFoundError>()
+                error.shouldBeInstanceOf<CancelOrderCommand.OrderNotFoundError>()
             }
 
             test("Order cancel should be called when order was found") {
@@ -308,7 +306,7 @@ internal class OrderUseCaseTests : FunSpec() {
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<OrderNotFoundError>()
+                error.shouldBeInstanceOf<ReturnOrderCommand.OrderNotFoundError>()
             }
 
             test("Order return should be called when order was found") {

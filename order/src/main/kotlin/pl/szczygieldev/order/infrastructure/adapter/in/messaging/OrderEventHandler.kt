@@ -10,7 +10,6 @@ import pl.szczygieldev.ecommercelibrary.eventstore.EventStore
 import pl.szczygieldev.ecommercelibrary.messaging.InMemoryMessageQueue
 import pl.szczygieldev.ecommercelibrary.messaging.config.MessageQueueConfig
 import pl.szczygieldev.order.application.port.`in`.command.SendOrderConfirmationMailCommand
-import pl.szczygieldev.order.domain.error.AppError
 import pl.szczygieldev.order.domain.event.*
 
 @Component
@@ -27,9 +26,11 @@ internal class OrderEventHandler(
     companion object {
         private val log = KotlinLogging.logger { }
     }
+
     override suspend fun handle(notification: OrderEvent) {
         val domainEvent = notification
-        either<AppError, Unit> {
+
+        try {
             when (domainEvent) {
                 is OrderCreated -> {}
                 is OrderAccepted -> {}
@@ -45,10 +46,9 @@ internal class OrderEventHandler(
 
                 is OrderDeliveryStatusChanged -> {}
             }
-        }.fold({
-            log.error { "Event handling failed=${domainEvent}" }
-        }, {
             log.info { "Event handled=${domainEvent}" }
-        })
+        } catch (e: Exception) {
+            log.error { "Event handling failed=${domainEvent}" }
+        }
     }
 }

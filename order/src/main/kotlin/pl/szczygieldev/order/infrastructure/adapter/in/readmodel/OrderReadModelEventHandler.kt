@@ -13,9 +13,6 @@ import pl.szczygieldev.order.application.port.`in`.query.model.PaymentProjection
 import pl.szczygieldev.order.application.port.out.OrdersProjections
 import pl.szczygieldev.order.application.port.out.Products
 import pl.szczygieldev.order.domain.*
-import pl.szczygieldev.order.domain.error.AppError
-import pl.szczygieldev.order.domain.error.OrderNotFoundError
-import pl.szczygieldev.order.domain.error.ProductNotFoundError
 import pl.szczygieldev.order.domain.event.*
 import java.math.BigDecimal
 
@@ -37,7 +34,8 @@ internal class OrderReadModelEventHandler(
 
     override suspend fun handle(notification: OrderEvent) {
         val domainEvent = notification
-        either<AppError, Unit> {
+
+        try {
             when (domainEvent) {
                 is OrderCreated -> {
                     val paymentDetails = domainEvent.paymentDetails
@@ -45,7 +43,7 @@ internal class OrderReadModelEventHandler(
                     val orderItemsProjections = domainEvent.items.map { orderItem ->
 
                         val productId = orderItem.productId
-                        val product = products.findById(productId) ?: raise(ProductNotFoundError.forId(productId))
+                        val product = products.findById(productId) ?: throw Exception("Cannot find product with id='${productId.id()}'")
 
                         OrderProjection.OrderItemProjection(
                             orderItem.productId,
@@ -79,20 +77,20 @@ internal class OrderReadModelEventHandler(
 
                 is OrderAccepted -> {
                     val orderId = domainEvent.orderId
-                    val foundOrder = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
+                    val foundOrder = ordersProjections.findById(orderId) ?: throw Exception("Cannot find order with id='${orderId.id()}'.")
                     ordersProjections.save(foundOrder.copy(status = OrderStatus.ACCEPTED))
                 }
 
                 is OrderCanceled -> {
                     val orderId = domainEvent.orderId
-                    val foundOrder = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
+                    val foundOrder = ordersProjections.findById(orderId) ?: throw Exception("Cannot find order with id='${orderId.id()}'.")
                     ordersProjections.save(foundOrder.copy(status = OrderStatus.CANCELLED))
                 }
 
 
                 is OrderPackaged -> {
                     val orderId = domainEvent.orderId
-                    val foundOrder = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
+                    val foundOrder = ordersProjections.findById(orderId) ?: throw Exception("Cannot find order with id='${orderId.id()}'.")
                     ordersProjections.save(
                         foundOrder.copy(
                             status = OrderStatus.READY, delivery = foundOrder.delivery.copy(
@@ -106,20 +104,20 @@ internal class OrderReadModelEventHandler(
 
                 is OrderPackagingStarted -> {
                     val orderId = domainEvent.orderId
-                    val foundOrder = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
+                    val foundOrder = ordersProjections.findById(orderId) ?: throw Exception("Cannot find order with id='${orderId.id()}'.")
                     ordersProjections.save(foundOrder.copy(status = OrderStatus.IN_PROGRESS))
                 }
 
                 is OrderRejected -> {
                     val orderId = domainEvent.orderId
-                    val foundOrder = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
+                    val foundOrder = ordersProjections.findById(orderId) ?: throw Exception("Cannot find order with id='${orderId.id()}'.")
                     ordersProjections.save(foundOrder.copy(status = OrderStatus.REJECTED))
                 }
 
 
                 is OrderPaymentReceived -> {
                     val orderId = domainEvent.orderId
-                    val foundOrder = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
+                    val foundOrder = ordersProjections.findById(orderId) ?: throw Exception("Cannot find order with id='${orderId.id()}'.")
                     val paymentProjection = foundOrder.paymentProjection
 
                     val transactions = mutableListOf<PaymentTransaction>()
@@ -136,19 +134,19 @@ internal class OrderReadModelEventHandler(
 
                 is OrderInvalidAmountPaid -> {
                     val orderId = domainEvent.orderId
-                    val foundOrder = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
+                    val foundOrder = ordersProjections.findById(orderId) ?: throw Exception("Cannot find order with id='${orderId.id()}'.")
                     ordersProjections.save(foundOrder.copy(paymentProjection = foundOrder.paymentProjection.copy(status = PaymentStatus.INVALID_AMOUNT)))
                 }
 
                 is OrderPaid -> {
                     val orderId = domainEvent.orderId
-                    val foundOrder = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
+                    val foundOrder = ordersProjections.findById(orderId) ?: throw Exception("Cannot find order with id='${orderId.id()}'.")
                     ordersProjections.save(foundOrder.copy(paymentProjection = foundOrder.paymentProjection.copy(status = PaymentStatus.PAID)))
                 }
 
                 is OrderDeliveryStatusChanged -> {
                     val orderId = domainEvent.orderId
-                    val foundOrder = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
+                    val foundOrder = ordersProjections.findById(orderId) ?: throw Exception("Cannot find order with id='${orderId.id()}'.")
 
                     var updatedOrder = foundOrder.copy(delivery = foundOrder.delivery.copy(status = domainEvent.status))
                     if (domainEvent.status != DeliveryStatus.WAITING) {
@@ -158,10 +156,10 @@ internal class OrderReadModelEventHandler(
                     ordersProjections.save(updatedOrder)
                 }
             }
-        }.fold({
-            log.error { "Event handling failed=${domainEvent}" }
-        }, {
             log.info { "Event handled=${domainEvent}" }
-        })
+        }
+        catch (ex: Exception) {
+            log.error { "Event handling failed=${domainEvent}" }
+        }
     }
 }

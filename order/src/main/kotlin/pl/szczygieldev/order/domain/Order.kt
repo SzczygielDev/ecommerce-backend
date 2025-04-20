@@ -63,42 +63,42 @@ internal class Order private constructor(
 
     }
 
-    fun accept(): Either<OrderError, Unit> = either {
+    fun accept(): Either<AcceptError, Unit> = either {
         if (_status != OrderStatus.CREATED) {
-            raise(AlreadyAcceptedOrderError.forId(orderId))
+            raise(AcceptError.AlreadyAcceptedOrderError.forId(orderId))
         }
         raiseEvent(OrderAccepted(orderId))
     }
 
-    fun reject(): Either<OrderError, Unit> = either {
+    fun reject(): Either<RejectError, Unit> = either {
         if (_status != OrderStatus.CREATED) {
-            raise(AlreadyAcceptedOrderError.forId(orderId))
+            raise(RejectError.AlreadyAcceptedOrderError.forId(orderId))
         }
         raiseEvent(OrderRejected(orderId))
     }
 
 
-    fun cancel(): Either<OrderError, Unit> = either {
+    fun cancel(): Either<CancelError, Unit> = either {
         if (_status == OrderStatus.SENT) {
-            raise(CannotCancelSentOrderError.forId(orderId))
+            raise(CancelError.CannotCancelSentOrderError.forId(orderId))
         }
         raiseEvent(OrderCanceled(orderId))
         //TODO after cancel refund process should start
     }
 
-    fun returnOrder(): Either<OrderError, Unit> = either {
+    fun returnOrder(): Either<ReturnError, Unit> = either {
         if (_delivery.status != DeliveryStatus.DELIVERED) {
-            raise(CannotReturnNotReceivedOrderError.forId(orderId))
+            raise(ReturnError.CannotReturnNotReceivedOrderError.forId(orderId))
         }
         //TODO
     }
 
-    fun beginPacking(): Either<OrderError, Unit> = either {
+    fun beginPacking(): Either<PackingError, Unit> = either {
         if (_status != OrderStatus.ACCEPTED) {
-            raise(CannotPackageNotAcceptedOrderError.forId(orderId))
+            raise(PackingError.CannotPackageNotAcceptedOrderError.forId(orderId))
         }
         if (!_payment.isPaid) {
-            raise(NotPaidOrderError.forId(orderId))
+            raise(PackingError.NotPaidOrderError.forId(orderId))
         }
         raiseEvent(OrderPackagingStarted(orderId))
     }
@@ -106,9 +106,9 @@ internal class Order private constructor(
     fun completePacking(
         parcelId: ParcelId,
         parcelDimensions: ParcelDimensions
-    ): Either<OrderError, Unit> = either {
+    ): Either<CompletePackingError, Unit> = either {
         if (_status != OrderStatus.IN_PROGRESS) {
-            raise(PackingNotInProgressError.forId(orderId))
+            raise(CompletePackingError.PackingNotInProgressError.forId(orderId))
         }
         raiseEvent(OrderPackaged(orderId, parcelId, parcelDimensions))
     }

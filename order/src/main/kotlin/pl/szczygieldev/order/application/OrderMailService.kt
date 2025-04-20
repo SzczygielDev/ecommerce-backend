@@ -6,11 +6,16 @@ import pl.szczygieldev.ecommercelibrary.architecture.UseCase
 import pl.szczygieldev.order.application.port.`in`.OrderMailUseCase
 import pl.szczygieldev.order.application.port.`in`.command.SendOrderConfirmationMailCommand
 import pl.szczygieldev.order.application.port.out.MailService
-import pl.szczygieldev.order.domain.error.AppError
 
 @UseCase
 internal class OrderMailService(private val mailService: MailService) : OrderMailUseCase {
-    override fun sendConfirmationMail(command: SendOrderConfirmationMailCommand): Either<AppError,Unit> = either {
-        mailService.sendOrderConfirmationMail(command.orderId).bind()
-    }
+    override fun sendConfirmationMail(command: SendOrderConfirmationMailCommand): Either<SendOrderConfirmationMailCommand.Error, Unit> =
+        either {
+            val orderId = command.orderId
+            val result = mailService.sendOrderConfirmationMail(orderId)
+
+            result.exceptionOrNull()?.let { error ->
+                raise(SendOrderConfirmationMailCommand.MailSendError.forId(orderId, error.message ?: ""))
+            }
+        }
 }

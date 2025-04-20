@@ -11,7 +11,6 @@ import pl.szczygieldev.order.application.port.`in`.command.ProcessPaymentCommand
 import pl.szczygieldev.order.application.port.out.Orders
 import pl.szczygieldev.order.application.port.out.PaymentService
 import pl.szczygieldev.order.domain.*
-import pl.szczygieldev.order.domain.error.OrderNotFoundError
 import pl.szczygieldev.order.domain.event.OrderEvent
 import java.math.BigDecimal
 import java.net.URL
@@ -70,7 +69,7 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
             //Assert
             result.isLeft().shouldBe(true)
             val error = result.leftOrNull().shouldNotBeNull()
-            error.shouldBeInstanceOf<OrderNotFoundError>()
+            error.shouldBeInstanceOf<ProcessPaymentCommand.OrderNotFoundError>()
         }
 
         test("Order should register payment transaction") {
