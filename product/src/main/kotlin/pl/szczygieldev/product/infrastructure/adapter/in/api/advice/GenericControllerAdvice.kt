@@ -15,8 +15,6 @@ internal class GenericControllerAdvice {
         private val log = KotlinLogging.logger { }
     }
 
-
-
    @ExceptionHandler(RuntimeException::class)
     fun handleRuntimeException(ex: RuntimeException): ProblemDetail {
         val problemDetail: ProblemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ex.message ?: "")

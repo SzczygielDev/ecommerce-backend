@@ -15,7 +15,6 @@ import pl.szczygieldev.product.domain.ProductDescription
 import pl.szczygieldev.product.domain.ProductId
 import pl.szczygieldev.product.domain.ProductPrice
 import pl.szczygieldev.product.domain.ProductTitle
-import pl.szczygieldev.product.domain.error.ProductNotFoundError
 import pl.szczygieldev.product.domain.event.ProductEvent
 import java.math.BigDecimal
 import java.util.*
@@ -49,7 +48,7 @@ internal class UpdateProductCommandHandlerTests : FunSpec() {
             //Assert
             result.isLeft().shouldBe(true)
             val error = result.leftOrNull().shouldNotBeNull()
-            error.shouldBeInstanceOf<ProductNotFoundError>()
+            error.shouldBeInstanceOf<UpdateProductCommand.ProductNotFoundError>()
         }
 
         test("Product title, description, price and image should be updated") {
