@@ -29,12 +29,10 @@ internal class OrderShippingUseCaseTests : FunSpec() {
     val shippingService = mockk<ShippingService>()
     val orderProjections = mockk<OrdersProjections>()
 
-    val orderShippingUseCase = OrderShippingService(
-        ordersMock,
-        orderEventPublisherMock,
-        shippingService,
-        orderProjections
-    )
+    val beginOrderPackingCommandHandler = BeginOrderPackingCommandHandler(ordersMock, orderEventPublisherMock)
+    val completeOrderPackingCommandHandler =
+        CompleteOrderPackingCommandHandler(ordersMock, orderEventPublisherMock, shippingService, orderProjections)
+    val changeOrderDeliveryStatusCommandHandler = ChangeOrderDeliveryStatusCommandHandler(ordersMock,orderEventPublisherMock,orderProjections)
 
     init {
         isolationMode = IsolationMode.InstancePerLeaf
@@ -105,7 +103,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(any()) } returns null
 
                 //Act
-                val result = orderShippingUseCase.beginPacking(command)
+                val result = beginOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 result.isLeft().shouldBe(true)
@@ -119,7 +117,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns order
 
                 //Act
-                orderShippingUseCase.beginPacking(command)
+                beginOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 verify { order.beginPacking() }
@@ -130,7 +128,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns order
 
                 //Act
-                orderShippingUseCase.beginPacking(command)
+                beginOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 coVerify { ordersMock.save(order, any()) }
@@ -141,7 +139,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns order
 
                 //Act
-                orderShippingUseCase.beginPacking(command)
+                beginOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 verify { orderEventPublisherMock.publishBatch(order.occurredEvents()) }
@@ -157,7 +155,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns null
 
                 //Act
-                val result = orderShippingUseCase.completePacking(command)
+                val result = completeOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 result.isLeft().shouldBe(true)
@@ -171,7 +169,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { orderProjections.findById(orderId) } returns null
 
                 //Act
-                val result = orderShippingUseCase.completePacking(command)
+                val result = completeOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 result.isLeft().shouldBe(true)
@@ -186,7 +184,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { shippingService.registerParcel(any(), any()) } returns parcelId
 
                 //Act
-                orderShippingUseCase.completePacking(command)
+                completeOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 verify { shippingService.registerParcel(dimensions, deliveryProvider) }
@@ -199,7 +197,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { shippingService.registerParcel(any(), any()) } returns null
 
                 //Act
-                val result = orderShippingUseCase.completePacking(command)
+                val result = completeOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 result.isLeft().shouldBe(true)
@@ -215,7 +213,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { shippingService.registerParcel(any(), any()) } returns parcelId
 
                 //Act
-                orderShippingUseCase.completePacking(command)
+                completeOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 verify { order.completePacking(parcelId, dimensions) }
@@ -228,7 +226,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { shippingService.registerParcel(any(), any()) } returns parcelId
 
                 //Act
-                orderShippingUseCase.completePacking(command)
+                completeOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 coVerify { ordersMock.save(order, any()) }
@@ -241,7 +239,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { shippingService.registerParcel(any(), any()) } returns parcelId
 
                 //Act
-                orderShippingUseCase.completePacking(command)
+                completeOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 verify { orderEventPublisherMock.publishBatch(order.occurredEvents()) }
@@ -257,7 +255,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { orderProjections.findByParcelIdentifier(parcelId) } returns null
 
                 //Act
-                val result = orderShippingUseCase.changeDeliveryStatus(command)
+                val result = changeOrderDeliveryStatusCommandHandler.handle(command)
 
                 //Assert
                 result.isLeft().shouldBe(true)
@@ -271,7 +269,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns null
 
                 //Act
-                val result = orderShippingUseCase.changeDeliveryStatus(command)
+                val result = changeOrderDeliveryStatusCommandHandler.handle(command)
 
                 //Assert
                 result.isLeft().shouldBe(true)
@@ -286,7 +284,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns order
 
                 //Act
-                orderShippingUseCase.changeDeliveryStatus(command)
+                changeOrderDeliveryStatusCommandHandler.handle(command)
 
                 //Assert
                 verify { order.changeDeliveryStatus(deliveryStatus) }
@@ -298,7 +296,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns order
 
                 //Act
-                orderShippingUseCase.changeDeliveryStatus(command)
+                changeOrderDeliveryStatusCommandHandler.handle(command)
 
                 //Assert
                 coVerify { ordersMock.save(order, any()) }
@@ -310,7 +308,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns order
 
                 //Act
-                orderShippingUseCase.changeDeliveryStatus(command)
+                changeOrderDeliveryStatusCommandHandler.handle(command)
 
                 //Assert
                 verify { orderEventPublisherMock.publishBatch(order.occurredEvents()) }

@@ -21,7 +21,8 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
     val ordersMock = mockk<Orders>()
     val orderEventPublisherMock = mockk<DomainEventPublisher<OrderEvent>>()
     val paymentServiceMock = mockk<PaymentService>()
-    val orderPaymentService = OrderPaymentService(ordersMock, orderEventPublisherMock,paymentServiceMock)
+
+    val processPaymentCommandHandler = ProcessPaymentCommandHandler(ordersMock, orderEventPublisherMock, paymentServiceMock)
 
     init {
         isolationMode = IsolationMode.InstancePerLeaf
@@ -64,7 +65,7 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
             val command = ProcessPaymentCommand(paymentId, paymentTransaction)
 
             //Act
-            val result = orderPaymentService.pay(command)
+            val result = processPaymentCommandHandler.handle(command)
 
             //Assert
             result.isLeft().shouldBe(true)
@@ -79,7 +80,7 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
             val command = ProcessPaymentCommand(paymentId, paymentTransaction)
 
             //Act
-            orderPaymentService.pay(command)
+            processPaymentCommandHandler.handle(command)
 
             //Assert
             verify { order.pay(paymentTransaction) }
@@ -90,7 +91,7 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
             val command = ProcessPaymentCommand(paymentId, paymentTransaction)
 
             //Act
-            orderPaymentService.pay(command)
+            processPaymentCommandHandler.handle(command)
 
             //Assert
             verify { paymentServiceMock.verifyPayment(paymentId) }
@@ -101,7 +102,7 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
             val command = ProcessPaymentCommand(paymentId, paymentTransaction)
 
             //Act
-            orderPaymentService.pay(command)
+            processPaymentCommandHandler.handle(command)
 
             //Assert
             coVerify { ordersMock.save(order, any()) }
@@ -112,7 +113,7 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
             val command = ProcessPaymentCommand(paymentId, paymentTransaction)
 
             //Act
-            orderPaymentService.pay(command)
+            processPaymentCommandHandler.handle(command)
 
             //Assert
             verify { orderEventPublisherMock.publishBatch(order.occurredEvents()) }

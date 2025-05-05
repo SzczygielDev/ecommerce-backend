@@ -2,21 +2,20 @@ package pl.szczygieldev.order.application
 
 import arrow.core.Either
 import arrow.core.raise.either
-import pl.szczygieldev.ecommercelibrary.architecture.UseCase
+import com.trendyol.kediatr.CommandWithResultHandler
 import pl.szczygieldev.ecommercelibrary.ddd.core.DomainEventPublisher
-import pl.szczygieldev.order.application.port.`in`.OrderPaymentUseCase
 import pl.szczygieldev.order.application.port.`in`.command.ProcessPaymentCommand
 import pl.szczygieldev.order.application.port.out.Orders
 import pl.szczygieldev.order.application.port.out.PaymentService
 import pl.szczygieldev.order.domain.event.OrderEvent
 
-@UseCase
-internal class OrderPaymentService(
+internal class ProcessPaymentCommandHandler(
     val orders: Orders,
     val orderEventPublisher: DomainEventPublisher<OrderEvent>,
     val paymentService: PaymentService,
-) : OrderPaymentUseCase {
-    override suspend fun pay(command: ProcessPaymentCommand): Either<ProcessPaymentCommand.Error, Unit> = either {
+) :
+    CommandWithResultHandler<ProcessPaymentCommand, Either<ProcessPaymentCommand.Error, Unit>> {
+    override suspend fun handle(command: ProcessPaymentCommand): Either<ProcessPaymentCommand.Error, Unit> = either {
         val paymentId = command.paymentId
         val paymentTransaction = command.paymentTransaction
 
@@ -33,3 +32,4 @@ internal class OrderPaymentService(
         orderEventPublisher.publishBatch(events)
     }
 }
+
