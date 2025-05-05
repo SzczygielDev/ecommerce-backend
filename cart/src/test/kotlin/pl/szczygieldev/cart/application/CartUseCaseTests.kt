@@ -6,7 +6,6 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
-import pl.szczygieldev.cart.application.port.`in`.CartUseCase
 import pl.szczygieldev.cart.application.port.`in`.command.AddItemToCartCommand
 import pl.szczygieldev.cart.application.port.`in`.command.CreateCartCommand
 import pl.szczygieldev.cart.application.port.`in`.command.RemoveItemFromCartCommand
@@ -22,11 +21,11 @@ internal class CartUseCaseTests : FunSpec() {
     val productsMock = mockk<Products>()
     val cartsMock = mockk<Carts>()
     val eventPublisherMock = mockk<DomainEventPublisher<CartEvent>>()
-    val cartUseCase: CartUseCase = CartService(
-        cartsMock,
-        productsMock,
-        eventPublisherMock,
-    )
+
+    val submitCartCommandHandler = SubmitCartCommandHandler(cartsMock,eventPublisherMock)
+    val addItemToCartCommandHandler = AddItemToCartCommandHandler(cartsMock,productsMock,eventPublisherMock)
+    val removeItemFromCartCommandHandler = RemoveItemFromCartCommandHandler(cartsMock, eventPublisherMock)
+    val cartCreateCommandHandler = CartCreateCommandHandler(cartsMock,eventPublisherMock)
 
     init {
         every { cartsMock.save(any(), any()) } just runs
@@ -46,7 +45,7 @@ internal class CartUseCaseTests : FunSpec() {
 
             //Act
             val result =
-                cartUseCase.submitCart(SubmitCartCommand(clientId, deliveryProvider, paymentServiceProvider))
+                submitCartCommandHandler.handle(SubmitCartCommand(clientId, deliveryProvider, paymentServiceProvider))
 
             //Assert
             result.isLeft().shouldBe(true)
@@ -66,7 +65,7 @@ internal class CartUseCaseTests : FunSpec() {
             val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
 
             //Act
-            cartUseCase.submitCart(SubmitCartCommand(clientId, deliveryProvider, paymentServiceProvider))
+            submitCartCommandHandler.handle(SubmitCartCommand(clientId, deliveryProvider, paymentServiceProvider))
 
             //Assert
             verify { cart.submit(deliveryProvider, paymentServiceProvider) }
@@ -89,7 +88,7 @@ internal class CartUseCaseTests : FunSpec() {
             every { cartsMock.findActiveForClient(clientId) } returns cart
 
             //Act
-            cartUseCase.submitCart(SubmitCartCommand(clientId, deliveryProvider, paymentServiceProvider))
+            submitCartCommandHandler.handle(SubmitCartCommand(clientId, deliveryProvider, paymentServiceProvider))
 
             //Assert
             savedCartsSlot.size.shouldBe(2)
@@ -114,7 +113,7 @@ internal class CartUseCaseTests : FunSpec() {
             every { cartsMock.findActiveForClient(clientId) } returns cart
 
             //Act
-            cartUseCase.submitCart(SubmitCartCommand(clientId, deliveryProvider, paymentServiceProvider))
+            submitCartCommandHandler.handle(SubmitCartCommand(clientId, deliveryProvider, paymentServiceProvider))
 
             //Assert
             val publishedEvents = events.first()
@@ -131,7 +130,7 @@ internal class CartUseCaseTests : FunSpec() {
             every { cartsMock.findActiveForClient(clientId) } returns null
 
             //Act
-            val result = cartUseCase.addProductToCart(AddItemToCartCommand(clientId, productId, 1))
+            val result = addItemToCartCommandHandler.handle(AddItemToCartCommand(clientId, productId, 1))
 
             //Assert
             result.isLeft().shouldBe(true)
@@ -150,7 +149,7 @@ internal class CartUseCaseTests : FunSpec() {
             every { cartsMock.findActiveForClient(clientId) } returns cart
 
             //Act
-            val result = cartUseCase.addProductToCart(AddItemToCartCommand(clientId, productId, 1))
+            val result = addItemToCartCommandHandler.handle(AddItemToCartCommand(clientId, productId, 1))
 
             //Assert
             result.isLeft().shouldBe(true)
@@ -176,7 +175,7 @@ internal class CartUseCaseTests : FunSpec() {
             val command = AddItemToCartCommand(clientId, productId, 1)
 
             //Act
-            val result = cartUseCase.addProductToCart(command)
+            val result = addItemToCartCommandHandler.handle(command)
 
             //Assert
             verify { cart.addItem(productId, 1) }
@@ -191,7 +190,7 @@ internal class CartUseCaseTests : FunSpec() {
             every { cartsMock.findActiveForClient(clientId) } returns null
 
             //Act
-            val result = cartUseCase.removeProductFromCart(RemoveItemFromCartCommand(clientId, productId.idAsUUID()))
+            val result = removeItemFromCartCommandHandler.handle(RemoveItemFromCartCommand(clientId, productId.idAsUUID()))
 
             //Assert
             result.isLeft().shouldBe(true)
@@ -219,7 +218,7 @@ internal class CartUseCaseTests : FunSpec() {
             val command = RemoveItemFromCartCommand(clientId, productId.idAsUUID())
 
             //Act
-            val result = cartUseCase.removeProductFromCart(command)
+            val result = removeItemFromCartCommandHandler.handle(command)
 
             //Assert
             verify { cart.removeItem(productId) }
@@ -233,7 +232,7 @@ internal class CartUseCaseTests : FunSpec() {
             every { cartsMock.nextIdentity() } returns cartId
 
             //Act
-            cartUseCase.createCart(command)
+            cartCreateCommandHandler.handle(command)
 
             //Assert
             verify { cartsMock.save(any(), any()) }
@@ -247,7 +246,7 @@ internal class CartUseCaseTests : FunSpec() {
             every { cartsMock.nextIdentity() } returns cartId
 
             //Act
-            cartUseCase.createCart(command)
+            cartCreateCommandHandler.handle(command)
 
             //Assert
             verify { eventPublisherMock.publishBatch(any()) }

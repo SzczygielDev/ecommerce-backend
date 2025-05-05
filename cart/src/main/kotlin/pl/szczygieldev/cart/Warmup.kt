@@ -3,17 +3,16 @@ package pl.szczygieldev.cart
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
-import pl.szczygieldev.cart.application.port.`in`.CartUseCase
 import pl.szczygieldev.cart.application.port.`in`.command.CreateCartCommand
 import pl.szczygieldev.cart.domain.ClientId
+import pl.szczygieldev.ecommercelibrary.command.Mediator
 import java.util.*
 
-
 @Component("cartModule.Warmup")
-internal class Warmup(val cartUseCase: CartUseCase) {
+internal class Warmup(val mediator: Mediator) {
     @EventListener(ApplicationReadyEvent::class)
     suspend fun initData() {
-        cartUseCase.createCart(CreateCartCommand(mockClientId))
+        mediator.send(CreateCartCommand(mockClientId))
     }
 }
 

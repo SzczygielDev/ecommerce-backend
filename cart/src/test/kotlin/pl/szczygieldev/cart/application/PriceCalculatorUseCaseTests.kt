@@ -5,7 +5,6 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
-import pl.szczygieldev.cart.application.port.`in`.PriceCalculatorUseCase
 import pl.szczygieldev.cart.application.port.`in`.command.CalculateCartTotalCommand
 import pl.szczygieldev.cart.application.port.out.Carts
 import pl.szczygieldev.cart.application.port.out.Products
@@ -25,12 +24,9 @@ internal class PriceCalculatorUseCaseTests() : FunSpec() {
     val cartsMock = mockk<Carts>()
     val eventPublisherMock = mockk<DomainEventPublisher<PriceCalculatorEvent>>()
     val priceCalculator = PriceCalculator()
-    val priceCalculatorUseCase: PriceCalculatorUseCase = PriceCalculatorService(
-        priceCalculator,
-        productsMock,
-        cartsMock,
-        eventPublisherMock
-    )
+
+    val calculateCartTotalCommandHandler =
+        CalculateCartTotalCommandHandler(priceCalculator, productsMock, cartsMock, eventPublisherMock)
 
     init {
         test("Calculating cart total for non existing cart should raise CartNotFoundError") {
@@ -43,7 +39,7 @@ internal class PriceCalculatorUseCaseTests() : FunSpec() {
             every { cartsMock.findById(any()) } returns null
 
             //Act
-            val result = priceCalculatorUseCase.calculateCartTotal(
+            val result = calculateCartTotalCommandHandler.handle(
                 CalculateCartTotalCommand(
                     CartId(UUID.randomUUID())
                 )
@@ -59,7 +55,7 @@ internal class PriceCalculatorUseCaseTests() : FunSpec() {
             val cartId = CartId(UUID.randomUUID())
             val productId = ProductId(UUID.randomUUID())
             val clientId = ClientId(UUID.randomUUID())
-            val cart = Cart.create(cartId,clientId)
+            val cart = Cart.create(cartId, clientId)
             cart.addItem(productId, 1)
 
 
@@ -67,7 +63,7 @@ internal class PriceCalculatorUseCaseTests() : FunSpec() {
             every { productsMock.findById(productId) } returns null
 
             //Act
-            val result = priceCalculatorUseCase.calculateCartTotal(
+            val result = calculateCartTotalCommandHandler.handle(
                 CalculateCartTotalCommand(
                     cartId
                 )
@@ -92,7 +88,7 @@ internal class PriceCalculatorUseCaseTests() : FunSpec() {
             )
             val cartId = CartId(UUID.randomUUID())
             val clientId = ClientId(UUID.randomUUID())
-            val cart = Cart.create(cartId,clientId)
+            val cart = Cart.create(cartId, clientId)
             cart.addItem(productA.productId, 4)
             cart.addItem(productB.productId, 2)
 
@@ -104,7 +100,7 @@ internal class PriceCalculatorUseCaseTests() : FunSpec() {
             every { eventPublisherMock.publish(capture(eventSlot)) } just runs
 
             //Act
-            val result = priceCalculatorUseCase.calculateCartTotal(
+            val result = calculateCartTotalCommandHandler.handle(
                 CalculateCartTotalCommand(
                     cartId
                 )
