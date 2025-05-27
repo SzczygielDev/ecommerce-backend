@@ -6,8 +6,8 @@ import pl.szczygieldev.cart.domain.CartEvent
 import pl.szczygieldev.cart.domain.CartSubmitted
 import pl.szczygieldev.cart.domain.ItemAddedToCart
 import pl.szczygieldev.cart.domain.ItemRemovedFromCart
-import pl.szczygieldev.ecommercelibrary.messaging.IntegrationEvent
-import pl.szczygieldev.ecommercelibrary.messaging.IntegrationEventMapper
+import pl.szczygieldev.ecommercelibrary.outbox.IntegrationEvent
+import pl.szczygieldev.ecommercelibrary.outbox.IntegrationEventMapper
 import java.util.*
 
 internal class CartEventMapper : IntegrationEventMapper<CartEvent> {

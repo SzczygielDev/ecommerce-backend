@@ -1,6 +1,6 @@
 package pl.szczygieldev.cart.api
 
-import pl.szczygieldev.ecommercelibrary.messaging.IntegrationEvent
+import pl.szczygieldev.ecommercelibrary.outbox.IntegrationEvent
 import java.time.Instant
 import java.util.*
 
