@@ -1,4 +1,15 @@
 services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - s3
+      - mailpit
+    environment:
+      - APP_STORAGE_URL=http://s3:8333/
+      - SPRING_MAIL_HOST=mailpit
   master:
     image: chrislusf/seaweedfs:dev
     ports:

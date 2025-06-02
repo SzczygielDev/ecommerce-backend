@@ -5,6 +5,7 @@ import io.minio.*
 import jakarta.annotation.PostConstruct
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
 import pl.szczygieldev.product.domain.ImageId
 import pl.szczygieldev.product.infrastructure.adapter.out.persistence.table.ImageTable
@@ -12,11 +13,14 @@ import java.io.InputStream
 import java.util.UUID
 
 @Repository
-internal class ImageRepository {
+internal class ImageRepository(
+    @Value("\${app.storage.url}")
+    val storageUrl: String
+) {
     companion object {
         private val log = KotlinLogging.logger { }
     }
-    private val storageUrl = "http://localhost:8333"
+
     private val imageBucketName = "images"
     private val minioClient = MinioClient.builder()
         .endpoint(storageUrl)
@@ -67,6 +71,6 @@ internal class ImageRepository {
             log.error { e }
             return@transaction null
         }
-        return@transaction  imageId
+        return@transaction imageId
     }
 }
