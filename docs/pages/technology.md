@@ -24,6 +24,7 @@ Infrastructure:
 Mailing:
 - Mailpit
 - Mustache.java
+- maizzle for templates
 
 Documentation:
 - Docsify
