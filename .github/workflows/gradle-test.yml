@@ -2,8 +2,7 @@ name: gradle-test.yml
 
 on:
   pull_request:
-    types: [opened, reopened]
-  workflow_dispatch:
+    types: [opened, reopened, synchronize]
 
 jobs:
   build:
