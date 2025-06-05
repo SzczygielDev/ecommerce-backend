@@ -20,3 +20,6 @@ jobs:
         run: chmod +x ./gradlew
       - name: Run Tests
         run: ./gradlew clean test
+        env:
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
