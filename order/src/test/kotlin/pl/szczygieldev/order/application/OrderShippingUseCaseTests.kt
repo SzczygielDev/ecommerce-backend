@@ -17,8 +17,6 @@ import pl.szczygieldev.order.application.port.out.Orders
 import pl.szczygieldev.order.application.port.out.OrdersProjections
 import pl.szczygieldev.order.application.port.out.ShippingService
 import pl.szczygieldev.order.domain.*
-import pl.szczygieldev.order.domain.error.CannotRegisterParcelError
-import pl.szczygieldev.order.domain.error.OrderNotFoundError
 import pl.szczygieldev.order.domain.event.OrderEvent
 import java.math.BigDecimal
 import java.net.URL
@@ -31,17 +29,15 @@ internal class OrderShippingUseCaseTests : FunSpec() {
     val shippingService = mockk<ShippingService>()
     val orderProjections = mockk<OrdersProjections>()
 
-    val orderShippingUseCase = OrderShippingService(
-        ordersMock,
-        orderEventPublisherMock,
-        shippingService,
-        orderProjections
-    )
+    val beginOrderPackingCommandHandler = BeginOrderPackingCommandHandler(ordersMock, orderEventPublisherMock)
+    val completeOrderPackingCommandHandler =
+        CompleteOrderPackingCommandHandler(ordersMock, orderEventPublisherMock, shippingService, orderProjections)
+    val changeOrderDeliveryStatusCommandHandler = ChangeOrderDeliveryStatusCommandHandler(ordersMock,orderEventPublisherMock,orderProjections)
 
     init {
         isolationMode = IsolationMode.InstancePerLeaf
 
-        every { ordersMock.save(any(), any()) } just runs
+        coEvery { ordersMock.save(any(), any()) } just runs
         every { orderEventPublisherMock.publish(any()) } just runs
         every { orderEventPublisherMock.publishBatch(any()) } just runs
 
@@ -107,12 +103,12 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(any()) } returns null
 
                 //Act
-                val result = orderShippingUseCase.beginPacking(command)
+                val result = beginOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<OrderNotFoundError>()
+                error.shouldBeInstanceOf<BeginOrderPackingCommand.OrderNotFoundError>()
             }
 
             test("Order packing begin should be called") {
@@ -121,7 +117,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns order
 
                 //Act
-                orderShippingUseCase.beginPacking(command)
+                beginOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 verify { order.beginPacking() }
@@ -132,10 +128,10 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns order
 
                 //Act
-                orderShippingUseCase.beginPacking(command)
+                beginOrderPackingCommandHandler.handle(command)
 
                 //Assert
-                verify { ordersMock.save(order, any()) }
+                coVerify { ordersMock.save(order, any()) }
             }
 
             test("Order occurred events should be published when no error occurred") {
@@ -143,7 +139,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns order
 
                 //Act
-                orderShippingUseCase.beginPacking(command)
+                beginOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 verify { orderEventPublisherMock.publishBatch(order.occurredEvents()) }
@@ -159,12 +155,12 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns null
 
                 //Act
-                val result = orderShippingUseCase.completePacking(command)
+                val result = completeOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<OrderNotFoundError>()
+                error.shouldBeInstanceOf<CompleteOrderPackingCommand.OrderNotFoundError>()
             }
 
             test("OrderNotFoundError should be raised when order projection was not found") {
@@ -173,12 +169,12 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { orderProjections.findById(orderId) } returns null
 
                 //Act
-                val result = orderShippingUseCase.completePacking(command)
+                val result = completeOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<OrderNotFoundError>()
+                error.shouldBeInstanceOf<CompleteOrderPackingCommand.OrderNotFoundError>()
             }
 
             test("Parcel should be registered for order") {
@@ -188,7 +184,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { shippingService.registerParcel(any(), any()) } returns parcelId
 
                 //Act
-                orderShippingUseCase.completePacking(command)
+                completeOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 verify { shippingService.registerParcel(dimensions, deliveryProvider) }
@@ -201,12 +197,12 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { shippingService.registerParcel(any(), any()) } returns null
 
                 //Act
-                val result = orderShippingUseCase.completePacking(command)
+                val result = completeOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<CannotRegisterParcelError>()
+                error.shouldBeInstanceOf<CompleteOrderPackingCommand.CannotRegisterParcelError>()
             }
 
             test("Order packing completion should be called") {
@@ -217,7 +213,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { shippingService.registerParcel(any(), any()) } returns parcelId
 
                 //Act
-                orderShippingUseCase.completePacking(command)
+                completeOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 verify { order.completePacking(parcelId, dimensions) }
@@ -230,10 +226,10 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { shippingService.registerParcel(any(), any()) } returns parcelId
 
                 //Act
-                orderShippingUseCase.completePacking(command)
+                completeOrderPackingCommandHandler.handle(command)
 
                 //Assert
-                verify { ordersMock.save(order, any()) }
+                coVerify { ordersMock.save(order, any()) }
             }
 
             test("Order occurred events should be published when no error occurred") {
@@ -243,7 +239,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { shippingService.registerParcel(any(), any()) } returns parcelId
 
                 //Act
-                orderShippingUseCase.completePacking(command)
+                completeOrderPackingCommandHandler.handle(command)
 
                 //Assert
                 verify { orderEventPublisherMock.publishBatch(order.occurredEvents()) }
@@ -259,12 +255,12 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { orderProjections.findByParcelIdentifier(parcelId) } returns null
 
                 //Act
-                val result = orderShippingUseCase.changeDeliveryStatus(command)
+                val result = changeOrderDeliveryStatusCommandHandler.handle(command)
 
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<OrderNotFoundError>()
+                error.shouldBeInstanceOf<ChangeOrderDeliveryStatusCommand.OrderNotFoundError>()
             }
 
             test("OrderNotFoundError should be raised when order was not found") {
@@ -273,12 +269,12 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns null
 
                 //Act
-                val result = orderShippingUseCase.changeDeliveryStatus(command)
+                val result = changeOrderDeliveryStatusCommandHandler.handle(command)
 
                 //Assert
                 result.isLeft().shouldBe(true)
                 val error = result.leftOrNull().shouldNotBeNull()
-                error.shouldBeInstanceOf<OrderNotFoundError>()
+                error.shouldBeInstanceOf<ChangeOrderDeliveryStatusCommand.OrderNotFoundError>()
             }
 
             test("Order delivery status change should be called") {
@@ -288,7 +284,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns order
 
                 //Act
-                orderShippingUseCase.changeDeliveryStatus(command)
+                changeOrderDeliveryStatusCommandHandler.handle(command)
 
                 //Assert
                 verify { order.changeDeliveryStatus(deliveryStatus) }
@@ -300,10 +296,10 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns order
 
                 //Act
-                orderShippingUseCase.changeDeliveryStatus(command)
+                changeOrderDeliveryStatusCommandHandler.handle(command)
 
                 //Assert
-                verify { ordersMock.save(order, any()) }
+                coVerify { ordersMock.save(order, any()) }
             }
 
             test("Order occurred events should be published when no error occurred") {
@@ -312,7 +308,7 @@ internal class OrderShippingUseCaseTests : FunSpec() {
                 every { ordersMock.findById(orderId) } returns order
 
                 //Act
-                orderShippingUseCase.changeDeliveryStatus(command)
+                changeOrderDeliveryStatusCommandHandler.handle(command)
 
                 //Assert
                 verify { orderEventPublisherMock.publishBatch(order.occurredEvents()) }

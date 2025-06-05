@@ -175,7 +175,7 @@ internal class OrderProjectionRepository : OrdersProjections {
         )
 
         val orderItems = OrderProjectionEntryTable.selectAll()
-            .where(OrderProjectionEntryTable.id.eq(row[OrderProjectionTable.id])).map { orderItem ->
+            .where(OrderProjectionEntryTable.orderId.eq(row[OrderProjectionTable.id])).map { orderItem ->
                 return@map OrderProjection.OrderItemProjection(
                     ProductId(orderItem[OrderProjectionEntryTable.productId]),
                     orderItem[OrderProjectionEntryTable.title],

@@ -4,7 +4,5 @@ import pl.szczygieldev.order.domain.Cart
 import pl.szczygieldev.order.domain.CartId
 
 internal interface Carts {
-    fun nextIdentity(): CartId
-    fun findById(id : CartId): Cart?
-    fun save(cart: Cart, version: Int)
+    fun findById(id: CartId): Cart?
 }

@@ -9,13 +9,12 @@ import pl.szczygieldev.product.domain.Product
 import pl.szczygieldev.product.domain.ProductDescription
 import pl.szczygieldev.product.domain.ProductPrice
 import pl.szczygieldev.product.domain.ProductTitle
-import pl.szczygieldev.product.domain.error.AppError
 import java.math.BigDecimal
 
 internal class CreateProductCommandHandler(val products: Products) :
-    CommandWithResultHandler<CreateProductCommand, Either<AppError, Unit>> {
+    CommandWithResultHandler<CreateProductCommand, Either<CreateProductCommand.Error, Unit>> {
 
-    override suspend fun handle(command: CreateProductCommand): Either<AppError, Unit> = either {
+    override suspend fun handle(command: CreateProductCommand): Either<CreateProductCommand.Error, Unit> = either {
         val product = Product.create(
             command.productId,
             ProductTitle(command.title),

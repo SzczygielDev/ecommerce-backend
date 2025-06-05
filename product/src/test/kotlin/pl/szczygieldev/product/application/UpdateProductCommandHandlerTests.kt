@@ -15,7 +15,6 @@ import pl.szczygieldev.product.domain.ProductDescription
 import pl.szczygieldev.product.domain.ProductId
 import pl.szczygieldev.product.domain.ProductPrice
 import pl.szczygieldev.product.domain.ProductTitle
-import pl.szczygieldev.product.domain.error.ProductNotFoundError
 import pl.szczygieldev.product.domain.event.ProductEvent
 import java.math.BigDecimal
 import java.util.*
@@ -49,14 +48,14 @@ internal class UpdateProductCommandHandlerTests : FunSpec() {
             //Assert
             result.isLeft().shouldBe(true)
             val error = result.leftOrNull().shouldNotBeNull()
-            error.shouldBeInstanceOf<ProductNotFoundError>()
+            error.shouldBeInstanceOf<UpdateProductCommand.ProductNotFoundError>()
         }
 
         test("Product title, description, price and image should be updated") {
             //Arrange
             every { productsMock.findById(productId) } returns product
             val savedProductSlot = slot<Product>()
-            every { productsMock.save(capture(savedProductSlot), any()) } returns product
+            coEvery { productsMock.save(capture(savedProductSlot), any()) } returns product
             every { eventPublisherMock.publishBatch(any()) } just runs
 
             //Act
@@ -74,20 +73,20 @@ internal class UpdateProductCommandHandlerTests : FunSpec() {
         test("Product should be saved when no error occurred") {
             //Arrange
             every { productsMock.findById(productId) } returns product
-            every { productsMock.save(any(), any()) } returns product
+            coEvery  { productsMock.save(any(), any()) } returns product
             every { eventPublisherMock.publishBatch(any()) } just runs
 
             //Act
             updateProductCommandHandler.handle(command)
 
             //Assert
-            verify { productsMock.save(product, any()) }
+            coVerify { productsMock.save(product, any()) }
         }
 
         test("Product occurred events should be published when no error occurred") {
             //Arrange
             every { productsMock.findById(productId) } returns product
-            every { productsMock.save(any(), any()) } returns product
+            coEvery { productsMock.save(any(), any()) } returns product
             every { eventPublisherMock.publishBatch(any()) } just runs
 
             //Act

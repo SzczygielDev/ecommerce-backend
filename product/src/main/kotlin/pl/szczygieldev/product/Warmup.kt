@@ -26,10 +26,10 @@ internal class Warmup(
         val resource = ClassPathResource(
             path
         )
-        val file = resource.getFile()
+
         val mediaType = MediaTypeFactory.getMediaType(resource).getOrNull()
 
-        return imageRepository.uploadImage(file.inputStream(), file.length(), mediaType.toString())
+        return imageRepository.uploadImage(resource.inputStream, resource.contentLength(), mediaType.toString())
     }
 
     @EventListener(ApplicationReadyEvent::class)

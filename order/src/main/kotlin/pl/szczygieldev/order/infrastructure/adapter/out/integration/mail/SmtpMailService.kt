@@ -1,5 +1,6 @@
 package pl.szczygieldev.order.infrastructure.adapter.out.integration.mail
 
+import arrow.core.Either
 import arrow.core.raise.either
 import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.MustacheFactory
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Component
 import pl.szczygieldev.order.application.port.out.MailService
 import pl.szczygieldev.order.application.port.out.OrdersProjections
 import pl.szczygieldev.order.domain.OrderId
-import pl.szczygieldev.order.domain.error.OrderNotFoundError
 import pl.szczygieldev.order.infrastructure.adapter.out.integration.mail.model.OrderConfirmationTemplateData
 import java.io.StringReader
 import java.io.StringWriter
@@ -25,9 +25,9 @@ internal class SmtpMailService(val mailSender: JavaMailSender, val ordersProject
     private val mf: MustacheFactory = DefaultMustacheFactory("static/mail")
     private val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
-    override fun sendOrderConfirmationMail(orderId: OrderId) = either{
+    override fun sendOrderConfirmationMail(orderId: OrderId): Result<Unit> {
         val username = "Jan"
-        val order = ordersProjections.findById(orderId) ?: raise(OrderNotFoundError.forId(orderId))
+        val order = ordersProjections.findById(orderId) ?: return Result.failure(Exception("Cannot find order with id='${orderId.id()}'."))
 
         val data = OrderConfirmationTemplateData(
             username,
@@ -61,5 +61,6 @@ internal class SmtpMailService(val mailSender: JavaMailSender, val ordersProject
         helper.setText(payload, true)
 
         mailSender.send(mimeMessage)
+        return Result.success(Unit);
     }
 }

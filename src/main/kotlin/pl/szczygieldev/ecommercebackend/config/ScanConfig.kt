@@ -5,7 +5,6 @@ import com.trendyol.kediatr.QueryHandler
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
-import pl.szczygieldev.ecommercelibrary.architecture.UseCase
 import pl.szczygieldev.ecommercelibrary.ddd.core.DomainService
 
 @Configuration
@@ -13,12 +12,13 @@ import pl.szczygieldev.ecommercelibrary.ddd.core.DomainService
     basePackages = ["pl.szczygieldev.ecommercebackend",
                     "pl.szczygieldev.product",
                     "pl.szczygieldev.order",
-                    "pl.szczygieldev.external"
+                    "pl.szczygieldev.external",
+                    "pl.szczygieldev.cart",
                    ],
     includeFilters = [
         ComponentScan.Filter(
             type = FilterType.ANNOTATION,
-            value = [UseCase::class, DomainService::class]
+            value = [DomainService::class]
 
         ),
         ComponentScan.Filter(

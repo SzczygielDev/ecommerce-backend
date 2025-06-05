@@ -9,6 +9,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.boot:spring-boot-starter:3.2.5")
     implementation(project(mapOf("path" to ":product")))
+    implementation(project(mapOf("path" to ":cart")))
     implementation(project(mapOf("path" to ":external")))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("org.springframework.boot:spring-boot-starter-web:3.2.5")
@@ -17,7 +18,7 @@ dependencies {
     implementation("io.arrow-kt:arrow-core:1.2.4")
 
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
-    implementation("com.trendyol:kediatr-core:3.0.0")
+    implementation("com.trendyol:kediatr-core:3.1.1")
     implementation("com.trendyol:kediatr-spring-starter:3.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
     runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.9.0-RC")
@@ -35,10 +36,8 @@ dependencies {
     implementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     testImplementation("io.mockk:mockk:1.13.11")
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.4.0")
-    implementation("pl.szczygieldev:ecommerce-library:3.0.0")
 }
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 kotlin {

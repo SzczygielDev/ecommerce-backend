@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     id("org.springframework.boot") version "3.2.5"
@@ -22,27 +23,38 @@ configurations {
 
 repositories {
     mavenCentral()
-    mavenLocal()
 }
 
 allprojects {
+    apply(plugin = "org.jetbrains.kotlin.jvm")
     repositories {
+        mavenLocal()
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/szczygieldev/ecommerce-library")
             credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+                username = System.getenv("GPR_USERNAME") ?: project.findProperty("gpr.user") as String?
+                password = System.getenv("GPR_TOKEN") ?: project.findProperty("gpr.key") as String?
             }
         }
     }
+    dependencies {
+        implementation("pl.szczygieldev:ecommerce-library:4.0.0")
+    }
 }
+subprojects {
+    tasks.withType<BootJar> {
+        enabled = false
+    }
+}
+
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation(project(mapOf("path" to ":product")))
     implementation(project(mapOf("path" to ":order")))
+    implementation(project(mapOf("path" to ":cart")))
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -70,10 +82,9 @@ dependencies {
     runtimeOnly("org.jetbrains.exposed:exposed-kotlin-datetime:0.55.0")
     implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.55.0")
 
-    implementation("com.trendyol:kediatr-core:3.0.0")
+    implementation("com.trendyol:kediatr-core:3.1.1")
     implementation("com.trendyol:kediatr-spring-starter:3.0.0")
     implementation("org.springframework.boot:spring-boot-gradle-plugin:3.3.5")
-    implementation("pl.szczygieldev:ecommerce-library:3.0.0")
 }
 
 tasks.withType<KotlinCompile> {

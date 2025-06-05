@@ -11,7 +11,6 @@ import pl.szczygieldev.order.application.port.`in`.command.ProcessPaymentCommand
 import pl.szczygieldev.order.application.port.out.Orders
 import pl.szczygieldev.order.application.port.out.PaymentService
 import pl.szczygieldev.order.domain.*
-import pl.szczygieldev.order.domain.error.OrderNotFoundError
 import pl.szczygieldev.order.domain.event.OrderEvent
 import java.math.BigDecimal
 import java.net.URL
@@ -22,7 +21,8 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
     val ordersMock = mockk<Orders>()
     val orderEventPublisherMock = mockk<DomainEventPublisher<OrderEvent>>()
     val paymentServiceMock = mockk<PaymentService>()
-    val orderPaymentService = OrderPaymentService(ordersMock, orderEventPublisherMock,paymentServiceMock)
+
+    val processPaymentCommandHandler = ProcessPaymentCommandHandler(ordersMock, orderEventPublisherMock, paymentServiceMock)
 
     init {
         isolationMode = IsolationMode.InstancePerLeaf
@@ -53,7 +53,7 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
         val paymentTransaction = PaymentTransaction(paymentTransactionId, amount, Instant.now())
 
         val orderSlot = slot<Order>()
-        every { ordersMock.save(capture(orderSlot), any()) } just runs
+        coEvery { ordersMock.save(capture(orderSlot), any()) } just runs
         every { orderEventPublisherMock.publishBatch(any()) } just runs
         every { paymentServiceMock.verifyPayment(paymentId) } just runs
         every { ordersMock.findByPaymentId(paymentId) } returns order
@@ -65,12 +65,12 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
             val command = ProcessPaymentCommand(paymentId, paymentTransaction)
 
             //Act
-            val result = orderPaymentService.pay(command)
+            val result = processPaymentCommandHandler.handle(command)
 
             //Assert
             result.isLeft().shouldBe(true)
             val error = result.leftOrNull().shouldNotBeNull()
-            error.shouldBeInstanceOf<OrderNotFoundError>()
+            error.shouldBeInstanceOf<ProcessPaymentCommand.OrderNotFoundError>()
         }
 
         test("Order should register payment transaction") {
@@ -80,7 +80,7 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
             val command = ProcessPaymentCommand(paymentId, paymentTransaction)
 
             //Act
-            orderPaymentService.pay(command)
+            processPaymentCommandHandler.handle(command)
 
             //Assert
             verify { order.pay(paymentTransaction) }
@@ -91,7 +91,7 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
             val command = ProcessPaymentCommand(paymentId, paymentTransaction)
 
             //Act
-            orderPaymentService.pay(command)
+            processPaymentCommandHandler.handle(command)
 
             //Assert
             verify { paymentServiceMock.verifyPayment(paymentId) }
@@ -102,10 +102,10 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
             val command = ProcessPaymentCommand(paymentId, paymentTransaction)
 
             //Act
-            orderPaymentService.pay(command)
+            processPaymentCommandHandler.handle(command)
 
             //Assert
-            verify { ordersMock.save(order, any()) }
+            coVerify { ordersMock.save(order, any()) }
         }
 
         test("Order occurred events should be published when no error occurred") {
@@ -113,7 +113,7 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
             val command = ProcessPaymentCommand(paymentId, paymentTransaction)
 
             //Act
-            orderPaymentService.pay(command)
+            processPaymentCommandHandler.handle(command)
 
             //Assert
             verify { orderEventPublisherMock.publishBatch(order.occurredEvents()) }

@@ -6,7 +6,7 @@ import pl.szczygieldev.order.domain.PaymentId
 
 internal interface Orders {
     fun nextIdentity(): OrderId
-    fun findById(id : OrderId): Order?
-    fun save(order: Order, version: Int)
+    fun findById(id: OrderId): Order?
+    suspend fun save(order: Order, version: Int)
     fun findByPaymentId(paymentId: PaymentId): Order?
 }
