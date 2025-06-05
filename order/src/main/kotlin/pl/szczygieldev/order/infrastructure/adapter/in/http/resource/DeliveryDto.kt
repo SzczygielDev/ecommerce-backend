@@ -1,0 +1,7 @@
+package pl.szczygieldev.order.infrastructure.adapter.`in`.http.resource
+
+import pl.szczygieldev.order.domain.DeliveryProvider
+import pl.szczygieldev.order.domain.DeliveryStatus
+
+internal data class DeliveryDto(val deliveryProvider: DeliveryProvider,
+                  val status: DeliveryStatus)
