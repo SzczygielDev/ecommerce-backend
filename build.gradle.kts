@@ -55,6 +55,7 @@ dependencies {
     implementation(project(mapOf("path" to ":product")))
     implementation(project(mapOf("path" to ":order")))
     implementation(project(mapOf("path" to ":cart")))
+    implementation(project(mapOf("path" to ":client")))
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -85,6 +86,9 @@ dependencies {
     implementation("com.trendyol:kediatr-core:3.1.1")
     implementation("com.trendyol:kediatr-spring-starter:3.0.0")
     implementation("org.springframework.boot:spring-boot-gradle-plugin:3.3.5")
+
+    implementation("org.springframework.boot:spring-boot-starter-security:3.5.3")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.5.3")
 }
 
 tasks.withType<KotlinCompile> {

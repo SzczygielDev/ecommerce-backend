@@ -9,12 +9,14 @@ import pl.szczygieldev.ecommercelibrary.ddd.core.DomainService
 
 @Configuration
 @ComponentScan(
-    basePackages = ["pl.szczygieldev.ecommercebackend",
-                    "pl.szczygieldev.product",
-                    "pl.szczygieldev.order",
-                    "pl.szczygieldev.external",
-                    "pl.szczygieldev.cart",
-                   ],
+    basePackages = [
+        "pl.szczygieldev.ecommercebackend",
+        "pl.szczygieldev.product",
+        "pl.szczygieldev.order",
+        "pl.szczygieldev.external",
+        "pl.szczygieldev.cart",
+        "pl.szczygieldev.client",
+    ],
     includeFilters = [
         ComponentScan.Filter(
             type = FilterType.ANNOTATION,
