@@ -1,6 +1,7 @@
 package pl.szczygieldev.order.infrastructure.adapter.out.integration.payments
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
@@ -18,13 +19,22 @@ import java.net.URL
 import java.util.*
 
 @Component
-internal class MockPaymentService : PaymentService {
+internal class MockPaymentService(
+    @Value("\${app.externalApi.key}")
+    private final val externalApiKey: String,
+    @Value("\${app.externalApi.psp.url}")
+    private final val externalApiUrl: String,
+) : PaymentService {
+
+    private val webClient = WebClient.builder()
+        .baseUrl(externalApiUrl)
+        .defaultHeader("X-API-KEY", externalApiKey)
+        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .build()
+
+
     companion object {
         private val log = KotlinLogging.logger { }
-        private val webClient = WebClient.builder()
-            .baseUrl("http://localhost:8080/external/psp/")
-            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .build()
     }
 
     override fun registerPayment(

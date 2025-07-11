@@ -29,12 +29,12 @@ internal class PspController(val pspService: PspService) {
         return ResponseEntity.ok("OK")
     }
 
-    @GetMapping("/{paymentId}")
+    @GetMapping("/public/{paymentId}")
     fun get(@PathVariable paymentId: UUID): ResponseEntity<*> {
         return ResponseEntity.ok(pspService.get(paymentId))
     }
 
-    @PostMapping("/pay/{paymentId}")
+    @PostMapping("/public/pay/{paymentId}")
     fun pay(@PathVariable paymentId: UUID, @RequestParam amount: BigDecimal): ResponseEntity<*> {
         pspService.pay(paymentId, amount)
         return ResponseEntity.ok(pspService.get(paymentId))

@@ -1,6 +1,7 @@
 package pl.szczygieldev.external.psp
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -13,12 +14,16 @@ import java.net.URL
 import java.util.UUID
 
 @Service
-internal class PspService {
+internal class PspService(
+    @Value("\${app.externalApi.psp.notification.token}")
+    private final val notificationToken: String,
+) {
     private val db = mutableMapOf<UUID, Payment>()
     private val paymentUrlBase = "http://localhost:64427/mockPayment/"
     private val notificationUrl = "http://localhost:8080/payments/notification"
     private val webClient = WebClient.builder()
         .baseUrl(notificationUrl)
+        .defaultHeader("X-API-KEY", notificationToken)
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         .build()
 
