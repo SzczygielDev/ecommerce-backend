@@ -1,6 +1,6 @@
 package pl.szczygieldev.client.infrastructure.adapter.`in`.http.resource
 
-data class ClientCreateRequest(
+data class ClientUpdateRequest(
     val name: String,
     val lastName: String,
     val phone: String,

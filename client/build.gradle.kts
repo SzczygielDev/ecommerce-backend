@@ -35,6 +35,7 @@ dependencies {
     implementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     testImplementation("io.mockk:mockk:1.13.11")
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.5.3")
 
 }
 

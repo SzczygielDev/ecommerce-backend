@@ -2,7 +2,7 @@ package pl.szczygieldev.client.domain
 
 import java.util.UUID
 
-class Client(
+data class Client(
     val id: ClientId,
     val externalId: UUID,
     val name: String,
