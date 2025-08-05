@@ -56,6 +56,7 @@ dependencies {
     implementation(project(mapOf("path" to ":order")))
     implementation(project(mapOf("path" to ":cart")))
     implementation(project(mapOf("path" to ":client")))
+    implementation(project(mapOf("path" to ":shipment")))
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

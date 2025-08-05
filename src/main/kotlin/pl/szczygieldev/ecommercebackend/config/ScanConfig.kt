@@ -16,6 +16,7 @@ import pl.szczygieldev.ecommercelibrary.ddd.core.DomainService
         "pl.szczygieldev.external",
         "pl.szczygieldev.cart",
         "pl.szczygieldev.client",
+        "pl.szczygieldev.shipment",
     ],
     includeFilters = [
         ComponentScan.Filter(
