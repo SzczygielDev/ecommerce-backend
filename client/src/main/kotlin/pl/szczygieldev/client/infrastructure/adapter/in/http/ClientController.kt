@@ -84,4 +84,30 @@ class ClientController(val clientRepository: ClientRepository, val clientPresent
 
         return ResponseEntity.ok().body(clientPresenter.toDto(updatedClient))
     }
+
+    @PutMapping("/premium")
+    fun premiumActivation(principal: Principal): ResponseEntity<*> {
+        val client =
+            clientRepository.findByExternalId(UUID.fromString(principal.name)) ?: return ResponseEntity.notFound()
+                .build<Any>()
+
+        client.activatePremiumAccount()
+
+        clientRepository.save(client)
+
+        return ResponseEntity.ok(clientPresenter.toDto(client))
+    }
+
+    @DeleteMapping("/premium")
+    fun premiumDeactivation(principal: Principal): ResponseEntity<*> {
+        val client =
+            clientRepository.findByExternalId(UUID.fromString(principal.name)) ?: return ResponseEntity.notFound()
+                .build<Any>()
+
+        client.deactivatePremiumAccount()
+
+        clientRepository.save(client)
+
+        return ResponseEntity.ok(clientPresenter.toDto(client))
+    }
 }

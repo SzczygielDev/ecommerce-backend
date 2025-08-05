@@ -9,6 +9,15 @@ data class Client(
     val lastName: String,
     val email: ClientEmail,
     val phone: ClientPhoneNumber,
-    val accountType: AccountType,
+    var accountType: AccountType,
     val address: ClientAddress
-)
+){
+
+    fun activatePremiumAccount() {
+        accountType = AccountType.PREMIUM
+    }
+
+    fun deactivatePremiumAccount() {
+        accountType = AccountType.STANDARD
+    }
+}
