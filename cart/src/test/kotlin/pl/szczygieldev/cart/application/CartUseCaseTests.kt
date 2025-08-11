@@ -38,7 +38,7 @@ internal class CartUseCaseTests : FunSpec() {
             val cartId = CartId(UUID.randomUUID())
             val clientId = ClientId(UUID.randomUUID())
             val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
-            val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
+            val deliveryProvider = DeliveryProvider("MOCK_DELIVERY_PROVIDER")
 
             every { cartsMock.findActiveForClient(clientId) } returns null
             every { cartsMock.findById(cartId) } returns null
@@ -62,7 +62,7 @@ internal class CartUseCaseTests : FunSpec() {
             every { cartsMock.findActiveForClient(clientId) } returns cart
 
             val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
-            val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
+            val deliveryProvider = DeliveryProvider("MOCK_DELIVERY_PROVIDER")
 
             //Act
             submitCartCommandHandler.handle(SubmitCartCommand(clientId, deliveryProvider, paymentServiceProvider))
@@ -78,7 +78,7 @@ internal class CartUseCaseTests : FunSpec() {
             val cart = Cart.create(cartId,clientId)
             val newCartId = CartId(UUID.randomUUID())
             val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
-            val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
+            val deliveryProvider = DeliveryProvider("MOCK_DELIVERY_PROVIDER")
 
             val savedCartsSlot = mutableListOf<Cart>()
 
@@ -102,7 +102,7 @@ internal class CartUseCaseTests : FunSpec() {
             val cart = Cart.create(cartId,clientId)
             val newCartId = CartId(UUID.randomUUID())
             val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
-            val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
+            val deliveryProvider = DeliveryProvider("MOCK_DELIVERY_PROVIDER")
 
             val events = mutableListOf<List<CartEvent>>()
 

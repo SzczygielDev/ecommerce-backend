@@ -33,7 +33,7 @@ internal class OrderPaymentUseCaseTests : FunSpec() {
         val orderId = OrderId(UUID.randomUUID())
         val amount = BigDecimal.TEN
         val psp = PaymentServiceProvider.MOCK_PSP
-        val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
+        val deliveryProvider = DeliveryProvider("MOCK_DELIVERY_PROVIDER")
         val cartId = CartId(UUID.randomUUID())
 
         val paymentUrl = URL("http://localhost:3000/")

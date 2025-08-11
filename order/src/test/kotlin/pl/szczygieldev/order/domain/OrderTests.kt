@@ -30,7 +30,7 @@ internal class OrderTests : BehaviorSpec({
                     paymentId, orderAmount, URL("http://localhost:8080/"),
                     PaymentServiceProvider.MOCK_PSP
                 ),
-                DeliveryProvider.MOCK_DELIVERY_PROVIDER,
+                DeliveryProvider("MOCK_DELIVERY_PROVIDER"),
                 emptyList()
             )
             val dimensions = ParcelDimensions(10.0, 25.0, 30.0, 5.0)
@@ -79,7 +79,7 @@ internal class OrderTests : BehaviorSpec({
                     paymentId, orderAmount, URL("http://localhost:8080/"),
                     PaymentServiceProvider.MOCK_PSP
                 ),
-                DeliveryProvider.MOCK_DELIVERY_PROVIDER,
+                DeliveryProvider("MOCK_DELIVERY_PROVIDER"),
                 emptyList()
             )
             val paymentTransactionId = PaymentTransactionId(UUID.randomUUID())
@@ -148,7 +148,7 @@ internal class OrderTests : BehaviorSpec({
                     paymentId, orderAmount, URL("http://localhost:8080/"),
                     PaymentServiceProvider.MOCK_PSP
                 ),
-                DeliveryProvider.MOCK_DELIVERY_PROVIDER,
+                DeliveryProvider("MOCK_DELIVERY_PROVIDER"),
                 emptyList()
             )
 
@@ -177,7 +177,7 @@ internal class OrderTests : BehaviorSpec({
                     paymentId, orderAmount, URL("http://localhost:8080/"),
                     PaymentServiceProvider.MOCK_PSP
                 ),
-                DeliveryProvider.MOCK_DELIVERY_PROVIDER,
+                DeliveryProvider("MOCK_DELIVERY_PROVIDER"),
                 emptyList()
             )
             val paymentTransactionId = PaymentTransactionId(UUID.randomUUID())
@@ -220,7 +220,7 @@ internal class OrderTests : BehaviorSpec({
                     paymentId, orderAmount, URL("http://localhost:8080/"),
                     PaymentServiceProvider.MOCK_PSP
                 ),
-                DeliveryProvider.MOCK_DELIVERY_PROVIDER,
+                DeliveryProvider("MOCK_DELIVERY_PROVIDER"),
                 emptyList()
             )
             val paymentTransactionId = PaymentTransactionId(UUID.randomUUID())
@@ -264,7 +264,7 @@ internal class OrderTests : BehaviorSpec({
                     paymentId, orderAmount, URL("http://localhost:8080/"),
                     PaymentServiceProvider.MOCK_PSP
                 ),
-                DeliveryProvider.MOCK_DELIVERY_PROVIDER,
+                DeliveryProvider("MOCK_DELIVERY_PROVIDER"),
                 emptyList()
             )
             val paymentTransactionId = PaymentTransactionId(UUID.randomUUID())
@@ -310,7 +310,7 @@ internal class OrderTests : BehaviorSpec({
                     paymentId, orderAmount, URL("http://localhost:8080/"),
                     PaymentServiceProvider.MOCK_PSP
                 ),
-                DeliveryProvider.MOCK_DELIVERY_PROVIDER,
+                DeliveryProvider("MOCK_DELIVERY_PROVIDER"),
                 emptyList()
             )
 
@@ -376,7 +376,7 @@ internal class OrderTests : BehaviorSpec({
                     paymentId, orderAmount, URL("http://localhost:8080/"),
                     PaymentServiceProvider.MOCK_PSP
                 ),
-                DeliveryProvider.MOCK_DELIVERY_PROVIDER,
+                DeliveryProvider("MOCK_DELIVERY_PROVIDER"),
                 emptyList()
             )
             val paymentTransactionId = PaymentTransactionId(UUID.randomUUID())

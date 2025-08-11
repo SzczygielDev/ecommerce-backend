@@ -16,7 +16,7 @@ internal class CartTests : FunSpec({
         val cart = Cart.create(cartId,clientId)
         val productId = ProductId(UUID.randomUUID())
         val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
-        val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
+        val deliveryProvider = DeliveryProvider("MOCK_DELIVERY_PROVIDER")
 
         //Act
         cart.submit(deliveryProvider,paymentServiceProvider)
@@ -35,7 +35,7 @@ internal class CartTests : FunSpec({
         val cart = Cart.create(cartId,clientId)
         val productId = ProductId(UUID.randomUUID())
         val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
-        val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
+        val deliveryProvider = DeliveryProvider("MOCK_DELIVERY_PROVIDER")
 
         //Act
         cart.submit(deliveryProvider,paymentServiceProvider)
@@ -53,7 +53,7 @@ internal class CartTests : FunSpec({
         val clientId = ClientId(UUID.randomUUID())
         val cart = Cart.create(cartId,clientId)
         val paymentServiceProvider = PaymentServiceProvider.MOCK_PSP
-        val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
+        val deliveryProvider = DeliveryProvider("MOCK_DELIVERY_PROVIDER")
 
         //Act
         cart.submit(deliveryProvider,paymentServiceProvider)

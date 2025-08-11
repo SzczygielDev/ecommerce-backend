@@ -40,7 +40,7 @@ internal class OrderUseCaseTests : FunSpec() {
         val orderId = OrderId(UUID.randomUUID())
         val amount = BigDecimal.TEN
         val psp = PaymentServiceProvider.MOCK_PSP
-        val deliveryProvider = DeliveryProvider.MOCK_DELIVERY_PROVIDER
+        val deliveryProvider = DeliveryProvider("MOCK_DELIVERY_PROVIDER")
         val cartId = CartId(UUID.randomUUID())
 
         val paymentId = PaymentId(UUID.randomUUID())
