@@ -40,6 +40,7 @@ allprojects {
     }
     dependencies {
         implementation("pl.szczygieldev:ecommerce-library:4.0.0")
+        implementation("pl.szczygieldev:shipment-sdk:1.0.0")
     }
 }
 subprojects {

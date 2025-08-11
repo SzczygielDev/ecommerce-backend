@@ -18,7 +18,7 @@ class CartEventHandler(val mediator: Mediator) {
             CreateOrderCommand(
                 CartId(event.cartId),
                 PaymentServiceProvider.valueOf(event.paymentServiceProvider),
-                DeliveryProvider.valueOf(event.deliveryProvider)
+                DeliveryProvider(event.deliveryProvider)
             )
         )
     }

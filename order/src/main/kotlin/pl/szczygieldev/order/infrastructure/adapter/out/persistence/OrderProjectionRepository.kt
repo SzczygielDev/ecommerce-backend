@@ -63,7 +63,7 @@ internal class OrderProjectionRepository : OrdersProjections {
             it[cartId] = order.cartId.idAsUUID()
             it[status] = order.status
             it[paymentId] = payment.paymentId.idAsUUID()
-            it[deliveryProvider] = delivery.deliveryProvider
+            it[deliveryProvider] = delivery.deliveryProvider.name
             it[deliveryStatus] = delivery.status
             it[parcelId] = delivery.parcel?.parcelId?.id
             it[width] = delivery.parcel?.parcelDimensions?.width
@@ -205,7 +205,7 @@ internal class OrderProjectionRepository : OrdersProjections {
             row[OrderProjectionTable.status],
             payment,
             Delivery(
-                row[OrderProjectionTable.deliveryProvider],
+                DeliveryProvider(row[OrderProjectionTable.deliveryProvider]),
                 row[OrderProjectionTable.deliveryStatus],
                 parcel
             ),

@@ -8,22 +8,27 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pl.szczygieldev.ecommercelibrary.command.Mediator
 import pl.szczygieldev.order.application.port.`in`.command.ChangeOrderDeliveryStatusCommand
-import pl.szczygieldev.order.domain.DeliveryProvider
+
 import pl.szczygieldev.order.domain.DeliveryStatus
 import pl.szczygieldev.order.domain.ParcelId
+import pl.szczygieldev.order.infrastructure.adapter.`in`.http.presenter.DeliveryProviderPresenter
 import pl.szczygieldev.order.infrastructure.adapter.`in`.http.resource.ParcelStatus
 import pl.szczygieldev.order.infrastructure.adapter.`in`.http.resource.ParcelStatusChangeNotificationRequest
-import pl.szczygieldev.order.infrastructure.mapper.DeliveryProviderMapper
+import pl.szczygieldev.shipmentsdk.model.DeliveryProvider
 
 @RequestMapping("/delivery")
 @RestController
-internal class DeliveryController(val deliveryProviderMapper: DeliveryProviderMapper,val mediator: Mediator) {
+internal class DeliveryController(val deliveryProviderPresenter: DeliveryProviderPresenter, val mediator: Mediator) {
     @GetMapping("/providers")
-    fun getDeliveryMethods(): ResponseEntity<*> = ResponseEntity.ok(
-        DeliveryProvider.values().map { deliveryProvider -> deliveryProviderMapper.mapToDetails(deliveryProvider) })
+    fun getDeliveryMethods(): ResponseEntity<*> {
+
+        return ResponseEntity.ok(
+            DeliveryProvider.values().map { deliveryProviderPresenter.toDto(it) }
+        )
+    }
 
     @PostMapping("/notification")
-    suspend fun notificationHook(@RequestBody notification: ParcelStatusChangeNotificationRequest) : ResponseEntity<*> {
+    suspend fun notificationHook(@RequestBody notification: ParcelStatusChangeNotificationRequest): ResponseEntity<*> {
         mediator.send(
             ChangeOrderDeliveryStatusCommand(
                 ParcelId(notification.parcelId),

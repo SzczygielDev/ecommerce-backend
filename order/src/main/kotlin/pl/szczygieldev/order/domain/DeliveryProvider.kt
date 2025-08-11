@@ -1,3 +1,3 @@
 package pl.szczygieldev.order.domain
 
-internal enum class DeliveryProvider { MOCK_DELIVERY_PROVIDER }
+internal data class DeliveryProvider(val name: String)

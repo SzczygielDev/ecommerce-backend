@@ -19,7 +19,7 @@ internal class OrderPresenter {
                 paymentProjection.paymentURL
             )
         val delivery = orderProjection.delivery
-        val deliveryDto = DeliveryDto(delivery.deliveryProvider, delivery.status)
+        val deliveryDto = DeliveryDto(delivery.deliveryProvider.name, delivery.status)
 
         return OrderDto(
             orderProjection.orderId.id(),
@@ -59,7 +59,7 @@ internal class OrderPresenter {
                 }
             )
         val delivery = orderProjection.delivery
-        val deliveryDto = DeliveryDto(delivery.deliveryProvider, delivery.status)
+        val deliveryDto = DeliveryDto(delivery.deliveryProvider.name, delivery.status)
 
         return OrderFullDto(
             orderProjection.orderId.id(),

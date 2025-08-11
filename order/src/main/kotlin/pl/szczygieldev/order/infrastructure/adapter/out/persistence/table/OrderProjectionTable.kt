@@ -6,12 +6,12 @@ import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
 import pl.szczygieldev.order.domain.DeliveryProvider
 import pl.szczygieldev.order.domain.DeliveryStatus
 
-internal object OrderProjectionTable : Table("order_projections")  {
+internal object OrderProjectionTable : Table("order_projections") {
     val id = uuid("id").uniqueIndex()
     val cartId = uuid("cart_id")
     val status = enumeration("status", OrderStatus::class)
-    val paymentId = reference("payment_id",OrderProjectionPaymentTable.id)
-    val deliveryProvider = enumeration("delivery_provider", DeliveryProvider::class)
+    val paymentId = reference("payment_id", OrderProjectionPaymentTable.id)
+    val deliveryProvider = varchar("delivery_provider", 255)
     val deliveryStatus = enumeration("delivery_status", DeliveryStatus::class)
     val parcelId = uuid("parcel_id").nullable()
     val width = double("parcel_width").nullable()

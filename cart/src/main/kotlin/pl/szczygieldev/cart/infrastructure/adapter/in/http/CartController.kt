@@ -9,6 +9,7 @@ import pl.szczygieldev.cart.application.port.`in`.command.RemoveItemFromCartComm
 import pl.szczygieldev.cart.application.port.`in`.command.SubmitCartCommand
 import pl.szczygieldev.cart.application.port.`in`.command.AddItemToCartCommand.ProductNotFoundError
 import pl.szczygieldev.cart.application.port.out.CartsProjections
+import pl.szczygieldev.cart.domain.DeliveryProvider
 import pl.szczygieldev.cart.domain.ProductId
 import pl.szczygieldev.cart.infrastructure.adapter.`in`.http.resource.AddItemToCartRequest
 import pl.szczygieldev.cart.infrastructure.adapter.`in`.http.resource.CartPresenter
@@ -83,7 +84,7 @@ internal class CartController(
         val result = mediator.send(
             SubmitCartCommand(
                 mockClientId,
-                request.deliveryProvider,
+                DeliveryProvider(request.deliveryProvider),
                 request.paymentServiceProvider
             )
         )
