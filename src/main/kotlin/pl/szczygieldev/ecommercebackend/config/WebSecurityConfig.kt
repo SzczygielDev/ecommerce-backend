@@ -20,7 +20,7 @@ class SecurityConfig(
         http {
             csrf {
                 ignoringRequestMatchers(PathRequest.toH2Console())
-                ignoringRequestMatchers("/external/psp/**","/payments/**")
+                ignoringRequestMatchers("/external/psp/**","/payments/**","/external/shipping/**")
             }
             authorizeHttpRequests {
                 authorize("/public/**", permitAll)

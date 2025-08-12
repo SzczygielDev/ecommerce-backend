@@ -1,5 +1,6 @@
 package pl.szczygieldev.order.infrastructure.adapter.out.integration.shipping
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import pl.szczygieldev.order.application.port.out.ShippingService
 import pl.szczygieldev.order.domain.DeliveryProvider
@@ -10,8 +11,11 @@ import pl.szczygieldev.shipmentsdk.ShippingServiceFactory
 
 
 @Configuration
-internal class ShippingSdkConfig : ShippingService {
-    private val shippingSdk = ShippingServiceFactory.create()
+internal class ShippingSdkConfig(
+    @Value("\${app.externalApi.key}")
+    private val externalApiKey: String
+) : ShippingService {
+    private val shippingSdk = ShippingServiceFactory.create(externalApiKey)
 
     override fun registerParcel(parcelDimensions: ParcelDimensions, deliveryProvider: DeliveryProvider): ParcelId? {
         val parcel = shippingSdk.registerParcel(
