@@ -13,7 +13,7 @@ import java.util.*
 @Repository
 class ClientRepository {
     fun save(client: Client) = transaction {
-        ClientTable.upsert{
+        ClientTable.upsert {
             it[id] = client.id.idAsUUID()
             it[externalId] = client.externalId
             it[name] = client.name
@@ -41,6 +41,18 @@ class ClientRepository {
                 ?: return@transaction null
 
         return@transaction mapClient(rows)
+    }
+
+    fun findPage(offset: Long, limit: Int): List<Client> = transaction {
+        return@transaction ClientTable.selectAll().offset(offset).limit(limit).map { result ->
+            mapClient(result)
+        }
+    }
+
+    fun findAll(): List<Client> = transaction {
+        return@transaction ClientTable.selectAll().map { result ->
+            mapClient(result)
+        }
     }
 
     private fun mapClient(rows: ResultRow): Client = Client(
