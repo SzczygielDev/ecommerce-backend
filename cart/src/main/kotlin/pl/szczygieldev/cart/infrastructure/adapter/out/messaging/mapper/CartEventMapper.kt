@@ -19,7 +19,7 @@ internal class CartEventMapper : IntegrationEventMapper<CartEvent> {
                 event.occurredOn,
                 event.cartId.id,
                 event.paymentServiceProvider.toString(),
-                event.deliveryProvider.toString()
+                event.deliveryProvider.name
             )
 
             is ItemAddedToCart -> null
